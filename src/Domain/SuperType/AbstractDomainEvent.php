@@ -2,7 +2,7 @@
 
 namespace CQRS\Domain\SuperType;
 
-use CQRS\Eventing\DomainEvent;
+use CQRS\EventHandling\DomainEvent;
 use DateTime;
 
 abstract class AbstractDomainEvent implements DomainEvent
