@@ -17,7 +17,10 @@ abstract class IdentifiedDomainObject
      */
     private $id;
 
-    protected function id()
+    /**
+     * @return int
+     */
+    protected function getId()
     {
         return $this->id;
     }

@@ -4,5 +4,9 @@ namespace CQRS\EventHandling;
 
 interface EventHandlerLocator
 {
-    public function getEventHandlers($event);
+    /**
+     * @param DomainEvent $event
+     * @return array
+     */
+    public function getEventHandlers(DomainEvent $event);
 }

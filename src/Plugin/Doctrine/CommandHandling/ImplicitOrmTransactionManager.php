@@ -2,7 +2,7 @@
 
 namespace CQRS\Plugin\Doctrine\CommandHandling;
 
-class ImplicitTransactionManager extends AbstractTransactionManager
+class ImplicitTransactionManager extends AbstractOrmTransactionManager
 {
     public function begin()
     {}

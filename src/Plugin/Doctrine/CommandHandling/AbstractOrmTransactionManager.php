@@ -5,7 +5,7 @@ namespace CQRS\Plugin\Doctrine\CommandHandling;
 use CQRS\CommandHandling\TransactionManager;
 use Doctrine\ORM\EntityManager;
 
-abstract class AbstractTransactionManager implements TransactionManager
+abstract class AbstractOrmTransactionManager implements TransactionManager
 {
     /** @var EntityManager */
     protected $entityManager;

@@ -2,7 +2,7 @@
 
 namespace CQRS\Service;
 
-use CQRS\Plugin\Doctrine\CommandHandling\AbstractTransactionManager;
+use CQRS\Plugin\Doctrine\CommandHandling\AbstractOrmTransactionManager;
 use CQRS\Plugin\Zend\Options\TransactionManager;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -38,7 +38,7 @@ class TransactionManagerFactory extends AbstractFactory
 
         $transactionManager = new $class;
 
-        if ($transactionManager instanceof AbstractTransactionManager) {
+        if ($transactionManager instanceof AbstractOrmTransactionManager) {
             /** @var \Doctrine\ORM\EntityManager $entityManager */
             $entityManager = $sl->get($options->getEntityManager());
             $transactionManager->setEntityManager($entityManager);

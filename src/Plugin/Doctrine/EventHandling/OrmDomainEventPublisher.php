@@ -1,8 +1,9 @@
 <?php
 
-namespace CQRS\EventHandling;
+namespace CQRS\Plugin\Doctrine\EventHandling;
 
-use CQRS\Domain\AggregateRoot;
+use CQRS\Domain\SuperType\AggregateRoot;
+use CQRS\EventHandling\EventBus;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\LifecycleEventArgs;
@@ -68,7 +69,6 @@ class OrmDomainEventPublisher implements EventSubscriber
     public function postFlush(PostFlushEventArgs $event)
     {
         $entityManager = $event->getEntityManager();
-        $evm = $entityManager->getEventManager();
 
         foreach ($this->aggregateRoots as $aggregateRoot) {
             $class = $entityManager->getClassMetadata(get_class($aggregateRoot));
