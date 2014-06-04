@@ -45,7 +45,19 @@ return [
 
     'service_manager' => [
         'abstract_factories' => [
-            'DoctrineModule' => 'CQRS\Plugin\Zend\ServiceFactory\AbstractCqrsServiceFactory',
+            'CQRS' => 'CQRS\Plugin\Zend\ServiceFactory\AbstractCqrsServiceFactory',
         ],
     ],
+
+    'doctrine' => [
+        'driver' => [
+            'CQRS_Driver' => [
+                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+                'cache' => 'array',
+                'paths' => [
+                    __DIR__ . '/../src/Domain/SuperType'
+                ],
+            ],
+        ]
+    ]
 ];

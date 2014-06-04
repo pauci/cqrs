@@ -51,7 +51,7 @@ class AbstractCqrsServiceFactory implements AbstractFactoryInterface
     {
         $matches = [];
 
-        if (!preg_match('/^cqrs\.(?P<serviceType>[a-z0-9_]+)\.(?P<serviceName>[a-z0-9_]+)$/', $name, $matches)) {
+        if (!preg_match('/^cqrs\.(?P<serviceType>[a-z0-9_]+)\.(?P<serviceName>[a-z0-9_]+)$/i', $name, $matches)) {
             return false;
         }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace CQRS\Service;
+namespace CQRS\Plugin\Zend\Service;
 
 use CQRS\Plugin\Zend\Options\CommandHandlerLocator;
 use RuntimeException;
@@ -25,7 +25,7 @@ class CommandHandlerLocatorFactory extends AbstractFactory
      */
     public function getOptionsClass()
     {
-        return 'CQRS\Options\CommandHandlerLocator';
+        return 'CQRS\Plugin\Zend\Options\CommandHandlerLocator';
     }
 
     /**

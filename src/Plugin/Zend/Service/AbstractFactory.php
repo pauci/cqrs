@@ -1,6 +1,6 @@
 <?php
 
-namespace CQRS\Service;
+namespace CQRS\Plugin\Zend\Service;
 
 use RuntimeException;
 use Zend\ServiceManager\FactoryInterface;

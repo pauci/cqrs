@@ -1,6 +1,6 @@
 <?php
 
-namespace CQRS\Service;
+namespace CQRS\Plugin\Zend\Service;
 
 use CQRS\Plugin\Doctrine\CommandHandling\AbstractOrmTransactionManager;
 use CQRS\Plugin\Zend\Options\TransactionManager;
@@ -15,7 +15,7 @@ class TransactionManagerFactory extends AbstractFactory
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         /** @var TransactionManager $options */
-        $options = $this->getOptions($serviceLocator, 'commandBus');
+        $options = $this->getOptions($serviceLocator, 'transactionManager');
         return $this->create($serviceLocator, $options);
     }
 

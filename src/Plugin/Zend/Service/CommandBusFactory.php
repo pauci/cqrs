@@ -1,6 +1,6 @@
 <?php
 
-namespace CQRS\Service;
+namespace CQRS\Plugin\Zend\Service;
 
 use CQRS\Plugin\Zend\Options\CommandBus;
 use Zend\ServiceManager\ServiceLocatorInterface;
