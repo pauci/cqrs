@@ -16,7 +16,7 @@ class MemoryCommandHandlerLocator implements CommandHandlerLocator
      */
     public function getCommandHandler(Command $command)
     {
-        $commandType = $command->getCommandType();
+        $commandType = new CommandType($command);
         $key = strtolower($commandType);
 
         if (!isset($this->handlers[$key])) {

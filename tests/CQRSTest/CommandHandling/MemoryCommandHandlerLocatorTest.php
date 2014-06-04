@@ -17,7 +17,7 @@ class MemoryCommandHandlerLocatorTest extends \PHPUnit_Framework_TestCase
 
     public function testItThrowsExceptionWhenNoHandlerIsRegisteredForCommand()
     {
-        $this->setExpectedException('CQRS\Exception\RuntimeException', "No service registered for command type 'NoHandlerCommand'");
+        $this->setExpectedException('CQRS\Exception\RuntimeException', "No service registered for command type 'CQRSTest\\CommandHandling\\NoHandlerCommand'");
 
         $locator = new MemoryCommandHandlerLocator();
         $locator->getCommandHandler(new NoHandlerCommand());
@@ -25,9 +25,4 @@ class MemoryCommandHandlerLocatorTest extends \PHPUnit_Framework_TestCase
 }
 
 class NoHandlerCommand implements Command
-{
-    public function getCommandType()
-    {
-        return 'NoHandlerCommand';
-    }
-}
+{}

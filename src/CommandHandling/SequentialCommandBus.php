@@ -111,7 +111,9 @@ class SequentialCommandBus implements CommandBus
      */
     protected function getHandlerMethodName(Command $command)
     {
-        $parts = explode('\\', $command->getCommandType());
+        $commandType = new CommandType($command);
+
+        $parts = explode('\\', $commandType);
 
         return str_replace('Command', '', lcfirst(end($parts)));
     }

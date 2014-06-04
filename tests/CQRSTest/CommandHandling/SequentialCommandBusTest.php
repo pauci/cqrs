@@ -9,22 +9,42 @@ use CQRS\CommandHandling\TransactionManager;
 
 class SequentialCommandBusTest extends \PHPUnit_Framework_TestCase
 {
-    public function testCommandHandling()
+    public function testHandleSimpleCommand()
     {
-        $handler = new TestCommandHandler();
-
         $locator = new TestCommandHandlerLocator();
-        $locator->handler = $handler;
+        $locator->handler = new TestCommandHandler();
+
+        $transactionManager = new TestTransactionManager();
+
+        $command = new TestSimpleCommand();
+
+        $commandBus = new SequentialCommandBus($locator, $transactionManager);
+        $commandBus->handle($command);
+
+        $this->assertEquals(1, $locator->handler->simpleCount);
+        $this->assertSame($command, $locator->handler->command);
+
+        $this->assertEquals(1, $transactionManager->begin);
+        $this->assertEquals(1, $transactionManager->commit);
+        $this->assertEquals(0, $transactionManager->rollback);
+    }
+
+    public function testHandleSequentialCommand()
+    {
+        $locator = new TestCommandHandlerLocator();
+        $locator->handler = new TestCommandHandler();
 
         $transactionManager = new TestTransactionManager();
 
         $command = new TestSequentialCommand();
 
         $commandBus = new SequentialCommandBus($locator, $transactionManager);
+        $locator->handler->commandBus = $commandBus;
         $commandBus->handle($command);
 
-        $this->assertEquals(1, $handler->count);
-        $this->assertSame($command, $handler->command);
+        $this->assertEquals(1, $locator->handler->simpleCount);
+        $this->assertEquals(1, $locator->handler->sequentialCount);
+        $this->assertNotSame($command, $locator->handler->command);
 
         $this->assertEquals(1, $transactionManager->begin);
         $this->assertEquals(1, $transactionManager->commit);
@@ -32,13 +52,11 @@ class SequentialCommandBusTest extends \PHPUnit_Framework_TestCase
     }
 }
 
+class TestSimpleCommand implements Command
+{}
+
 class TestSequentialCommand implements Command
-{
-    public function getCommandType()
-    {
-        return 'Test\TestMeCommand';
-    }
-}
+{}
 
 class TestCommandHandlerLocator implements CommandHandlerLocator
 {
@@ -52,13 +70,22 @@ class TestCommandHandlerLocator implements CommandHandlerLocator
 
 class TestCommandHandler
 {
-    public $count = 0;
+    public $simpleCount = 0;
+    public $sequentialCount = 0;
     public $command;
+    /** @var SequentialCommandBus */
+    public $commandBus;
 
-    public function testMe(TestSequentialCommand $command)
+    public function testSimple(TestSimpleCommand $command)
     {
-        $this->count++;
+        $this->simpleCount++;
         $this->command = $command;
+    }
+
+    public function testSequential(TestSequentialCommand $command)
+    {
+        $this->sequentialCount++;
+        $this->commandBus->handle(new TestSimpleCommand());
     }
 }
 
