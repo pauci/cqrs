@@ -5,8 +5,8 @@ namespace CQRS\EventHandling;
 interface EventHandlerLocator
 {
     /**
-     * @param DomainEvent $event
+     * @param EventName $eventName
      * @return array
      */
-    public function getEventHandlers(DomainEvent $event);
+    public function getEventHandlers(EventName $eventName);
 }
