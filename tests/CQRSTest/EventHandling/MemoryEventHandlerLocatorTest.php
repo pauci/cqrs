@@ -19,6 +19,13 @@ class MemoryEventHandlerLocatorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame([$handler], $locator->getEventHandlers($eventName));
     }
 
+    public function testGetEmptyEventHandlers()
+    {
+        $locator = new MemoryEventHandlerLocator();
+
+        $this->assertEmpty($locator->getEventHandlers(new EventNameToRegister()));
+    }
+
     public function testItThrowsExceptionWhenRegisteredHandlerIsNoObject()
     {
         $this->setExpectedException(
@@ -45,5 +52,8 @@ class EventNameToRegister extends EventName
 class EventHandlerToRegister
 {
     public function onTestEvent()
+    {}
+
+    public function anotherMethod()
     {}
 }

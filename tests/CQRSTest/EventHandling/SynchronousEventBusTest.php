@@ -3,25 +3,60 @@
 namespace CQRSTest\EventHandling;
 
 use CQRS\EventHandling\DomainEvent;
+use CQRS\EventHandling\EventExecutionFailed;
 use CQRS\EventHandling\EventHandlerLocator;
 use CQRS\EventHandling\EventName;
 use CQRS\EventHandling\SynchronousEventBus;
 
 class SynchronousEventBusTest extends \PHPUnit_Framework_TestCase
 {
-    public function testPublishEvent()
+    /** @var SynchronousEventBus */
+    protected $eventBus;
+    /** @var SynchronousEventHandler */
+    protected $handler;
+
+    public function setUp()
     {
-        $locator = new SynchronousEventBusTestEventHandlerLocator();
-        $locator->handler = new SynchronousEventBusTestEventHandler();
+        $this->handler = new SynchronousEventHandler();
 
-        $eventBus = new SynchronousEventBus($locator);
-        $eventBus->publish(new SynchronousEventBusTestedEvent());
+        $locator = new SynchronousEventHandlerLocator();
+        $locator->handler = $this->handler;
 
-        $this->assertEquals(1, $locator->handler->executed);
+        $this->eventBus = new SynchronousEventBus($locator);
+    }
+
+    public function testPublishingOfEvent()
+    {
+        $this->eventBus->publish(new SynchronousEvent());
+
+        $this->assertEquals(1, $this->handler->executed);
+    }
+
+    public function testItRaisesEventExecutionFailedOnFailure()
+    {
+        $failureCausingEvent = new FailureCausingEvent();
+
+        $this->eventBus->publish($failureCausingEvent);
+
+        $failureEvent = $this->handler->failureEvent;
+
+        $this->assertInstanceOf('CQRS\EventHandling\EventExecutionFailed', $failureEvent);
+        $this->assertEquals('CQRSTest\EventHandling\SynchronousEventHandler', $failureEvent->service);
+        $this->assertInstanceOf('CQRSTest\EventHandling\EventHandlingException', $failureEvent->exception);
+        $this->assertSame($failureCausingEvent, $failureEvent->event);
+    }
+
+    public function testItIgnoresErrorWhenHandlingEventExecutionFailedEvent()
+    {
+        $failureEvent = new EventExecutionFailed();
+
+        $this->handler->throwErrorOnEventExecutionFailed = true;
+
+        $this->eventBus->publish($failureEvent);
     }
 }
 
-class SynchronousEventBusTestEventHandlerLocator implements EventHandlerLocator
+class SynchronousEventHandlerLocator implements EventHandlerLocator
 {
     public $handler;
 
@@ -31,15 +66,38 @@ class SynchronousEventBusTestEventHandlerLocator implements EventHandlerLocator
     }
 }
 
-class SynchronousEventBusTestEventHandler
+class SynchronousEventHandler
 {
     public $executed = 0;
+    public $throwErrorOnEventExecutionFailed = false;
+    /** @var EventExecutionFailed */
+    public $failureEvent;
 
-    public function onSynchronousEventBusTested(SynchronousEventBusTestedEvent $event)
+    public function onSynchronous(SynchronousEvent $event)
     {
         $this->executed++;
     }
+
+    public function onFailureCausing(FailureCausingEvent $event)
+    {
+        throw new EventHandlingException();
+    }
+
+    public function onEventExecutionFailed($event)
+    {
+        if ($this->throwErrorOnEventExecutionFailed) {
+            throw new EventHandlingException();
+        }
+
+        $this->failureEvent = $event;
+    }
 }
 
-class SynchronousEventBusTestedEvent implements DomainEvent
+class SynchronousEvent implements DomainEvent
+{}
+
+class FailureCausingEvent implements DomainEvent
+{}
+
+class EventHandlingException extends \Exception
 {}

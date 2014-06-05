@@ -2,6 +2,9 @@
 
 namespace CQRS\CommandHandling;
 
+/**
+ * @codeCoverageIgnore
+ */
 class NoTransactionManager implements TransactionManager
 {
     public function begin()

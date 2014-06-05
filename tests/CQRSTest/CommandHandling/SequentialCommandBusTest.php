@@ -29,7 +29,7 @@ class SequentialCommandBusTest extends \PHPUnit_Framework_TestCase
         $this->handler->commandBus = $this->commandBus;
     }
 
-    public function testHandleSequentialCommand()
+    public function testHandlingOfSequentialCommand()
     {
         $this->commandBus->handle(new DoSequentialCommand());
 
@@ -41,7 +41,7 @@ class SequentialCommandBusTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $this->transactionManager->rollback);
     }
 
-    public function testRollbackOnFailure()
+    public function testItRollbacksTransactionOnFailure()
     {
         $this->setExpectedException('CQRSTest\CommandHandling\CommandFailureTestException');
 
@@ -57,7 +57,7 @@ class SequentialCommandBusTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testItDoesNotThrowExceptionOnSequentialFailure()
+    public function testItIgnoresErrorOnSequentialFailure()
     {
         $this->commandBus->handle(new DoSequentialFailureCommand());
 
