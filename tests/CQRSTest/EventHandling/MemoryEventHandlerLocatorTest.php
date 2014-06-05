@@ -7,20 +7,31 @@ use CQRS\EventHandling\MemoryEventHandlerLocator;
 
 class MemoryEventHandlerLocatorTest extends \PHPUnit_Framework_TestCase
 {
-    public function testRegisterEventHandler()
+    public function testRegisterAndGetEventHandlers()
     {
-        $handler = new MemoryEventHandlerLocatorTestEventHandler();
+        $handler = new EventHandlerToRegister();
 
         $locator = new MemoryEventHandlerLocator();
         $locator->register($handler);
 
-        $eventName = new MemoryEventHandlerLocatorTestEventName();
+        $eventName = new EventNameToRegister();
 
         $this->assertSame([$handler], $locator->getEventHandlers($eventName));
     }
+
+    public function testItThrowsExceptionWhenRegisteredHandlerIsNoObject()
+    {
+        $this->setExpectedException(
+            'CQRS\Exception\RuntimeException',
+            'No valid event handler given; expected object, got string'
+        );
+
+        $locator = new MemoryEventHandlerLocator();
+        $locator->register('not an object');
+    }
 }
 
-class MemoryEventHandlerLocatorTestEventName extends EventName
+class EventNameToRegister extends EventName
 {
     public function __construct()
     {}
@@ -31,7 +42,7 @@ class MemoryEventHandlerLocatorTestEventName extends EventName
     }
 }
 
-class MemoryEventHandlerLocatorTestEventHandler
+class EventHandlerToRegister
 {
     public function onTestEvent()
     {}

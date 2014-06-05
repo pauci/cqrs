@@ -20,7 +20,7 @@ class MemoryCommandHandlerLocator implements CommandHandlerLocator
         $key = strtolower($commandType);
 
         if (!isset($this->handlers[$key])) {
-            throw new RuntimeException(sprintf("No service registered for command type '%s'", $commandType));
+            throw new RuntimeException(sprintf('No service registered for command type "%s"', $commandType));
         }
 
         return $this->handlers[$key];
@@ -34,7 +34,11 @@ class MemoryCommandHandlerLocator implements CommandHandlerLocator
     public function register($commandType, $service)
     {
         if (!is_object($service)) {
-            throw new RuntimeException(sprintf("No valid service given for command type '%s'", $commandType));
+            throw new RuntimeException(sprintf(
+                'No valid service given for command type "%s"; expected object, got %s',
+                $commandType,
+                gettype($service)
+            ));
         }
 
         $this->handlers[strtolower($commandType)] = $service;

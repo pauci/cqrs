@@ -3,5 +3,4 @@
 namespace CQRS\EventHandling;
 
 interface DomainEvent
-{
-}
+{}

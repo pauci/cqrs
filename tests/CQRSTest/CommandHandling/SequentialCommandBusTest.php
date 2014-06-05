@@ -9,56 +9,90 @@ use CQRS\CommandHandling\TransactionManager;
 
 class SequentialCommandBusTest extends \PHPUnit_Framework_TestCase
 {
-    public function testHandleSimpleCommand()
+    /** @var SequentialCommandBus */
+    protected $commandBus;
+    /** @var SequentialCommandHandler */
+    protected $handler;
+    /** @var SequentialTransactionManager */
+    protected $transactionManager;
+
+    public function setUp()
     {
-        $locator = new TestCommandHandlerLocator();
-        $locator->handler = new TestCommandHandler();
+        $this->handler = new SequentialCommandHandler();
 
-        $transactionManager = new TestTransactionManager();
+        $locator = new SequentialCommandHandlerLocator();
+        $locator->handler = $this->handler;
 
-        $command = new TestSimpleCommand();
+        $this->transactionManager = new SequentialTransactionManager();
 
-        $commandBus = new SequentialCommandBus($locator, $transactionManager);
-        $commandBus->handle($command);
-
-        $this->assertEquals(1, $locator->handler->simpleCount);
-        $this->assertSame($command, $locator->handler->command);
-
-        $this->assertEquals(1, $transactionManager->begin);
-        $this->assertEquals(1, $transactionManager->commit);
-        $this->assertEquals(0, $transactionManager->rollback);
+        $this->commandBus = new SequentialCommandBus($locator, $this->transactionManager);
+        $this->handler->commandBus = $this->commandBus;
     }
 
     public function testHandleSequentialCommand()
     {
-        $locator = new TestCommandHandlerLocator();
-        $locator->handler = new TestCommandHandler();
+        $this->commandBus->handle(new DoSequentialCommand());
 
-        $transactionManager = new TestTransactionManager();
+        $this->assertEquals(1, $this->handler->sequential);
+        $this->assertEquals(1, $this->handler->simple);
 
-        $command = new TestSequentialCommand();
+        $this->assertEquals(1, $this->transactionManager->begin);
+        $this->assertEquals(1, $this->transactionManager->commit);
+        $this->assertEquals(0, $this->transactionManager->rollback);
+    }
 
-        $commandBus = new SequentialCommandBus($locator, $transactionManager);
-        $locator->handler->commandBus = $commandBus;
-        $commandBus->handle($command);
+    public function testRollbackOnFailure()
+    {
+        $this->setExpectedException('CQRSTest\CommandHandling\CommandFailureTestException');
 
-        $this->assertEquals(1, $locator->handler->simpleCount);
-        $this->assertEquals(1, $locator->handler->sequentialCount);
-        $this->assertNotSame($command, $locator->handler->command);
+        try {
+            $this->commandBus->handle(new DoFailureCommand());
+        } catch (CommandFailureTestException $e) {
 
-        $this->assertEquals(1, $transactionManager->begin);
-        $this->assertEquals(1, $transactionManager->commit);
-        $this->assertEquals(0, $transactionManager->rollback);
+            $this->assertEquals(1, $this->transactionManager->begin);
+            $this->assertEquals(0, $this->transactionManager->commit);
+            $this->assertEquals(1, $this->transactionManager->rollback);
+
+            throw $e;
+        }
+    }
+
+    public function testItDoesNotThrowExceptionOnSequentialFailure()
+    {
+        $this->commandBus->handle(new DoSequentialFailureCommand());
+
+        $this->assertEquals(1, $this->transactionManager->begin);
+        $this->assertEquals(1, $this->transactionManager->commit);
+        $this->assertEquals(0, $this->transactionManager->rollback);
+    }
+
+    public function testItThrowsExceptionWhenServiceHasNoHandlingMethod()
+    {
+        $this->setExpectedException(
+            'CQRS\Exception\RuntimeException',
+            'Service CQRSTest\CommandHandling\SequentialCommandHandler has no method noHandlingMethod to handle command'
+        );
+
+        $this->commandBus->handle(new NoHandlingMethodCommand());
     }
 }
 
-class TestSimpleCommand implements Command
+class DoSimpleCommand implements Command
 {}
 
-class TestSequentialCommand implements Command
+class DoSequentialCommand implements Command
 {}
 
-class TestCommandHandlerLocator implements CommandHandlerLocator
+class DoFailureCommand implements Command
+{}
+
+class DoSequentialFailureCommand implements Command
+{}
+
+class NoHandlingMethodCommand implements Command
+{}
+
+class SequentialCommandHandlerLocator implements CommandHandlerLocator
 {
     public $handler;
 
@@ -68,28 +102,40 @@ class TestCommandHandlerLocator implements CommandHandlerLocator
     }
 }
 
-class TestCommandHandler
+class SequentialCommandHandler
 {
-    public $simpleCount = 0;
-    public $sequentialCount = 0;
-    public $command;
     /** @var SequentialCommandBus */
     public $commandBus;
 
-    public function testSimple(TestSimpleCommand $command)
+    public $simple = 0;
+    public $sequential = 0;
+
+    public function doSimple(DoSimpleCommand $command)
     {
-        $this->simpleCount++;
-        $this->command = $command;
+        $this->simple++;
     }
 
-    public function testSequential(TestSequentialCommand $command)
+    public function doSequential(DoSequentialCommand $command)
     {
-        $this->sequentialCount++;
-        $this->commandBus->handle(new TestSimpleCommand());
+        $this->sequential++;
+        $this->commandBus->handle(new DoSimpleCommand());
+    }
+
+    public function doFailure(DoFailureCommand $command)
+    {
+        throw new CommandFailureTestException();
+    }
+
+    public function doSequentialFailure(DoSequentialFailureCommand $command)
+    {
+        $this->commandBus->handle(new DoFailureCommand());
     }
 }
 
-class TestTransactionManager implements TransactionManager
+class CommandFailureTestException extends \Exception
+{}
+
+class SequentialTransactionManager implements TransactionManager
 {
     public $begin = 0;
     public $commit = 0;

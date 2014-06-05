@@ -2,6 +2,8 @@
 
 namespace CQRS\EventHandling;
 
+use CQRS\Exception\RuntimeException;
+
 /**
  * In Memory Event Handler Locator
  *
@@ -32,9 +34,17 @@ class MemoryEventHandlerLocator implements EventHandlerLocator
 
     /**
      * @param object $handler
+     * @throws RuntimeException
      */
     public function register($handler)
     {
+        if (!is_object($handler)) {
+            throw new RuntimeException(sprintf(
+                'No valid event handler given; expected object, got %s',
+                gettype($handler)
+            ));
+        }
+
         foreach (get_class_methods($handler) as $methodName) {
             if (strpos($methodName, 'on') !== 0) {
                 continue;

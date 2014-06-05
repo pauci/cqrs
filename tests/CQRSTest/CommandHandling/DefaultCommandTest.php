@@ -8,7 +8,7 @@ class DefaultCommandTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreateArrayMapsToPublicProperties()
     {
-        $command = new TestCommand([
+        $command = new TestDefaultCommand([
             'test'          => 'value',
             'protectedTest' => 'protectedValue'
         ]);
@@ -21,19 +21,19 @@ class DefaultCommandTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(
             'CQRS\Exception\RuntimeException',
-            'Property "unknown" is not a valid property on command "Test".'
+            'Property "unknown" is not a valid property on command "TestDefault"'
         );
 
-        new TestCommand(['unknown' => 'value']);
+        new TestDefaultCommand(['unknown' => 'value']);
     }
 
     public function testAccessingUndefinedPropertyThrowsException()
     {
-        $command = new TestCommand();
+        $command = new TestDefaultCommand();
 
         $this->setExpectedException(
             'CQRS\Exception\RuntimeException',
-            'Property "unknown" is not a valid property on command "Test".'
+            'Property "unknown" is not a valid property on command "TestDefault"'
         );
 
         $value = $command->unknown;
@@ -43,7 +43,7 @@ class DefaultCommandTest extends \PHPUnit_Framework_TestCase
 /**
  * @property-read string $protectedTest
  */
-class TestCommand extends DefaultCommand
+class TestDefaultCommand extends DefaultCommand
 {
     public $test;
     protected $protectedTest;

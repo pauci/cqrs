@@ -52,7 +52,7 @@ abstract class DefaultDomainEvent implements DomainEvent
         if (!property_exists($this, $name)) {
             $eventName = new EventName($this);
             throw new RuntimeException(sprintf(
-                'Property "%s" is not a valid property on event "%s".',
+                'Property "%s" is not a valid property on event "%s"',
                 $name,
                 $eventName
             ));

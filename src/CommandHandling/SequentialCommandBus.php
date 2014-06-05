@@ -89,7 +89,7 @@ class SequentialCommandBus implements CommandBus
 
             if (!method_exists($service, $method)) {
                 throw new RuntimeException(sprintf(
-                    'Service %s has no method %s to handle command.',
+                    'Service %s has no method %s to handle command',
                     get_class($service),
                     $method
                 ));

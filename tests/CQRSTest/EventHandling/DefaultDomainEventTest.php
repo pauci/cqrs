@@ -8,7 +8,7 @@ class DefaultDomainEventTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreateArrayMapsToProperties()
     {
-        $event = new TestedEvent([
+        $event = new TestDefaultDomainEvent([
             'test'          => 'value',
             'protectedTest' => 'protectedValue'
         ]);
@@ -21,19 +21,19 @@ class DefaultDomainEventTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(
             'CQRS\Exception\RuntimeException',
-            'Property "unknown" is not a valid property on event "Tested".'
+            'Property "unknown" is not a valid property on event "TestDefaultDomain"'
         );
 
-        new TestedEvent(['unknown' => 'value']);
+        new TestDefaultDomainEvent(['unknown' => 'value']);
     }
 
     public function testAccessingUndefinedPropertyThrowsException()
     {
-        $event = new TestedEvent();
+        $event = new TestDefaultDomainEvent();
 
         $this->setExpectedException(
             'CQRS\Exception\RuntimeException',
-            'Property "unknown" is not a valid property on event "Tested".'
+            'Property "unknown" is not a valid property on event "TestDefaultDomain"'
         );
 
         $value = $event->unknown;
@@ -43,7 +43,7 @@ class DefaultDomainEventTest extends \PHPUnit_Framework_TestCase
 /**
  * @property-read string $protectedTest
  */
-class TestedEvent extends DefaultDomainEvent
+class TestDefaultDomainEvent extends DefaultDomainEvent
 {
     public $test;
     protected $protectedTest;

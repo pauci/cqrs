@@ -48,9 +48,13 @@ abstract class DefaultCommand implements Command
     {
         if (!property_exists($this, $name)) {
             $parts   = explode('\\', get_class($this));
-            $command = str_replace('Command', '', end($parts));
+            $command = end($parts);
+            if (substr($command, -7) == 'Command') {
+                $command = substr($command, 0, -7);
+            }
+
             throw new RuntimeException(sprintf(
-                'Property "%s" is not a valid property on command "%s".',
+                'Property "%s" is not a valid property on command "%s"',
                 $name,
                 $command
             ));

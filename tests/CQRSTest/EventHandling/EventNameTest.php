@@ -9,12 +9,12 @@ class EventNameTest extends \PHPUnit_Framework_TestCase
 {
     public function testEventNameToString()
     {
-        $event = new EventNameTestEvent();
+        $event = new EventOfSomeName();
         $eventName = new EventName($event);
 
-        $this->assertEquals('EventNameTest', $eventName);
+        $this->assertEquals('EventOfSomeName', $eventName);
     }
 }
 
-class EventNameTestEvent implements DomainEvent
+class EventOfSomeName implements DomainEvent
 {}

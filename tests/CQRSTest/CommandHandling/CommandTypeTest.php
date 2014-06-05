@@ -9,13 +9,11 @@ class CommandTypeTest extends \PHPUnit_Framework_TestCase
 {
     public function testCommandTypeToString()
     {
-        $command = new CommandTypeTestCommand();
+        $commandType = new CommandType(new CommandOfSomeType());
 
-        $commandType = new CommandType($command);
-
-        $this->assertEquals('CQRSTest\CommandHandling\CommandTypeTestCommand', $commandType);
+        $this->assertEquals('CQRSTest\CommandHandling\CommandOfSomeType', $commandType);
     }
 }
 
-class CommandTypeTestCommand implements Command
+class CommandOfSomeType implements Command
 {}
