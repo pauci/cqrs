@@ -47,4 +47,4 @@ class CommandHandlerLocator extends AbstractOptions
     {
         return $this->handlers;
     }
-} 
+}
