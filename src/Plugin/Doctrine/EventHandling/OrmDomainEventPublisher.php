@@ -4,13 +4,16 @@ namespace CQRS\Plugin\Doctrine\EventHandling;
 
 use CQRS\Domain\SuperType\AggregateRoot;
 use CQRS\EventHandling\EventBus;
+use CQRS\EventHandling\EventPublisher;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-class OrmDomainEventPublisher implements EventSubscriber
+class OrmDomainEventPublisher implements
+    EventPublisher,
+    EventSubscriber
 {
     /** @var AggregateRoot[] */
     private $aggregateRoots = [];
@@ -24,6 +27,10 @@ class OrmDomainEventPublisher implements EventSubscriber
     public function __construct(EventBus $eventBus)
     {
         $this->eventBus = $eventBus;
+    }
+
+    public function publishEvents()
+    {
     }
 
     /**

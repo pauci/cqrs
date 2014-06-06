@@ -42,6 +42,12 @@ return [
             ]
         ],
 
+        'eventPublisher' => [
+            'cqrs_default' => [
+                'class' => 'CQRS\EventHandling\SimpleEventPublisher'
+            ]
+        ],
+
         'eventBus' => [
             'cqrs_default' => [
                 'class'                 => 'CQRS\EventHandling\SynchronousEventBus',

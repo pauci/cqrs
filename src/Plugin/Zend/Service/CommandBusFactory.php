@@ -41,6 +41,9 @@ class CommandBusFactory extends AbstractFactory
         /** @var \CQRS\CommandHandling\TransactionManager $transactionManager */
         $transactionManager = $sl->get($options->getTransactionManager());
 
-        return new $class($commandHandlerLocator, $transactionManager);
+        /** @var \CQRS\EventHandling\EventPublisher $eventPublisher */
+        $eventPublisher = $sl->get($options->getEventPublisher());
+
+        return new $class($commandHandlerLocator, $transactionManager, $eventPublisher);
     }
 }

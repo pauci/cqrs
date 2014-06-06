@@ -6,6 +6,7 @@ use CQRS\CommandHandling\Command;
 use CQRS\CommandHandling\CommandHandlerLocator;
 use CQRS\CommandHandling\SequentialCommandBus;
 use CQRS\CommandHandling\TransactionManager;
+use CQRS\EventHandling\EventPublisher;
 
 class SequentialCommandBusTest extends \PHPUnit_Framework_TestCase
 {
@@ -15,6 +16,8 @@ class SequentialCommandBusTest extends \PHPUnit_Framework_TestCase
     protected $handler;
     /** @var SequentialTransactionManager */
     protected $transactionManager;
+    /** @var SequentialEventPublisher */
+    protected $eventPublisher;
 
     public function setUp()
     {
@@ -25,7 +28,9 @@ class SequentialCommandBusTest extends \PHPUnit_Framework_TestCase
 
         $this->transactionManager = new SequentialTransactionManager();
 
-        $this->commandBus = new SequentialCommandBus($locator, $this->transactionManager);
+        $this->eventPublisher = new SequentialEventPublisher();
+
+        $this->commandBus = new SequentialCommandBus($locator, $this->transactionManager, $this->eventPublisher);
         $this->handler->commandBus = $this->commandBus;
     }
 
@@ -39,6 +44,8 @@ class SequentialCommandBusTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $this->transactionManager->begin);
         $this->assertEquals(1, $this->transactionManager->commit);
         $this->assertEquals(0, $this->transactionManager->rollback);
+
+        $this->assertEquals(1, $this->eventPublisher->published);
     }
 
     public function testItRollbacksTransactionOnFailure()
@@ -53,6 +60,8 @@ class SequentialCommandBusTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals(0, $this->transactionManager->commit);
             $this->assertEquals(1, $this->transactionManager->rollback);
 
+            $this->assertEquals(0, $this->eventPublisher->published);
+
             throw $e;
         }
     }
@@ -64,6 +73,8 @@ class SequentialCommandBusTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $this->transactionManager->begin);
         $this->assertEquals(1, $this->transactionManager->commit);
         $this->assertEquals(0, $this->transactionManager->rollback);
+
+        $this->assertEquals(1, $this->eventPublisher->published);
     }
 
     public function testItThrowsExceptionWhenServiceHasNoHandlingMethod()
@@ -154,5 +165,15 @@ class SequentialTransactionManager implements TransactionManager
     public function rollback()
     {
         $this->rollback++;
+    }
+}
+
+class SequentialEventPublisher implements EventPublisher
+{
+    public $published = 0;
+
+    public function publishEvents()
+    {
+        $this->published++;
     }
 }

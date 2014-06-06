@@ -15,6 +15,9 @@ class CommandBus extends AbstractOptions
     /** @var string */
     protected $transactionManager = 'cqrs_default';
 
+    /** @var string */
+    protected $eventPublisher = 'cqrs_default';
+
     /**
      * @param string $class
      * @return self
@@ -67,5 +70,23 @@ class CommandBus extends AbstractOptions
     public function getTransactionManager()
     {
         return "cqrs.transactionManager.{$this->transactionManager}";
+    }
+
+    /**
+     * @param string $eventPublisher
+     * @return self
+     */
+    public function setEventPublisher($eventPublisher)
+    {
+        $this->eventPublisher = $eventPublisher;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEventPublisher()
+    {
+        return "cqrs.eventPublisher.{$this->eventPublisher}";
     }
 } 

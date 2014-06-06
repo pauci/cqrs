@@ -2,6 +2,7 @@
 
 namespace CQRS\CommandHandling;
 
+use CQRS\EventHandling\EventPublisher;
 use CQRS\Exception\RuntimeException;
 use Exception;
 
@@ -27,6 +28,9 @@ class SequentialCommandBus implements CommandBus
     /** @var TransactionManager */
     private $transactionManager;
 
+    /** @var EventPublisher */
+    private $eventPublisher;
+
     /** @var Command[] */
     private $commandStack = [];
 
@@ -36,11 +40,13 @@ class SequentialCommandBus implements CommandBus
     /**
      * @param CommandHandlerLocator $locator
      * @param TransactionManager $transactionManager
+     * @param EventPublisher $eventPublisher
      */
-    public function __construct(CommandHandlerLocator $locator, TransactionManager $transactionManager)
+    public function __construct(CommandHandlerLocator $locator, TransactionManager $transactionManager, EventPublisher $eventPublisher)
     {
         $this->locator = $locator;
         $this->transactionManager = $transactionManager;
+        $this->eventPublisher = $eventPublisher;
     }
 
     /**
@@ -68,6 +74,7 @@ class SequentialCommandBus implements CommandBus
                 $this->invokeHandler($command, $first);
                 $first = false;
             }
+            $this->eventPublisher->publishEvents();
             $this->transactionManager->commit();
         } catch (Exception $e) {
             $this->transactionManager->rollback();
