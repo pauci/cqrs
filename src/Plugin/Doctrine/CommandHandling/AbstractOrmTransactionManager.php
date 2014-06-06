@@ -3,17 +3,17 @@
 namespace CQRS\Plugin\Doctrine\CommandHandling;
 
 use CQRS\CommandHandling\TransactionManager;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 abstract class AbstractOrmTransactionManager implements TransactionManager
 {
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     protected $entityManager;
 
     /**
-     * @param EntityManager $entityManager
+     * @param EntityManagerInterface $entityManager
      */
-    public function setEntityManager(EntityManager $entityManager)
+    public function setEntityManager(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
     }

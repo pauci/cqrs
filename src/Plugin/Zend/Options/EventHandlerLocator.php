@@ -4,10 +4,10 @@ namespace CQRS\Plugin\Zend\Options;
 
 use Zend\Stdlib\AbstractOptions;
 
-class CommandHandlerLocator extends AbstractOptions
+class EventHandlerLocator extends AbstractOptions
 {
     /** @var string */
-    protected $class = 'CQRS\CommandHandling\MemoryCommandHandlerLocator';
+    protected $class = 'CQRS\EventHandling\MemoryEventHandlerLocator';
 
     /** @var array */
     protected $handlers = [];

@@ -7,7 +7,7 @@ use Zend\Stdlib\AbstractOptions;
 class TransactionManager extends AbstractOptions
 {
     /** @var string */
-    protected $class;
+    protected $class = 'CQRS\CommandHandling\NoTransactionManager';
 
     /** @var string */
     protected $entityManager = 'orm_default';
