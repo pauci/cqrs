@@ -7,10 +7,16 @@ use Zend\Stdlib\AbstractOptions;
 class EventHandlerLocator extends AbstractOptions
 {
     /** @var string */
-    protected $class = 'CQRS\EventHandling\MemoryEventHandlerLocator';
+    protected $class = 'CQRS\Plugin\Zend\EventHandling\ServiceEventHandlerLocator';
 
     /** @var array */
-    protected $handlers = [];
+    protected $callbacks = [];
+
+    /** @var array */
+    protected $subscribers = [];
+
+    /** @var array */
+    protected $services = [];
 
     /**
      * @param string $class
@@ -31,20 +37,56 @@ class EventHandlerLocator extends AbstractOptions
     }
 
     /**
-     * @param array $handlers
+     * @param array $callbacks
      * @return self
      */
-    public function setHandlers(array $handlers)
+    public function setCallbacks(array $callbacks)
     {
-        $this->handlers = $handlers;
+        $this->callbacks = $callbacks;
         return $this;
     }
 
     /**
      * @return array
      */
-    public function getHandlers()
+    public function getCallbacks()
     {
-        return $this->handlers;
+        return $this->callbacks;
+    }
+
+    /**
+     * @param array $subscribers
+     * @return self
+     */
+    public function setSubscribers(array $subscribers)
+    {
+        $this->subscribers = $subscribers;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSubscribers()
+    {
+        return $this->subscribers;
+    }
+
+    /**
+     * @param array $services
+     * @return self
+     */
+    public function setServices(array $services)
+    {
+        $this->services = $services;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getServices()
+    {
+        return $this->services;
     }
 }

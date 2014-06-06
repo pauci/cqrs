@@ -2,6 +2,7 @@
 
 namespace CQRS\Plugin\Zend\Service;
 
+use CQRS\Plugin\Doctrine\EventHandling\OrmDomainEventPublisher;
 use CQRS\Plugin\Zend\Options\EventPublisher as EventPublisherOptions;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -38,6 +39,14 @@ class EventPublisherFactory extends AbstractFactory
         /** @var \CQRS\EventHandling\EventBus $eventBus */
         $eventBus = $sl->get($options->getEventBus());
 
-        return new $class($eventBus);
+        $eventPublisher = new $class($eventBus);
+
+        if ($eventPublisher instanceof OrmDomainEventPublisher) {
+            /** @var \Doctrine\ORM\EntityManager $entityManager */
+            $entityManager = $sl->get($options->getOrmEntityManager());
+            $entityManager->getEventManager()->addEventSubscriber($eventPublisher);
+        }
+
+        return $eventPublisher;
     }
 } 

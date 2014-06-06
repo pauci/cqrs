@@ -2,19 +2,21 @@
 
 namespace CQRS\Plugin\Zend\EventHandling;
 
-use CQRS\EventHandling\EventHandlerLocator;
 use CQRS\EventHandling\EventName;
+use CQRS\EventHandling\MemoryEventHandlerLocator;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
 
-class ServiceEventHandlerLocator implements
-    EventHandlerLocator,
+class ServiceEventHandlerLocator extends MemoryEventHandlerLocator implements
     ServiceLocatorAwareInterface
 {
     use ServiceLocatorAwareTrait;
 
     /** @var array */
-    private $handlersMap = [];
+    private $services = [];
+
+    /** @var array */
+    private $subscribedServices = [];
 
     /**
      * @param EventName $eventName
@@ -22,40 +24,56 @@ class ServiceEventHandlerLocator implements
      */
     public function getEventHandlers(EventName $eventName)
     {
-        $eventName = strtolower($eventName);
+        $this->subscribeServices($eventName);
 
-        if (!isset($this->handlersMap[$eventName])) {
-            return [];
-        }
-
-        $eventHandlers = [];
-        foreach ($this->handlersMap[$eventName] as $serviceName) {
-            $eventHandlers[] = $this->serviceLocator->get($serviceName);
-        }
-
-        return $eventHandlers;
+        return parent::getEventHandlers($eventName);
     }
 
     /**
-     * Maps given event to the service(s) of given name(s)
+     * Maps given event name(s) to the service(s) of given name(s)
      *
-     * @param string $eventName
-     * @param array|string $serviceNames
+     * @param string|array $eventName
+     * @param string|array $serviceName
+     * @param int $priority
      */
-    public function register($eventName, $serviceNames)
+    public function registerService($eventName, $serviceName, $priority = 1)
+    {
+        $eventNames   = (array) $eventName;
+        $serviceNames = (array) $serviceName;
+
+        foreach ($eventNames as $eventName) {
+            $eventName = strtolower($eventName);
+
+            foreach ($serviceNames as $serviceName) {
+                $this->services[$eventName][$priority][] = $serviceName;
+            }
+        }
+    }
+
+    /**
+     * @param EventName $eventName
+     */
+    private function subscribeServices($eventName)
     {
         $eventName = strtolower($eventName);
 
-        if (!is_array($serviceNames)) {
-            $serviceNames = [$serviceNames];
+        if (!isset($this->services[$eventName])) {
+            return;
         }
 
-        if (!isset($this->handlersMap[$eventName])) {
-            $this->handlersMap[$eventName] = [];
+        foreach ($this->services[$eventName] as $priority => $serviceNames) {
+            foreach ($serviceNames as $serviceName) {
+                // Prevent multiple subscriptions of same service
+                if (array_key_exists($serviceName, $this->subscribedServices)) {
+                    continue;
+                }
+
+                $service = $this->serviceLocator->get($serviceName);
+                $this->registerSubscriber($service, $priority);
+                $this->subscribedServices[$serviceName] = true;
+            }
         }
 
-        foreach ($serviceNames as $serviceName) {
-            $this->handlersMap[$eventName][] = $serviceName;
-        }
+        unset($this->services[$eventName]);
     }
 }

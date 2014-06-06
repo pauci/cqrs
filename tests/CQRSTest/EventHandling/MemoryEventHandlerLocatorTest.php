@@ -7,26 +7,54 @@ use CQRS\EventHandling\MemoryEventHandlerLocator;
 
 class MemoryEventHandlerLocatorTest extends \PHPUnit_Framework_TestCase
 {
-    public function testRegisterAndGetEventHandlers()
+    public function testItReturnsRegisteredCallbacksSortedByPriority()
     {
-        $handler = new EventHandlerToRegister();
+        $callback1 = function() {};
+        $callback2 = function() {};
+        $callback3 = function() {};
+        $callback4 = function() {};
 
         $locator = new MemoryEventHandlerLocator();
-        $locator->register($handler);
+        $locator->registerCallback('TestEvent', $callback1, 1);
+        $locator->registerCallback('TestEvent', $callback2, -1);
+        $locator->registerCallback('TestEvent', $callback3, 2);
+        $locator->registerCallback('TestEvent', $callback4);
+        $locator->registerCallback('AnotherEvent', function() {});
 
-        $eventName = new EventNameToRegister();
-
-        $this->assertSame([$handler], $locator->getEventHandlers($eventName));
+        $this->assertSame([
+            $callback3,
+            $callback1,
+            $callback4,
+            $callback2
+        ], $locator->getEventHandlers(new LocatorTestEventName()));
     }
 
-    public function testGetEmptyEventHandlers()
+    public function testItReturnsCallbacksOnRegisteredSubscribersSortedByPriority()
+    {
+        $subscriber1 = new Subscriber();
+        $subscriber2 = new Subscriber();
+
+        $locator = new MemoryEventHandlerLocator();
+        $locator->registerSubscriber($subscriber1);
+        $locator->registerSubscriber($subscriber2, 10);
+        $locator->registerSubscriber(new AnotherSubscriber());
+
+        $handlers = $locator->getEventHandlers(new LocatorTestEventName());
+
+        $this->assertSame([
+            [$subscriber2, 'onTestEvent'],
+            [$subscriber1, 'onTestEvent']
+        ], $handlers);
+    }
+
+    public function testItReturnsEmptyArrayWhenNoHandlersAreRegistered()
     {
         $locator = new MemoryEventHandlerLocator();
 
-        $this->assertEmpty($locator->getEventHandlers(new EventNameToRegister()));
+        $this->assertEmpty($locator->getEventHandlers(new LocatorTestEventName()));
     }
 
-    public function testItThrowsExceptionWhenRegisteredHandlerIsNoObject()
+    public function testItThrowsExceptionWhenRegisteredSubscriberIsNoObject()
     {
         $this->setExpectedException(
             'CQRS\Exception\RuntimeException',
@@ -34,11 +62,11 @@ class MemoryEventHandlerLocatorTest extends \PHPUnit_Framework_TestCase
         );
 
         $locator = new MemoryEventHandlerLocator();
-        $locator->register('not an object');
+        $locator->registerSubscriber('not an object');
     }
 }
 
-class EventNameToRegister extends EventName
+class LocatorTestEventName extends EventName
 {
     public function __construct()
     {}
@@ -49,11 +77,17 @@ class EventNameToRegister extends EventName
     }
 }
 
-class EventHandlerToRegister
+class Subscriber
 {
     public function onTestEvent()
     {}
 
     public function anotherMethod()
+    {}
+}
+
+class AnotherSubscriber
+{
+    public function onAnotherEvent()
     {}
 }

@@ -40,7 +40,7 @@ class TransactionManagerFactory extends AbstractFactory
 
         if ($transactionManager instanceof AbstractOrmTransactionManager) {
             /** @var \Doctrine\ORM\EntityManager $entityManager */
-            $entityManager = $sl->get($options->getEntityManager());
+            $entityManager = $sl->get($options->getOrmEntityManager());
             $transactionManager->setEntityManager($entityManager);
         }
 

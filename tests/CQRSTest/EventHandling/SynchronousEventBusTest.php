@@ -41,7 +41,6 @@ class SynchronousEventBusTest extends \PHPUnit_Framework_TestCase
         $failureEvent = $this->handler->failureEvent;
 
         $this->assertInstanceOf('CQRS\EventHandling\EventExecutionFailed', $failureEvent);
-        $this->assertEquals('CQRSTest\EventHandling\SynchronousEventHandler', $failureEvent->service);
         $this->assertInstanceOf('CQRSTest\EventHandling\EventHandlingException', $failureEvent->exception);
         $this->assertSame($failureCausingEvent, $failureEvent->event);
     }
@@ -62,7 +61,7 @@ class SynchronousEventHandlerLocator implements EventHandlerLocator
 
     public function getEventHandlers(EventName $eventName)
     {
-        return [$this->handler];
+        return [[$this->handler, 'on' . $eventName]];
     }
 }
 

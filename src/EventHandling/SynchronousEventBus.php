@@ -22,32 +22,29 @@ class SynchronousEventBus implements EventBus
      */
     public function publish(DomainEvent $event)
     {
-        $eventName = new EventName($event);
-        $services  = $this->locator->getEventHandlers($eventName);
 
-        foreach ($services as $service) {
-            $this->invokeEventHandler($service, $eventName, $event);
+        $eventName = new EventName($event);
+        $callbacks = $this->locator->getEventHandlers($eventName);
+
+        foreach ($callbacks as $callback) {
+            $this->invokeEventHandler($callback, $event);
         }
     }
 
     /**
-     * @param object $service
-     * @param EventName $eventName
+     * @param Callable $callback
      * @param DomainEvent $event
      */
-    protected function invokeEventHandler($service, $eventName, $event)
+    private function invokeEventHandler(Callable $callback, $event)
     {
         try {
-            $methodName = 'on' . $eventName;
-
-            $service->$methodName($event);
+            $callback($event);
         } catch (Exception $e) {
             if ($event instanceof EventExecutionFailed) {
                 return;
             }
 
             $this->publish(new EventExecutionFailed([
-                'service'   => get_class($service),
                 'exception' => $e,
                 'event'     => $event,
             ]));

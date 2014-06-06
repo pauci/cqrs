@@ -7,7 +7,7 @@ use Zend\Stdlib\AbstractOptions;
 class CommandHandlerLocator extends AbstractOptions
 {
     /** @var string */
-    protected $class = 'CQRS\CommandHandling\MemoryCommandHandlerLocator';
+    protected $class = 'CQRS\Plugin\Zend\CommandHandling\ServiceCommandHandlerLocator';
 
     /** @var array */
     protected $handlers = [];

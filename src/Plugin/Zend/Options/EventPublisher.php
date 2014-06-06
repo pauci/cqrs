@@ -12,6 +12,9 @@ class EventPublisher extends AbstractOptions
     /** @var string */
     protected $eventBus = 'cqrs_default';
 
+    /** @var string */
+    protected $ormEntityManager = 'orm_default';
+
     /**
      * @param string $class
      * @return self
@@ -46,5 +49,23 @@ class EventPublisher extends AbstractOptions
     public function getEventBus()
     {
         return "cqrs.eventBus.{$this->eventBus}";
+    }
+
+    /**
+     * @param string $ormEntityManager
+     * @return self
+     */
+    public function setOrmEntityManager($ormEntityManager)
+    {
+        $this->ormEntityManager = $ormEntityManager;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOrmEntityManager()
+    {
+        return "doctrine.entitymanager.{$this->ormEntityManager}";
     }
 }

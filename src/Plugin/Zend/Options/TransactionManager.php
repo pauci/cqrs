@@ -10,7 +10,7 @@ class TransactionManager extends AbstractOptions
     protected $class = 'CQRS\CommandHandling\NoTransactionManager';
 
     /** @var string */
-    protected $entityManager = 'orm_default';
+    protected $ormEntityManager = 'orm_default';
 
     /**
      * @param string $class
@@ -31,20 +31,20 @@ class TransactionManager extends AbstractOptions
     }
 
     /**
-     * @param string $entityManager
+     * @param string $ormEntityManager
      * @return self
      */
-    public function setEntityManager($entityManager)
+    public function setOrmEntityManager($ormEntityManager)
     {
-        $this->entityManager = $entityManager;
+        $this->ormEntityManager = $ormEntityManager;
         return $this;
     }
 
     /**
      * @return string
      */
-    public function getEntityManager()
+    public function getOrmEntityManager()
     {
-        return "doctrine.entitymanager.{$this->entityManager}";
+        return "doctrine.entitymanager.{$this->ormEntityManager}";
     }
 } 

@@ -3,9 +3,9 @@ return [
     'cqrs' => [
         'commandBus' => [
             'cqrs_default' => [
-                'class'                   => 'CQRS\CommandHandling\SequentialCommandBus',
-                'command_handler_locator' => 'cqrs_default',
-                'transaction_manager'     => 'cqrs_default',
+                'class'                 => 'CQRS\CommandHandling\SequentialCommandBus',
+                'commandHandlerLocator' => 'cqrs_default',
+                'transactionManager'    => 'cqrs_default',
             ]
         ],
 
@@ -16,15 +16,15 @@ return [
                     /**
                      * Command handlers in format:
                      *
-                     * '<CommandType>' => '<CommandHandlerServiceName>',
+                     *  '<CommandType>' => '<CommandHandlerServiceName>',
                      *
                      * or:
                      *
-                     * '<CommandHandlerServiceName>' => [
+                     *  '<CommandHandlerServiceName>' => [
                      *      '<CommandType1>',
                      *      '<CommandType2>',
                      *      ...
-                     * ]
+                     *  ]
                      */
                 ],
             ]
@@ -36,38 +36,67 @@ return [
                 /**
                  * To use with doctrine:
                  *
-                 * 'class'          => 'CQRS\Plugin\Doctrine\CommandHandling\ImplicitOrmTransactionManager',
-                 * 'entity_manager' => 'orm_default',
+                 *  'class'          => 'CQRS\Plugin\Doctrine\CommandHandling\ImplicitOrmTransactionManager',
+                 *  'entity_manager' => 'orm_default',
                  */
             ]
         ],
 
         'eventPublisher' => [
             'cqrs_default' => [
-                'class' => 'CQRS\EventHandling\SimpleEventPublisher'
+                'class'    => 'CQRS\EventHandling\SimpleEventPublisher',
+                'eventBus' => 'cqrs_default'
             ]
         ],
 
         'eventBus' => [
             'cqrs_default' => [
-                'class'                 => 'CQRS\EventHandling\SynchronousEventBus',
-                'event_handler_locator' => 'cqrs_default',
-                'event_store'           => 'cqrs_default',
+                'class'               => 'CQRS\EventHandling\SynchronousEventBus',
+                'eventHandlerLocator' => 'cqrs_default',
+                'eventStore'          => 'cqrs_default',
             ]
         ],
 
         'eventHandlerLocator' => [
             'cqrs_default' => [
                 'class'    => 'CQRS\Plugin\Zend\EventHandling\ServiceEventHandlerLocator',
-                'handlers' => [
+                'services' => [
                     /**
-                     * Event handlers in format:
+                     * Example:
                      *
-                     * '<EventName>' => [
-                     *      '<EventHandlerServiceName1>',
-                     *      '<EventHandlerServiceName2>',
+                     *  '<ServiceName>' => [
+                     *      '<EventName1>',
+                     *      '<EventName2>',
                      *      ...
-                     * ]
+                     *  ]
+                     *
+                     * or:
+                     *
+                     *  [
+                     *      'event'    => ['<EventName1>', ...],
+                     *      'service'  => ['<ServiceName1', ...],
+                     *      'priority' => 1
+                     *  ]
+                     */
+                ],
+                'callbacks' => [
+                    /**
+                     * Example:
+                     *
+                     *  '<EventName>' => function($event) {},
+                     *
+                     * or:
+                     *
+                     *  [
+                     *      'event'    => ['<EventName1>, '<EventName2'],
+                     *      'callback' => function($event) {},
+                     *      'priority' => 1
+                     *  ]
+                     */
+                ],
+                'subscribers' => [
+                    /**
+                     * Array of instances
                      */
                 ],
             ]
@@ -75,7 +104,6 @@ return [
 
         'eventStore' => [
             'cqrs_default' => [
-                ''
             ]
         ]
     ],
@@ -85,6 +113,7 @@ return [
         'commandHandlerLocator' => 'CQRS\Plugin\Zend\Service\CommandHandlerLocatorFactory',
         'transactionManager'    => 'CQRS\Plugin\Zend\Service\TransactionManagerFactory',
 
+        'eventPublisher'        => 'CQRS\Plugin\Zend\Service\EventPublisherFactory',
         'eventBus'              => 'CQRS\Plugin\Zend\Service\EventBusFactory',
         'eventHandlerLocator'   => 'CQRS\Plugin\Zend\Service\EventHandlerLocatorFactory',
         'eventStore'            => 'CQRS\Plugin\Zend\Service\EventStoreFactory',
