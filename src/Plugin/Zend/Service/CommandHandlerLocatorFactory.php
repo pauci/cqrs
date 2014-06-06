@@ -2,7 +2,7 @@
 
 namespace CQRS\Plugin\Zend\Service;
 
-use CQRS\Plugin\Zend\Options\CommandHandlerLocator;
+use CQRS\Plugin\Zend\Options\CommandHandlerLocator as CommandHandlerLocatorOptions;
 use RuntimeException;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -15,7 +15,7 @@ class CommandHandlerLocatorFactory extends AbstractFactory
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        /** @var $options CommandHandlerLocator */
+        /** @var CommandHandlerLocatorOptions $options */
         $options = $this->getOptions($serviceLocator, 'commandHandlerLocator');
         return $this->create($serviceLocator, $options);
     }
@@ -30,11 +30,11 @@ class CommandHandlerLocatorFactory extends AbstractFactory
 
     /**
      * @param ServiceLocatorInterface $sl
-     * @param CommandHandlerLocator $options
+     * @param CommandHandlerLocatorOptions $options
      * @return \CQRS\CommandHandling\CommandHandlerLocator
      * @throws RuntimeException
      */
-    protected function create(ServiceLocatorInterface $sl, CommandHandlerLocator $options)
+    protected function create(ServiceLocatorInterface $sl, CommandHandlerLocatorOptions $options)
     {
         $class = $options->getClass();
 

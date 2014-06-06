@@ -2,7 +2,7 @@
 
 namespace CQRS\Plugin\Zend\Service;
 
-use CQRS\Plugin\Zend\Options\CommandBus as Options;
+use CQRS\Plugin\Zend\Options\CommandBus as CommandBusOptions;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class CommandBusFactory extends AbstractFactory
@@ -13,7 +13,7 @@ class CommandBusFactory extends AbstractFactory
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        /** @var Options $options */
+        /** @var CommandBusOptions $options */
         $options = $this->getOptions($serviceLocator, 'commandBus');
         return $this->create($serviceLocator, $options);
     }
@@ -28,10 +28,10 @@ class CommandBusFactory extends AbstractFactory
 
     /**
      * @param ServiceLocatorInterface $sl
-     * @param Options $options
+     * @param CommandBusOptions $options
      * @return \CQRS\CommandHandling\CommandBus
      */
-    protected function create(ServiceLocatorInterface $sl, Options $options)
+    protected function create(ServiceLocatorInterface $sl, CommandBusOptions $options)
     {
         $class = $options->getClass();
 
@@ -41,8 +41,6 @@ class CommandBusFactory extends AbstractFactory
         /** @var \CQRS\CommandHandling\TransactionManager $transactionManager */
         $transactionManager = $sl->get($options->getTransactionManager());
 
-        $commandBus = new $class($commandHandlerLocator, $transactionManager);
-
-        return $commandBus;
+        return new $class($commandHandlerLocator, $transactionManager);
     }
 }

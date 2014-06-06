@@ -66,6 +66,6 @@ class EventBus extends AbstractOptions
      */
     public function getEventStore()
     {
-        return $this->eventStore;
+        return "cqrs.eventStore.{$this->eventStore}";
     }
 }

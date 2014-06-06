@@ -2,7 +2,7 @@
 
 namespace CQRS\Plugin\Zend\Service;
 
-use CQRS\Plugin\Zend\Options\EventBus;
+use CQRS\Plugin\Zend\Options\EventBus as EventBusOptions;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class EventBusFactory extends AbstractFactory
@@ -13,8 +13,8 @@ class EventBusFactory extends AbstractFactory
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        /** @var EventBus $options */
-        $options = $this->getOptions($serviceLocator, 'commandBus');
+        /** @var EventBusOptions $options */
+        $options = $this->getOptions($serviceLocator, 'eventBus');
         return $this->create($serviceLocator, $options);
     }
 
@@ -23,24 +23,25 @@ class EventBusFactory extends AbstractFactory
      */
     public function getOptionsClass()
     {
-        return 'CQRS\Plugin\Zend\Options\CommandBus';
+        return 'CQRS\Plugin\Zend\Options\EventBus';
     }
 
     /**
      * @param ServiceLocatorInterface $sl
-     * @param CommandBus $options
-     * @return \CQRS\CommandHandling\CommandBus
+     * @param EventBusOptions $options
+     * @return \CQRS\EventHandling\EventBus
      */
-    protected function create(ServiceLocatorInterface $sl, EventBus $options)
+    protected function create(ServiceLocatorInterface $sl, EventBusOptions $options)
     {
         $class = $options->getClass();
 
-        /** @var \CQRS\CommandHandling\CommandHandlerLocator $commandHandlerLocator */
-        $commandHandlerLocator = $sl->get($options->getCommandHandlerLocator());
+        /** @var \CQRS\EventHandling\EventHandlerLocator $eventHandlerLocator */
+        $eventHandlerLocator = $sl->get($options->getEventHandlerLocator());
 
-        /** @var \CQRS\CommandHandling\TransactionManager $transactionManager */
-        $transactionManager = $sl->get($options->getTransactionManager());
 
-        return new $class($commandHandlerLocator, $transactionManager);
+        /** @var \CQRS\EventHandling\EventStore $eventStore */
+        //$eventStore = $sl->get($options->getEventStore());
+
+        return new $class($eventHandlerLocator/*, $eventStore*/);
     }
 } 
