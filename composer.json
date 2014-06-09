@@ -1,0 +1,20 @@
+{
+    "name": "sygic/cqrs",
+    "description": "CQRS library",
+    "type": "library",
+    "license": "proprietary",
+    "require": {
+        "php": ">=5.4"
+    },
+    "require-dev": {
+        "zendframework/zendframework":  "2.*",
+        "doctrine/doctrine-orm-module": "0.*",
+        "phpunit/phpunit":              "3.7.*"
+    },
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "CQRS\\": "src/"
+        }
+    }
+}
