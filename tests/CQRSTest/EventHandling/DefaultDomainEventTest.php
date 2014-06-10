@@ -17,6 +17,13 @@ class DefaultDomainEventTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('protectedValue', $event->protectedTest);
     }
 
+    public function testCreateSetsOccurredAt()
+    {
+        $event = new TestDefaultDomainEvent();
+
+        $this->assertInstanceOf('DateTime', $event->occurredAt);
+    }
+
     public function testCreateThrowsExceptionWhenUnknownPropertySet()
     {
         $this->setExpectedException(

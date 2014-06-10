@@ -22,7 +22,6 @@ class SynchronousEventBus implements EventBus
      */
     public function publish(DomainEvent $event)
     {
-
         $eventName = new EventName($event);
         $callbacks = $this->locator->getEventHandlers($eventName);
 
