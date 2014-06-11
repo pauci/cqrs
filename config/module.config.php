@@ -131,7 +131,21 @@ return [
                 'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
                 'cache' => 'array',
                 'paths' => [
-                    __DIR__ . '/../src/Domain/SuperType'
+                    __DIR__ . '/../src/Domain'
+                ]
+            ]
+        ],
+        'configuration' => [
+            'orm_default' => [
+                'types' => [
+                    'uuid' => 'Rhumsaa\Uuid\Doctrine\UuidType'
+                ]
+            ]
+        ],
+        'eventmanager' => [
+            'orm_default' => [
+                'subscribers' => [
+                    'CQRS\Plugin\Doctrine\AggregateRootMetadataListener'
                 ]
             ]
         ]

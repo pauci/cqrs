@@ -1,7 +1,6 @@
 <?php
 
-namespace CQRS\Domain\SuperType;
+namespace CQRS\Domain;
 
 abstract class Entity extends IdentifiedDomainObject
-{
-}
+{}

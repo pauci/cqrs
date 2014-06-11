@@ -4,7 +4,8 @@
     "type": "library",
     "license": "proprietary",
     "require": {
-        "php": ">=5.4"
+        "php": ">=5.4",
+        "rhumsaa/uuid": "~2.7"
     },
     "require-dev": {
         "zendframework/zendframework":  "2.*",

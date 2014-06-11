@@ -2,7 +2,7 @@
 
 namespace CQRS\EventHandling;
 
-use CQRS\Domain\SuperType\AggregateRoot;
+use CQRS\Domain\AggregateRoot;
 
 class SimpleEventPublisher implements EventPublisher
 {

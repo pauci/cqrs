@@ -2,7 +2,7 @@
 
 namespace CQRS\Plugin\Doctrine\EventHandling;
 
-use CQRS\Domain\SuperType\AggregateRoot;
+use CQRS\Domain\AggregateRoot;
 use CQRS\EventHandling\EventBus;
 use CQRS\EventHandling\EventPublisher;
 use Doctrine\Common\EventSubscriber;

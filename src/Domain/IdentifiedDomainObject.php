@@ -1,6 +1,6 @@
 <?php
 
-namespace CQRS\Domain\SuperType;
+namespace CQRS\Domain;
 
 use Doctrine\ORM\Mapping as ORM;
 

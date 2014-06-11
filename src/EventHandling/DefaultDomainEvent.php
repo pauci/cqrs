@@ -4,6 +4,7 @@ namespace CQRS\EventHandling;
 
 use CQRS\Exception\RuntimeException;
 use CQRS\Util;
+use Rhumsaa\Uuid\Uuid;
 
 /**
  * Default Implementation for the DomainEvent interface.
@@ -21,10 +22,14 @@ use CQRS\Util;
  *   $event = new GreetedDomainEvent(['personId' => 1]);
  *   $eventBus->publish($event);
  *
+ * @property-read Uuid $id
  * @property-read \DateTime $occurredAt
  */
 abstract class DefaultDomainEvent implements DomainEvent
 {
+    /** @var Uuid */
+    protected $id;
+
     /** @var \DateTime */
     protected $occurredAt;
 
@@ -33,6 +38,10 @@ abstract class DefaultDomainEvent implements DomainEvent
      */
     public function __construct(array $data = [])
     {
+        if (!isset($data['id'])) {
+            $this->id = Uuid::uuid4();
+        }
+
         if (!isset($data['occurredAt'])) {
             $this->occurredAt = Util::createMicrosecondsNow();
         }
