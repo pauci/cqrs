@@ -5,10 +5,9 @@ namespace CQRS\Domain;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\MappedSuperclass
  * @property-read int $id
  */
-abstract class AbstractId extends IdentifiedValueObject
+abstract class Id extends IdentifiedValueObject
 {
     /**
      * @param string $name

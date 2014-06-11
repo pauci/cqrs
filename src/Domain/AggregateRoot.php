@@ -6,16 +6,16 @@ use CQRS\Exception\RuntimeException;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
- * @property-read AbstractId $id
+ * @ORM\MappedSuperclass
+ * @property-read Id $id
  */
 abstract class AggregateRoot
 {
     /**
      * @ORM\Id
-     * @ORM\OneToOne(targetEntity = "AbstractId")
+     * @ORM\OneToOne(targetEntity = "Id")
      * @ORM\JoinColumn(name = "id")
-     * @var AbstractId
+     * @var Id
      */
     private $id;
 
@@ -42,7 +42,7 @@ abstract class AggregateRoot
 
     /**
      * @param string $name
-     * @return AbstractId
+     * @return Id
      * @throws \RuntimeException
      */
     public function __get($name)
