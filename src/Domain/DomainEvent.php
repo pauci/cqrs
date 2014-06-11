@@ -43,6 +43,6 @@ abstract class DomainEvent extends DefaultDomainEvent
     private function setAggregate(AggregateRoot $aggregate)
     {
         $this->aggregateType = get_class($aggregate);
-        $this->aggregateId   = $aggregate->id->id;
+        $this->aggregateId   = $aggregate->getId()->id;
     }
 }

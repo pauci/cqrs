@@ -37,17 +37,10 @@ class TestedDomainEventAggregate extends AggregateRoot
         return new TestedDomainEvent();
     }
 
-    public function __get($name)
+    public function getId()
     {
-        if ($name == 'id') {
-            return new TestedDomainEventAggregateId();
-        }
-
-        return parent::__get($name);
+        $id = new \stdClass();
+        $id->id = 4;
+        return $id;
     }
-}
-
-class TestedDomainEventAggregateId
-{
-    public $id = 4;
 }

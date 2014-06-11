@@ -26,6 +26,9 @@ class AggregateRootUnderTest extends AggregateRoot
         $this->event = new AggregateRootTestEvent();
         $this->raiseDomainEvent($this->event);
     }
+
+    public function getId()
+    {}
 }
 
 class AggregateRootTestEvent extends DomainEvent
