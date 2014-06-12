@@ -135,6 +135,7 @@ return [
                 ]
             ]
         ],
+        /*
         'configuration' => [
             'orm_default' => [
                 'types' => [
@@ -145,9 +146,10 @@ return [
         'eventmanager' => [
             'orm_default' => [
                 'subscribers' => [
-                    'CQRS\Plugin\Doctrine\AggregateRootMetadataListener'
+                    'CQRS\Plugin\Doctrine\Domain\AggregateRootMetadataListener'
                 ]
             ]
         ]
+        */
     ]
 ];
