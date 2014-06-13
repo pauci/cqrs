@@ -23,4 +23,12 @@ abstract class Id extends IdentifiedValueObject
 
         throw new \RuntimeException(sprintf('Trying to access invalid property "%s"', $name));
     }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string) $this->id;
+    }
 }
