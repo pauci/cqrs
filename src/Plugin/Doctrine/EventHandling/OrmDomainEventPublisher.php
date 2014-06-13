@@ -75,14 +75,14 @@ class OrmDomainEventPublisher implements
      */
     public function postFlush(PostFlushEventArgs $event)
     {
-        $entityManager = $event->getEntityManager();
+        //$entityManager = $event->getEntityManager();
 
         foreach ($this->aggregateRoots as $aggregateRoot) {
-            $class = $entityManager->getClassMetadata(get_class($aggregateRoot));
+            //$class = $entityManager->getClassMetadata(get_class($aggregateRoot));
 
             foreach ($aggregateRoot->pullDomainEvents() as $domainEvent) {
-                $domainEvent->aggregateType = $class->name;
-                $domainEvent->aggregateId   = $class->getSingleIdReflectionProperty()->getValue($aggregateRoot);
+                //$domainEvent->aggregateType = $class->name;
+                //$domainEvent->aggregateId   = $class->getSingleIdReflectionProperty()->getValue($aggregateRoot);
 
                 $this->eventBus->publish($domainEvent);
             }
@@ -102,28 +102,5 @@ class OrmDomainEventPublisher implements
         }
 
         $this->aggregateRoots[] = $entity;
-    }
-
-    /**
-     * @param ClassMetadata $classMetadata
-     * @return string
-     */
-    private function getAggregateType(ClassMetadata $classMetadata)
-    {
-        $pos = strrpos($classMetadata->name, '\\');
-
-        if ($pos === false) {
-            return $classMetadata->name;
-        }
-
-        return substr($classMetadata->name, $pos + 1);
-    }
-
-    /**
-     * @return DateTime
-     */
-    private function getMicrosecondsNow()
-    {
-        return DateTime::createFromFormat('u', substr(microtime(), 2, 6));
     }
 }
