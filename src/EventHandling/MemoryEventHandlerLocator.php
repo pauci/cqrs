@@ -42,7 +42,7 @@ class MemoryEventHandlerLocator implements EventHandlerLocator
      * @param callable $callback
      * @param int $priority
      */
-    public function registerCallback($eventName, Callable $callback, $priority = 1)
+    public function registerCallback($eventName, callable $callback, $priority = 1)
     {
         $eventNames = (array) $eventName;
 

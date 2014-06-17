@@ -135,14 +135,15 @@ return [
                 ]
             ]
         ],
-        /*
         'configuration' => [
             'orm_default' => [
                 'types' => [
-                    'uuid' => 'Rhumsaa\Uuid\Doctrine\UuidType'
+                    'uuid'        => 'Rhumsaa\Uuid\Doctrine\UuidType',
+                    'binary_uuid' => 'CQRS\Plugin\Doctrine\Type\BinaryUuidType'
                 ]
             ]
         ],
+        /*
         'eventmanager' => [
             'orm_default' => [
                 'subscribers' => [
