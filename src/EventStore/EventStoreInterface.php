@@ -4,7 +4,7 @@ namespace CQRS\EventStore;
 
 use CQRS\Domain\Message\DomainEventMessageInterface;
 
-interface EventStore
+interface EventStoreInterface
 {
     public function store(DomainEventMessageInterface $event);
 }

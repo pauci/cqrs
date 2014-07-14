@@ -4,13 +4,13 @@ namespace CQRS\Plugin\Doctrine\EventStore;
 
 use CQRS\Domain\Message\DomainEventMessageInterface;
 use CQRS\EventHandling\EventName;
-use CQRS\EventStore\EventStore;
+use CQRS\EventStore\EventStoreInterface;
 use CQRS\Serializer\Serializer;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Zend\Json\Json;
 
-class DbalEventStore implements EventStore
+class DbalEventStore implements EventStoreInterface
 {
     /** @var Config */
     private $config;

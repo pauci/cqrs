@@ -5,13 +5,14 @@ namespace CQRS\Plugin\Zend\Service;
 use RuntimeException;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Stdlib\AbstractOptions;
 
 abstract class AbstractFactory implements FactoryInterface
 {
     /** @var string */
     protected $name;
 
-    /** @var \Zend\Stdlib\AbstractOptions */
+    /** @var AbstractOptions */
     protected $options;
 
     /**
@@ -36,7 +37,7 @@ abstract class AbstractFactory implements FactoryInterface
      * @param  ServiceLocatorInterface      $sl
      * @param  string                       $key
      * @param  null|string                  $name
-     * @return \Zend\Stdlib\AbstractOptions
+     * @return AbstractOptions
      * @throws RuntimeException
      */
     public function getOptions(ServiceLocatorInterface $sl, $key, $name = null)

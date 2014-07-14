@@ -7,7 +7,10 @@ use Zend\Stdlib\AbstractOptions;
 class EventStore extends AbstractOptions
 {
     /** @var string */
-    protected $class = '';
+    protected $class;
+
+    /** @var string */
+    protected $dbalConnection;
 
     /**
      * @param string $class
@@ -26,4 +29,22 @@ class EventStore extends AbstractOptions
     {
         return $this->class;
     }
-} 
+
+    /**
+     * @param string $dbalConnection
+     * @return self
+     */
+    public function setDbalConnection($dbalConnection)
+    {
+        $this->dbalConnection = $dbalConnection;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDbalConnection()
+    {
+        return "doctrine.connection.{$this->dbalConnection}";
+    }
+}

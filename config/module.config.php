@@ -36,8 +36,8 @@ return [
                 /**
                  * To use with doctrine:
                  *
-                 *  'class'          => 'CQRS\Plugin\Doctrine\CommandHandling\ImplicitOrmTransactionManager',
-                 *  'entity_manager' => 'orm_default',
+                 *  'class'              => 'CQRS\Plugin\Doctrine\CommandHandling\ImplicitOrmTransactionManager',
+                 *  'orm_entity_manager' => 'orm_default',
                  */
             ]
         ],
@@ -104,6 +104,8 @@ return [
 
         'eventStore' => [
             'cqrs_default' => [
+                'class'           => 'CQRS\Plugin\Doctrine\EventStore\DbalEventStore',
+                'dbal_connection' => 'orm_default'
             ]
         ]
     ],

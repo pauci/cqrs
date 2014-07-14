@@ -2,14 +2,17 @@
 
 namespace CQRS\Plugin\Zend\Service;
 
+use CQRS\EventStore\EventStoreInterface;
+use CQRS\Plugin\Doctrine\EventStore\DbalEventStore;
 use CQRS\Plugin\Zend\Options\EventStore as EventStoreOptions;
+use CQRS\Serializer\ReflectionSerializer;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class EventStoreFactory extends AbstractFactory
 {
     /**
      * @param ServiceLocatorInterface $serviceLocator
-     * @return \CQRS\EventHandling\EventStore
+     * @return EventStoreInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
@@ -29,11 +32,18 @@ class EventStoreFactory extends AbstractFactory
     /**
      * @param ServiceLocatorInterface $sl
      * @param EventStoreOptions $options
-     * @return \CQRS\EventHandling\EventStore
+     * @return EventStoreInterface
      */
     protected function create(ServiceLocatorInterface $sl, EventStoreOptions $options)
     {
         $class = $options->getClass();
+
+        if ($class == 'CQRS\Plugin\Doctrine\EventStore\DbalEventStore') {
+            $serializer = new ReflectionSerializer();
+            /** @var \Doctrine\DBAL\Connection $connection */
+            $connection = $sl->get($options->getDbalConnection());
+            return new DbalEventStore($serializer, $connection);
+        }
 
         return new $class;
     }
