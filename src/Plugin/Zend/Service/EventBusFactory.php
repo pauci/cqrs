@@ -40,8 +40,8 @@ class EventBusFactory extends AbstractFactory
 
 
         /** @var \CQRS\EventHandling\EventStore $eventStore */
-        //$eventStore = $sl->get($options->getEventStore());
+        $eventStore = $sl->get($options->getEventStore());
 
-        return new $class($eventHandlerLocator/*, $eventStore*/);
+        return new $class($eventHandlerLocator, $eventStore);
     }
 } 

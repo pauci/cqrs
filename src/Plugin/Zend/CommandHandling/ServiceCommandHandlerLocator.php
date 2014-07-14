@@ -8,7 +8,7 @@ use CQRS\CommandHandling\CommandType;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
 
-class ServiceCommandHandlerLocatorInterface implements
+class ServiceCommandHandlerLocator implements
     CommandHandlerLocatorInterface,
     ServiceLocatorAwareInterface
 {

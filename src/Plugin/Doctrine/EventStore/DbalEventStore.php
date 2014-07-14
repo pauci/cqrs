@@ -27,7 +27,9 @@ class DbalEventStore implements EventStoreInterface
      */
     public function __construct(Serializer $serializer, Connection $connection)
     {
+        $this->config     = new Config();
         $this->serializer = $serializer;
+        $this->conn       = $connection;
     }
 
     /**
@@ -40,7 +42,7 @@ class DbalEventStore implements EventStoreInterface
         $aggregateId = $event->getAggregateId();
 
         $params = [
-            $event->getId()->getBytes(),
+            (string) $event->getId(),
             $event->getAggregateType(),
             is_int($aggregateId) ? $aggregateId : (string) $aggregateId,
             (string) new EventName($event),
@@ -49,7 +51,7 @@ class DbalEventStore implements EventStoreInterface
         ];
 
         $types = [
-            Type::BINARY,
+            Type::STRING,
             Type::STRING,
             is_int($aggregateId) ? Type::INTEGER : Type::STRING,
             Type::STRING,

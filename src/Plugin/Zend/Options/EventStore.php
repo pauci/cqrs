@@ -10,7 +10,7 @@ class EventStore extends AbstractOptions
     protected $class;
 
     /** @var string */
-    protected $dbalConnection;
+    protected $dbalConnection = 'orm_default';
 
     /**
      * @param string $class
