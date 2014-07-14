@@ -37,19 +37,21 @@ class DbalEventStore implements EventStoreInterface
     {
         $sql = $this->getInsertEventSQL();
 
+        $aggregateId = $event->getAggregateId();
+
         $params = [
-            (string) $event->getId(),
+            $event->getId()->getBytes(),
             $event->getAggregateType(),
-            (string) $event->getAggregateId(),
+            is_int($aggregateId) ? $aggregateId : (string) $aggregateId,
             (string) new EventName($event),
             $this->serialize($event),
             $event->getTimestamp()
         ];
 
         $types = [
+            Type::BINARY,
             Type::STRING,
-            Type::STRING,
-            Type::STRING,
+            is_int($aggregateId) ? Type::INTEGER : Type::STRING,
             Type::STRING,
             Type::STRING,
             TYPE::DATETIME

@@ -23,5 +23,5 @@ class Config
     public $eventDataColumn = 'event_data';
 
     /** @var string */
-    public $timestampColumn = 'occurred_at';
+    public $timestampColumn = 'event_time';
 } 
