@@ -11,7 +11,7 @@ class EventHandlerLocatorFactory extends AbstractFactory
 {
     /**
      * @param ServiceLocatorInterface $serviceLocator
-     * @return \CQRS\CommandHandling\CommandHandlerLocator
+     * @return \CQRS\CommandHandling\Locator\CommandHandlerLocatorInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
@@ -31,7 +31,7 @@ class EventHandlerLocatorFactory extends AbstractFactory
     /**
      * @param ServiceLocatorInterface $sl
      * @param EventHandlerLocatorOptions $options
-     * @return \CQRS\EventHandling\EventHandlerLocator
+     * @return \CQRS\EventHandling\Locator\EventHandlerLocatorInterface
      * @throws RuntimeException
      */
     protected function create(ServiceLocatorInterface $sl, EventHandlerLocatorOptions $options)
@@ -39,10 +39,10 @@ class EventHandlerLocatorFactory extends AbstractFactory
         $class = $options->getClass();
 
         if (!$class) {
-            throw new RuntimeException('EventHandlerLocator must have a class name to instantiate');
+            throw new RuntimeException('EventHandlerLocatorInterface must have a class name to instantiate');
         }
 
-        /** @var \CQRS\EventHandling\EventHandlerLocator $eventHandlerLocator */
+        /** @var \CQRS\EventHandling\Locator\EventHandlerLocatorInterface $eventHandlerLocator */
         $eventHandlerLocator = new $class;
 
         if ($eventHandlerLocator instanceof ServiceLocatorAwareInterface) {

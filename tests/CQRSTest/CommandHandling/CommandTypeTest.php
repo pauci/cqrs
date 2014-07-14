@@ -2,7 +2,7 @@
 
 namespace CQRSTest\CommandHandling;
 
-use CQRS\CommandHandling\Command;
+use CQRS\CommandHandling\CommandInterface;
 use CQRS\CommandHandling\CommandType;
 
 class CommandTypeTest extends \PHPUnit_Framework_TestCase
@@ -15,5 +15,5 @@ class CommandTypeTest extends \PHPUnit_Framework_TestCase
     }
 }
 
-class CommandOfSomeType implements Command
+class CommandOfSomeType implements CommandInterface
 {}

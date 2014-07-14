@@ -2,17 +2,20 @@
 
 namespace CQRS\EventHandling;
 
+use CQRS\Domain\Message\EventMessageInterface;
+
 class EventName
 {
-    /** @var DomainEvent */
+    /** @var EventMessageInterface */
     private $event;
+
     /** @var string */
     private $name;
 
     /**
-     * @param DomainEvent $event
+     * @param EventMessageInterface $event
      */
-    public function __construct(DomainEvent $event)
+    public function __construct(EventMessageInterface $event)
     {
         $this->event = $event;
     }

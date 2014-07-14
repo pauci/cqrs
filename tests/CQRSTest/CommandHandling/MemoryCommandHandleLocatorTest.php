@@ -2,8 +2,8 @@
 
 namespace CQRSTest\CommandHandling;
 
-use CQRS\CommandHandling\Command;
-use CQRS\CommandHandling\MemoryCommandHandlerLocator;
+use CQRS\CommandHandling\CommandInterface;
+use CQRS\CommandHandling\Locator\MemoryCommandHandlerLocator;
 use stdClass;
 
 class MemoryCommandHandlerLocatorTest extends \PHPUnit_Framework_TestCase
@@ -33,7 +33,7 @@ class MemoryCommandHandlerLocatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(
             'CQRS\Exception\RuntimeException',
-            'No service registered for command type "CQRSTest\\CommandHandling\\NoHandlerCommand"'
+            'No service registered for command type "CQRSTest\CommandHandling\NoHandlerCommand"'
         );
 
         $locator = new MemoryCommandHandlerLocator();
@@ -41,8 +41,8 @@ class MemoryCommandHandlerLocatorTest extends \PHPUnit_Framework_TestCase
     }
 }
 
-class HandleCommand implements Command
+class HandleCommand implements CommandInterface
 {}
 
-class NoHandlerCommand implements Command
+class NoHandlerCommand implements CommandInterface
 {}

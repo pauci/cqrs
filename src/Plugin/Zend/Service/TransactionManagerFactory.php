@@ -10,7 +10,7 @@ class TransactionManagerFactory extends AbstractFactory
 {
     /**
      * @param ServiceLocatorInterface $serviceLocator
-     * @return \CQRS\CommandHandling\TransactionManager
+     * @return \CQRS\CommandHandling\TransactionManager\TransactionManagerInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
@@ -30,7 +30,7 @@ class TransactionManagerFactory extends AbstractFactory
     /**
      * @param ServiceLocatorInterface $sl
      * @param TransactionManagerOptions $options
-     * @return \CQRS\CommandHandling\TransactionManager
+     * @return \CQRS\CommandHandling\TransactionManager\TransactionManagerInterface
      */
     protected function create(ServiceLocatorInterface $sl, TransactionManagerOptions $options)
     {

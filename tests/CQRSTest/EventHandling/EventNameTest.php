@@ -2,7 +2,7 @@
 
 namespace CQRSTest\EventHandling;
 
-use CQRS\EventHandling\DomainEvent;
+use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\EventHandling\EventName;
 
 class EventNameTest extends \PHPUnit_Framework_TestCase
@@ -12,9 +12,21 @@ class EventNameTest extends \PHPUnit_Framework_TestCase
         $event = new EventOfSomeName();
         $eventName = new EventName($event);
 
-        $this->assertEquals('EventOfSomeName', $eventName);
+        $this->assertEquals('EventOfSomeName', (string) $eventName);
     }
 }
 
-class EventOfSomeName implements DomainEvent
-{}
+class EventOfSomeName implements EventMessageInterface
+{
+    public function getTimestamp()
+    {}
+
+    public function getId()
+    {}
+
+    public function getMetadata()
+    {}
+
+    public function getPayload()
+    {}
+}

@@ -2,14 +2,14 @@
 
 namespace CQRS\Plugin\Zend\CommandHandling;
 
-use CQRS\CommandHandling\Command;
-use CQRS\CommandHandling\CommandHandlerLocator;
+use CQRS\CommandHandling\CommandInterface;
+use CQRS\CommandHandling\Locator\CommandHandlerLocatorInterface;
 use CQRS\CommandHandling\CommandType;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
 
-class ServiceCommandHandlerLocator implements
-    CommandHandlerLocator,
+class ServiceCommandHandlerLocatorInterface implements
+    CommandHandlerLocatorInterface,
     ServiceLocatorAwareInterface
 {
     use ServiceLocatorAwareTrait;
@@ -18,10 +18,10 @@ class ServiceCommandHandlerLocator implements
     private $handlersMap = [];
 
     /**
-     * @param Command $command
+     * @param CommandInterface $command
      * @return object
      */
-    public function getCommandHandler(Command $command)
+    public function getCommandHandler(CommandInterface $command)
     {
         $commandType = new CommandType($command);
 

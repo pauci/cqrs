@@ -14,7 +14,7 @@ return [
                 'class'    => 'CQRS\Plugin\Zend\CommandHandling\ServiceCommandHandlerLocator',
                 'handlers' => [
                     /**
-                     * Command handlers in format:
+                     * CommandInterface handlers in format:
                      *
                      *  '<CommandType>' => '<CommandHandlerServiceName>',
                      *

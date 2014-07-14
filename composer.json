@@ -4,7 +4,7 @@
     "type": "library",
     "license": "proprietary",
     "require": {
-        "php": ">=5.4",
+        "php": ">=5.5",
         "rhumsaa/uuid": "~2.7"
     },
     "require-dev": {

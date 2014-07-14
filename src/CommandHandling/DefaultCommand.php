@@ -5,9 +5,9 @@ namespace CQRS\CommandHandling;
 use CQRS\Exception\RuntimeException;
 
 /**
- * Default Implementation for the Command interface.
+ * Default Implementation for the CommandInterface interface.
  *
- * Convenience Command that helps with construction by mapping an array input
+ * Convenience CommandInterface that helps with construction by mapping an array input
  * to command properties. If a passed property does not exist on the class
  * an exception is thrown.
  *
@@ -20,7 +20,7 @@ use CQRS\Exception\RuntimeException;
  *   $command = new GreetCommand(['personId' => 1]);
  *   $commandBus->handle($command);
  */
-abstract class DefaultCommand implements Command
+abstract class DefaultCommand implements CommandInterface
 {
     public function __construct(array $data = [])
     {

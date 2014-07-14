@@ -2,16 +2,18 @@
 
 namespace CQRSTest\EventHandling;
 
-use CQRS\EventHandling\DomainEvent;
+use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\EventHandling\EventExecutionFailed;
-use CQRS\EventHandling\EventHandlerLocator;
+use CQRS\EventHandling\Locator\EventHandlerLocatorInterface;
 use CQRS\EventHandling\EventName;
 use CQRS\EventHandling\SynchronousEventBus;
+use Exception;
 
 class SynchronousEventBusTest extends \PHPUnit_Framework_TestCase
 {
     /** @var SynchronousEventBus */
     protected $eventBus;
+
     /** @var SynchronousEventHandler */
     protected $handler;
 
@@ -19,7 +21,7 @@ class SynchronousEventBusTest extends \PHPUnit_Framework_TestCase
     {
         $this->handler = new SynchronousEventHandler();
 
-        $locator = new SynchronousEventHandlerLocator();
+        $locator = new SynchronousEventHandlerLocatorInterface();
         $locator->handler = $this->handler;
 
         $this->eventBus = new SynchronousEventBus($locator);
@@ -55,7 +57,7 @@ class SynchronousEventBusTest extends \PHPUnit_Framework_TestCase
     }
 }
 
-class SynchronousEventHandlerLocator implements EventHandlerLocator
+class SynchronousEventHandlerLocatorInterface implements EventHandlerLocatorInterface
 {
     public $handler;
 
@@ -92,11 +94,23 @@ class SynchronousEventHandler
     }
 }
 
-class SynchronousEvent implements DomainEvent
+class SynchronousEvent implements EventMessageInterface
+{
+    public function getTimestamp()
+    {}
+
+    public function getId()
+    {}
+
+    public function getMetadata()
+    {}
+
+    public function getPayload()
+    {}
+}
+
+class FailureCausingEvent extends SynchronousEvent
 {}
 
-class FailureCausingEvent implements DomainEvent
-{}
-
-class EventHandlingException extends \Exception
+class EventHandlingException extends Exception
 {}

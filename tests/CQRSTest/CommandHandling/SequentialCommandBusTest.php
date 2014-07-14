@@ -2,11 +2,11 @@
 
 namespace CQRSTest\CommandHandling;
 
-use CQRS\CommandHandling\Command;
-use CQRS\CommandHandling\CommandHandlerLocator;
+use CQRS\CommandHandling\CommandInterface;
+use CQRS\CommandHandling\Locator\CommandHandlerLocatorInterface;
 use CQRS\CommandHandling\SequentialCommandBus;
-use CQRS\CommandHandling\TransactionManager;
-use CQRS\EventHandling\EventPublisher;
+use CQRS\CommandHandling\TransactionManager\TransactionManagerInterface;
+use CQRS\EventHandling\Publisher\EventPublisherInterface;
 
 class SequentialCommandBusTest extends \PHPUnit_Framework_TestCase
 {
@@ -88,26 +88,26 @@ class SequentialCommandBusTest extends \PHPUnit_Framework_TestCase
     }
 }
 
-class DoSimpleCommand implements Command
+class DoSimpleCommand implements CommandInterface
 {}
 
-class DoSequentialCommand implements Command
+class DoSequentialCommand implements CommandInterface
 {}
 
-class DoFailureCommand implements Command
+class DoFailureCommand implements CommandInterface
 {}
 
-class DoSequentialFailureCommand implements Command
+class DoSequentialFailureCommand implements CommandInterface
 {}
 
-class NoHandlingMethodCommand implements Command
+class NoHandlingMethodCommand implements CommandInterface
 {}
 
-class SequentialCommandHandlerLocator implements CommandHandlerLocator
+class SequentialCommandHandlerLocator implements CommandHandlerLocatorInterface
 {
     public $handler;
 
-    public function getCommandHandler(Command $command)
+    public function getCommandHandler(CommandInterface $command)
     {
         return $this->handler;
     }
@@ -146,7 +146,7 @@ class SequentialCommandHandler
 class CommandFailureTestException extends \Exception
 {}
 
-class SequentialTransactionManager implements TransactionManager
+class SequentialTransactionManager implements TransactionManagerInterface
 {
     public $begin = 0;
     public $commit = 0;
@@ -168,7 +168,7 @@ class SequentialTransactionManager implements TransactionManager
     }
 }
 
-class SequentialEventPublisher implements EventPublisher
+class SequentialEventPublisher implements EventPublisherInterface
 {
     public $published = 0;
 

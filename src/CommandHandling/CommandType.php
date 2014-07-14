@@ -4,13 +4,13 @@ namespace CQRS\CommandHandling;
 
 class CommandType
 {
-    /** @var Command */
+    /** @var CommandInterface */
     private $command;
 
     /**
-     * @param Command $command
+     * @param CommandInterface $command
      */
-    public function __construct(Command $command)
+    public function __construct(CommandInterface $command)
     {
         $this->command = $command;
     }

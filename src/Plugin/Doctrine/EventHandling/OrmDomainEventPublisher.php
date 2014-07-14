@@ -2,29 +2,29 @@
 
 namespace CQRS\Plugin\Doctrine\EventHandling;
 
-use CQRS\Domain\AggregateRoot;
-use CQRS\EventHandling\EventBus;
-use CQRS\EventHandling\EventPublisher;
+use CQRS\Domain\Model\AggregateRootInterface;
+use CQRS\EventHandling\EventBusInterface;
+use CQRS\EventHandling\Publisher\EventPublisherInterface;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
-use Doctrine\ORM\Mapping\ClassMetadata;
 
 class OrmDomainEventPublisher implements
-    EventPublisher,
+    EventPublisherInterface,
     EventSubscriber
 {
-    /** @var AggregateRoot[] */
+    /** @var AggregateRootInterface[] */
     private $aggregateRoots = [];
 
-    /** @var EventBus */
+    /** @var EventBusInterface */
     private $eventBus;
 
     /**
-     * @param EventBus $eventBus
+     * @param EventBusInterface $eventBus
      */
-    public function __construct(EventBus $eventBus)
+    public function __construct(EventBusInterface $eventBus)
     {
         $this->eventBus = $eventBus;
     }
@@ -39,11 +39,33 @@ class OrmDomainEventPublisher implements
     public function getSubscribedEvents()
     {
         return [
+            Events::preFlush,
             Events::postPersist,
             Events::postUpdate,
             Events::postRemove,
             Events::postFlush
         ];
+    }
+
+    /**
+     * Remove entities marked as deleted
+     *
+     * @param PreFlushEventArgs $event
+     */
+    public function preFlush(PreFlushEventArgs $event)
+    {
+        $entityManager = $event->getEntityManager();
+        $uow = $entityManager->getUnitOfWork();
+
+        foreach ($uow->getIdentityMap() as $class => $entities) {
+            foreach ($entities as $entity) {
+                if ($entity instanceof AggregateRootInterface) {
+                    if ($entity->isDeleted()) {
+                        $entityManager->remove($entity);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -75,19 +97,12 @@ class OrmDomainEventPublisher implements
      */
     public function postFlush(PostFlushEventArgs $event)
     {
-        //$entityManager = $event->getEntityManager();
-
         foreach ($this->aggregateRoots as $aggregateRoot) {
-            //$class = $entityManager->getClassMetadata(get_class($aggregateRoot));
-
             foreach ($aggregateRoot->pullDomainEvents() as $domainEvent) {
-                //$domainEvent->aggregateType = $class->name;
-                //$domainEvent->aggregateId   = $class->getSingleIdReflectionProperty()->getValue($aggregateRoot);
-
                 $this->eventBus->publish($domainEvent);
             }
         }
-        $this->aggregateRoots = array();
+        $this->aggregateRoots = [];
     }
 
     /**
@@ -97,7 +112,7 @@ class OrmDomainEventPublisher implements
     {
         $entity = $event->getEntity();
 
-        if (!$entity instanceof AggregateRoot) {
+        if (!$entity instanceof AggregateRootInterface) {
             return;
         }
 

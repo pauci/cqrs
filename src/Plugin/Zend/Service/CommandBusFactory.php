@@ -9,7 +9,7 @@ class CommandBusFactory extends AbstractFactory
 {
     /**
      * @param ServiceLocatorInterface $serviceLocator
-     * @return \CQRS\CommandHandling\CommandBus
+     * @return \CQRS\CommandHandling\CommandBusInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
@@ -29,19 +29,19 @@ class CommandBusFactory extends AbstractFactory
     /**
      * @param ServiceLocatorInterface $sl
      * @param CommandBusOptions $options
-     * @return \CQRS\CommandHandling\CommandBus
+     * @return \CQRS\CommandHandling\CommandBusInterface
      */
     protected function create(ServiceLocatorInterface $sl, CommandBusOptions $options)
     {
         $class = $options->getClass();
 
-        /** @var \CQRS\CommandHandling\CommandHandlerLocator $commandHandlerLocator */
+        /** @var \CQRS\CommandHandling\Locator\CommandHandlerLocatorInterface $commandHandlerLocator */
         $commandHandlerLocator = $sl->get($options->getCommandHandlerLocator());
 
-        /** @var \CQRS\CommandHandling\TransactionManager $transactionManager */
+        /** @var \CQRS\CommandHandling\TransactionManager\TransactionManagerInterface $transactionManager */
         $transactionManager = $sl->get($options->getTransactionManager());
 
-        /** @var \CQRS\EventHandling\EventPublisher $eventPublisher */
+        /** @var \CQRS\EventHandling\Publisher\EventPublisherInterface $eventPublisher */
         $eventPublisher = $sl->get($options->getEventPublisher());
 
         return new $class($commandHandlerLocator, $transactionManager, $eventPublisher);

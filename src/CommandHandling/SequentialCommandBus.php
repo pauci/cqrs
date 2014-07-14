@@ -2,7 +2,9 @@
 
 namespace CQRS\CommandHandling;
 
-use CQRS\EventHandling\EventPublisher;
+use CQRS\CommandHandling\Locator\CommandHandlerLocatorInterface;
+use CQRS\CommandHandling\TransactionManager\TransactionManagerInterface;
+use CQRS\EventHandling\Publisher\EventPublisherInterface;
 use CQRS\Exception\RuntimeException;
 use Exception;
 
@@ -15,34 +17,34 @@ use Exception;
  *
  * Any command handler execution can be wrapped by additional handlers to form
  * a chain of responsibility. To control this process you can pass an array of
- * proxy factories into the CommandBus. The factories are iterated in REVERSE
+ * proxy factories into the CommandBusInterface. The factories are iterated in REVERSE
  * order and get passed the current handler to stack the chain of
  * responsibility. That means the proxy factory registered FIRST is the one
  * that wraps itself around the previous handlers LAST.
  */
-class SequentialCommandBus implements CommandBus
+class SequentialCommandBus implements CommandBusInterface
 {
-    /** @var CommandHandlerLocator */
+    /** @var CommandHandlerLocatorInterface */
     private $locator;
 
-    /** @var TransactionManager */
+    /** @var TransactionManagerInterface */
     private $transactionManager;
 
-    /** @var EventPublisher */
+    /** @var EventPublisherInterface */
     private $eventPublisher;
 
-    /** @var Command[] */
+    /** @var CommandInterface[] */
     private $commandStack = [];
 
     /** @var bool */
     private $executing = false;
 
     /**
-     * @param CommandHandlerLocator $locator
-     * @param TransactionManager $transactionManager
-     * @param EventPublisher $eventPublisher
+     * @param CommandHandlerLocatorInterface $locator
+     * @param TransactionManagerInterface $transactionManager
+     * @param \CQRS\EventHandling\Publisher\EventPublisherInterface $eventPublisher
      */
-    public function __construct(CommandHandlerLocator $locator, TransactionManager $transactionManager, EventPublisher $eventPublisher)
+    public function __construct(CommandHandlerLocatorInterface $locator, TransactionManagerInterface $transactionManager, EventPublisherInterface $eventPublisher)
     {
         $this->locator = $locator;
         $this->transactionManager = $transactionManager;
@@ -55,10 +57,10 @@ class SequentialCommandBus implements CommandBus
      * If an exception occurs in any command it will be put on a stack
      * of exceptions that is thrown only when all the commands are processed.
      *
-     * @param Command $command
+     * @param CommandInterface $command
      * @throws Exception
      */
-    public function handle(Command $command)
+    public function handle(CommandInterface $command)
     {
         $this->commandStack[] = $command;
 
@@ -83,10 +85,10 @@ class SequentialCommandBus implements CommandBus
     }
 
     /**
-     * @param Command $command
+     * @param CommandInterface $command
      * @param bool $first
      */
-    protected function invokeHandler($command, $first)
+    protected function invokeHandler(CommandInterface $command, $first)
     {
         try {
             $this->executing = true;
@@ -113,10 +115,10 @@ class SequentialCommandBus implements CommandBus
     }
 
     /**
-     * @param Command $command
+     * @param CommandInterface $command
      * @return string
      */
-    protected function getHandlerMethodName(Command $command)
+    protected function getHandlerMethodName(CommandInterface $command)
     {
         $commandType = new CommandType($command);
 

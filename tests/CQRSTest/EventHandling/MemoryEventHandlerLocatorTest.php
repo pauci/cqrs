@@ -3,7 +3,7 @@
 namespace CQRSTest\EventHandling;
 
 use CQRS\EventHandling\EventName;
-use CQRS\EventHandling\MemoryEventHandlerLocator;
+use CQRS\EventHandling\Locator\MemoryEventHandlerLocator;
 
 class MemoryEventHandlerLocatorTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,7 +14,7 @@ class MemoryEventHandlerLocatorTest extends \PHPUnit_Framework_TestCase
         $callback3 = function() {};
         $callback4 = function() {};
 
-        $locator = new MemoryEventHandlerLocator();
+        $locator = new \CQRS\EventHandling\Locator\MemoryEventHandlerLocator();
         $locator->registerCallback('TestEvent', $callback1, 1);
         $locator->registerCallback('TestEvent', $callback2, -1);
         $locator->registerCallback('TestEvent', $callback3, 2);
@@ -34,7 +34,7 @@ class MemoryEventHandlerLocatorTest extends \PHPUnit_Framework_TestCase
         $subscriber1 = new Subscriber();
         $subscriber2 = new Subscriber();
 
-        $locator = new MemoryEventHandlerLocator();
+        $locator = new \CQRS\EventHandling\Locator\MemoryEventHandlerLocator();
         $locator->registerSubscriber($subscriber1);
         $locator->registerSubscriber($subscriber2, 10);
         $locator->registerSubscriber(new AnotherSubscriber());
@@ -49,7 +49,7 @@ class MemoryEventHandlerLocatorTest extends \PHPUnit_Framework_TestCase
 
     public function testItReturnsEmptyArrayWhenNoHandlersAreRegistered()
     {
-        $locator = new MemoryEventHandlerLocator();
+        $locator = new \CQRS\EventHandling\Locator\MemoryEventHandlerLocator();
 
         $this->assertEmpty($locator->getEventHandlers(new LocatorTestEventName()));
     }
@@ -61,7 +61,7 @@ class MemoryEventHandlerLocatorTest extends \PHPUnit_Framework_TestCase
             'No valid event handler given; expected object, got string'
         );
 
-        $locator = new MemoryEventHandlerLocator();
+        $locator = new \CQRS\EventHandling\Locator\MemoryEventHandlerLocator();
         $locator->registerSubscriber('not an object');
     }
 }

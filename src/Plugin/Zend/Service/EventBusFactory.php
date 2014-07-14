@@ -9,7 +9,7 @@ class EventBusFactory extends AbstractFactory
 {
     /**
      * @param ServiceLocatorInterface $serviceLocator
-     * @return \CQRS\EventHandling\EventBus
+     * @return \CQRS\EventHandling\EventBusInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
@@ -29,13 +29,13 @@ class EventBusFactory extends AbstractFactory
     /**
      * @param ServiceLocatorInterface $sl
      * @param EventBusOptions $options
-     * @return \CQRS\EventHandling\EventBus
+     * @return \CQRS\EventHandling\EventBusInterface
      */
     protected function create(ServiceLocatorInterface $sl, EventBusOptions $options)
     {
         $class = $options->getClass();
 
-        /** @var \CQRS\EventHandling\EventHandlerLocator $eventHandlerLocator */
+        /** @var \CQRS\EventHandling\Locator\EventHandlerLocatorInterface $eventHandlerLocator */
         $eventHandlerLocator = $sl->get($options->getEventHandlerLocator());
 
 

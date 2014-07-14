@@ -45,7 +45,7 @@ return [
 
 ```php
 
-class User extends CQRS\Domain\SuperType\AggregateRoot
+class User extends CQRS\Domain\Model\AbstractAggregateRoot
 {
     private $name;
 
@@ -64,7 +64,7 @@ class ChangeUserName extends CQRS\CommandHandling\DefaultCommand
     public $name;
 }
 
-class UserNameChanged extends CQRS\EventHandling\DefaultDomainEvent
+class UserNameChanged extends CQRS\Domain\Message\AbstractDomainEventMessage
 {
     public $id;
     public $name;

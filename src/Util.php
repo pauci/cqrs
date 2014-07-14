@@ -2,15 +2,15 @@
 
 namespace CQRS;
 
-use DateTime;
+use DateTimeImmutable;
 
 class Util
 {
     /**
-     * @return DateTime
+     * @return DateTimeImmutable
      */
     public static function createMicrosecondsNow()
     {
-        return DateTime::createFromFormat('u', substr(microtime(), 2, 6));
+        return DateTimeImmutable::createFromFormat('u', substr(microtime(), 2, 6));
     }
 } 

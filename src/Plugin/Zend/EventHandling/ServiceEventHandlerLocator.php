@@ -3,7 +3,7 @@
 namespace CQRS\Plugin\Zend\EventHandling;
 
 use CQRS\EventHandling\EventName;
-use CQRS\EventHandling\MemoryEventHandlerLocator;
+use CQRS\EventHandling\Locator\MemoryEventHandlerLocator;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
 

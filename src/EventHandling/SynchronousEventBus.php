@@ -2,25 +2,27 @@
 
 namespace CQRS\EventHandling;
 
+use CQRS\Domain\Message\EventMessageInterface;
+use CQRS\EventHandling\Locator\EventHandlerLocatorInterface;
 use Exception;
 
-class SynchronousEventBus implements EventBus
+class SynchronousEventBus implements EventBusInterface
 {
-    /** @var EventHandlerLocator */
+    /** @var EventHandlerLocatorInterface */
     private $locator;
 
     /**
-     * @param EventHandlerLocator $locator
+     * @param EventHandlerLocatorInterface $locator
      */
-    public function __construct(EventHandlerLocator $locator)
+    public function __construct(EventHandlerLocatorInterface $locator)
     {
         $this->locator = $locator;
     }
 
     /**
-     * @param DomainEvent $event
+     * @param EventMessageInterface $event
      */
-    public function publish(DomainEvent $event)
+    public function publish(EventMessageInterface $event)
     {
         $eventName = new EventName($event);
         $callbacks = $this->locator->getEventHandlers($eventName);
@@ -32,9 +34,9 @@ class SynchronousEventBus implements EventBus
 
     /**
      * @param Callable $callback
-     * @param DomainEvent $event
+     * @param \CQRS\Domain\Message\EventMessageInterface $event
      */
-    private function invokeEventHandler(Callable $callback, $event)
+    private function invokeEventHandler(callable $callback, $event)
     {
         try {
             $callback($event);
