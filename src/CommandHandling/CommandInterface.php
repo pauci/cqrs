@@ -2,5 +2,7 @@
 
 namespace CQRS\CommandHandling;
 
-interface CommandInterface
+use CQRS\Domain\Message\MessageInterface;
+
+interface CommandInterface extends MessageInterface
 {}

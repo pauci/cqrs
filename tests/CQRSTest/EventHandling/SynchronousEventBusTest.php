@@ -2,10 +2,9 @@
 
 namespace CQRSTest\EventHandling;
 
-use CQRS\Domain\Message\EventMessageInterface;
+use CQRS\Domain\Message\AbstractEvent;
 use CQRS\EventHandling\EventExecutionFailed;
 use CQRS\EventHandling\Locator\EventHandlerLocatorInterface;
-use CQRS\EventHandling\EventName;
 use CQRS\EventHandling\SynchronousEventBus;
 use Exception;
 
@@ -61,7 +60,7 @@ class SynchronousEventHandlerLocatorInterface implements EventHandlerLocatorInte
 {
     public $handler;
 
-    public function getEventHandlers(EventName $eventName)
+    public function getEventHandlers($eventName)
     {
         return [[$this->handler, 'on' . $eventName]];
     }
@@ -94,22 +93,10 @@ class SynchronousEventHandler
     }
 }
 
-class SynchronousEvent implements EventMessageInterface
-{
-    public function getTimestamp()
-    {}
+class SynchronousEvent extends AbstractEvent
+{}
 
-    public function getId()
-    {}
-
-    public function getMetadata()
-    {}
-
-    public function getPayload()
-    {}
-}
-
-class FailureCausingEvent extends SynchronousEvent
+class FailureCausingEvent extends AbstractEvent
 {}
 
 class EventHandlingException extends Exception

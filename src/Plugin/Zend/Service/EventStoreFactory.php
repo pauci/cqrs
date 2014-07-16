@@ -3,7 +3,7 @@
 namespace CQRS\Plugin\Zend\Service;
 
 use CQRS\EventStore\EventStoreInterface;
-use CQRS\Plugin\Doctrine\EventStore\DbalEventStore;
+use CQRS\Plugin\Doctrine\EventStore\TableEventStore;
 use CQRS\Plugin\Zend\Options\EventStore as EventStoreOptions;
 use CQRS\Serializer\ReflectionSerializer;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -42,7 +42,7 @@ class EventStoreFactory extends AbstractFactory
             $serializer = new ReflectionSerializer();
             /** @var \Doctrine\DBAL\Connection $connection */
             $connection = $sl->get($options->getDbalConnection());
-            return new DbalEventStore($serializer, $connection);
+            return new TableEventStore($serializer, $connection);
         }
 
         return new $class;

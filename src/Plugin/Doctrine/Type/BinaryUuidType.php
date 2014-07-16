@@ -2,11 +2,11 @@
 
 namespace CQRS\Plugin\Doctrine\Type;
 
-use InvalidArgumentException;
-use Rhumsaa\Uuid\Uuid;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use InvalidArgumentException;
+use Rhumsaa\Uuid\Uuid;
 
 class BinaryUuidType extends Type
 {
@@ -16,8 +16,8 @@ class BinaryUuidType extends Type
     /**
      * {@inheritdoc}
      *
-     * @param array                                     $fieldDeclaration
-     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
+     * @param array $fieldDeclaration
+     * @param AbstractPlatform $platform
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
@@ -29,8 +29,8 @@ class BinaryUuidType extends Type
     /**
      * {@inheritdoc}
      *
-     * @param string|null                               $value
-     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
+     * @param string|null $value
+     * @param AbstractPlatform $platform
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
@@ -50,8 +50,8 @@ class BinaryUuidType extends Type
     /**
      * {@inheritdoc}
      *
-     * @param Uuid|null                                 $value
-     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
+     * @param Uuid|null $value
+     * @param AbstractPlatform $platform
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
@@ -79,7 +79,7 @@ class BinaryUuidType extends Type
     /**
      * {@inheritdoc}
      *
-     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
+     * @param AbstractPlatform $platform
      * @return boolean
      */
     public function requiresSQLCommentHint(AbstractPlatform $platform)

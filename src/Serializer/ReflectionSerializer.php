@@ -2,36 +2,97 @@
 
 namespace CQRS\Serializer;
 
+use CQRS\Domain\Message\DomainEventInterface;
+use CQRS\Domain\Message\EventInterface;
 use DateTime;
 use DateTimeInterface;
 use DateTimeImmutable;
 use DateTimeZone;
 use ReflectionClass;
+use ReflectionProperty;
 use Rhumsaa\Uuid\Uuid;
 
-class ReflectionSerializer implements Serializer
+class ReflectionSerializer implements SerializerInterface
 {
     /** @var ReflectionClass[] */
     private $classes = [];
+
+    /** @var ReflectionProperty[][] */
+    private $reflectionProperties = [];
+
+    /**
+     * @param EventInterface $event
+     * @param string $format
+     * @return string
+     */
+    public function serialize(EventInterface $event, $format)
+    {
+        return json_encode($this->toPhpClassArray($event));
+    }
+
+    /**
+     * @param string $eventClass
+     * @param string $data
+     * @param string $format
+     * @return string
+     */
+    public function deserialize($eventClass, $data, $format)
+    {
+        return $this->fromPhpClassArray(json_decode($data));
+    }
+
 
     /**
      * @param object $object
      * @return array
      */
-    public function toArray($object)
+    private function toPhpClassArray($object)
     {
+        $data = $this->toArray($object);
+
+        foreach ($data as &$value) {
+            if (is_object($value)) {
+                $value = $this->toPhpClassArray($value);
+            }
+        }
+
+        return array_merge([
+            'php_class' => get_class($object)
+        ], $data);
+    }
+
+    /**
+     * @param object $object
+     * @return array
+     */
+    private function toArray($object)
+    {
+        if ($object instanceof EventInterface) {
+            $data = [
+                'id'        => $object->getId(),
+                'timestamp' => $object->getTimestamp(),
+            ];
+
+            if ($object instanceof DomainEventInterface) {
+                $data['aggregate_type'] = $object->getAggregateType();
+                $data['aggregate_id']   = $object->getAggregateId();
+            }
+
+            $data['event_name'] = $object->getEventName();
+            $data['payload']    = $this->extractValuesFromObject($object);
+            return $data;
+        }
+
         if ($object instanceof DateTimeInterface) {
             return [
-                'php_class' => get_class($object),
-                'time'      => $object->format('Y-m-d H:i:s.u'),
-                'timezone'  => $object->getTimezone()->getName()
+                'time'     => $object->format('Y-m-d H:i:s.u'),
+                'timezone' => $object->getTimezone()->getName()
             ];
         }
 
         if ($object instanceof Uuid) {
             return [
-                'php_class' => 'Rhumsaa\Uuid\Uuid',
-                'uuid'      => (string) $object,
+                'uuid' => (string) $object,
             ];
         }
 
@@ -39,10 +100,23 @@ class ReflectionSerializer implements Serializer
     }
 
     /**
+     * @param object $object
+     * @return array
+     */
+    private function extractValuesFromObject($object)
+    {
+        $data = [];
+        foreach ($this->getReflectionProperties(get_class($object)) as $property) {
+            $data[$property->getName()] = $property->getValue($object);
+        }
+        return $data;
+    }
+
+    /**
      * @param array $data
      * @return object
      */
-    public function fromArray(array $data)
+    private function fromPhpClassArray(array $data)
     {
         switch ($data['php_class']) {
             case 'DateTime':
@@ -56,32 +130,6 @@ class ReflectionSerializer implements Serializer
         }
 
         return $this->hydrateObjectFromValues($data);
-    }
-
-    /**
-     * @param object $object
-     * @return array
-     */
-    private function extractValuesFromObject($object)
-    {
-        $reflectionClass = $this->getReflectionClass(get_class($object));
-
-        $data = [
-            'php_class' => $reflectionClass->getName(),
-        ];
-
-        foreach ($reflectionClass->getProperties() as $property) {
-            $property->setAccessible(true);
-            $value = $property->getValue($object);
-
-            if (is_object($value)) {
-                $value = $this->toArray($value);
-            }
-
-            $data[$property->getName()] = $value;
-        }
-
-        return $data;
     }
 
     /**
@@ -103,7 +151,7 @@ class ReflectionSerializer implements Serializer
             $value = $data[$name];
 
             if (isset($value['php_class'])) {
-                $value = $this->fromArray($value);
+                $value = $this->fromPhpClassArray($value);
             }
 
             $property->setAccessible(true);
@@ -124,5 +172,22 @@ class ReflectionSerializer implements Serializer
         }
 
         return $this->classes[$className];
+    }
+
+    /**
+     * @param string $className
+     * @return ReflectionProperty[]
+     */
+    private function getReflectionProperties($className)
+    {
+        if (!isset($this->reflectionProperties[$className])) {
+            $reflectionClass = new ReflectionClass($className);
+            $this->reflectionProperties[$className] = $reflectionClass->getProperties();
+            foreach ($this->reflectionProperties[$className] as $reflectionProperty) {
+                $reflectionProperty->setAccessible(true);
+            }
+        }
+
+        return $this->reflectionProperties[$className];
     }
 }

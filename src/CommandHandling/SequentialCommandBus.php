@@ -120,9 +120,7 @@ class SequentialCommandBus implements CommandBusInterface
      */
     protected function getHandlerMethodName(CommandInterface $command)
     {
-        $commandType = new CommandType($command);
-
-        $parts = explode('\\', $commandType);
+        $parts = explode('\\', get_class($command));
 
         return str_replace('Command', '', lcfirst(end($parts)));
     }

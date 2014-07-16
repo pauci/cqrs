@@ -2,13 +2,13 @@
 
 namespace CQRS\EventHandling;
 
-use CQRS\Domain\Message\EventMessageInterface;
+use CQRS\Domain\Message\EventInterface;
 
 interface EventBusInterface
 {
     /**
-     * @param EventMessageInterface $event
+     * @param EventInterface $event
      * @return
      */
-    public function publish(EventMessageInterface $event);
+    public function publish(EventInterface $event);
 }

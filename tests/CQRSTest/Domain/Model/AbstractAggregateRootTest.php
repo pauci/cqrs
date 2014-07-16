@@ -2,7 +2,7 @@
 
 namespace CQRSTest\Domain\Model;
 
-use CQRS\Domain\Message\DomainEventMessageInterface;
+use CQRS\Domain\Message\AbstractDomainEvent;
 use CQRS\Domain\Model\AbstractAggregateRoot;
 use CQRS\Domain\Model\AggregateRootInterface;
 
@@ -34,7 +34,7 @@ class AggregateRootUnderTest extends AbstractAggregateRoot
     {}
 }
 
-class RaiseDomainEventTestedEvent implements DomainEventMessageInterface
+class RaiseDomainEventTestedEvent extends AbstractDomainEvent
 {
     public $aggregate;
 
@@ -43,22 +43,4 @@ class RaiseDomainEventTestedEvent implements DomainEventMessageInterface
         $this->aggregate = $aggregate;
         return $this;
     }
-
-    public function getAggregateType()
-    {}
-
-    public function getAggregateId()
-    {}
-
-    public function getTimestamp()
-    {}
-
-    public function getId()
-    {}
-
-    public function getMetadata()
-    {}
-
-    public function getPayload()
-    {}
 }

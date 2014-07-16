@@ -2,65 +2,57 @@
 
 namespace CQRS\Domain\Message;
 
-use CQRS\Domain\AbstractProtectedPropertyReadAccessObject;
-use Rhumsaa\Uuid\Uuid;
 
-abstract class AbstractMessage extends AbstractProtectedPropertyReadAccessObject implements MessageInterface
+use CQRS\Exception\RuntimeException;
+
+abstract class AbstractMessage implements MessageInterface
 {
-    /** @var Uuid */
-    private $id;
-
-    /** @var Metadata */
-    private $metadata;
-
     /**
-     * @param array $payload
-     * @param Uuid $id
-     * @param Metadata $metadata
+     * Hydrates protected and public properties
+     *
+     * @param array $data
      */
-    public function __construct(array $payload = [], Uuid $id = null, Metadata $metadata = null)
+    public function __construct(array $data = [])
     {
-        parent::__construct($payload);
-        $this->id       = $id ?: Uuid::uuid4();
-        $this->metadata = $metadata ?: new Metadata();
-    }
-
-    /**
-     * @param Metadata $metadata
-     * @return $this|AbstractMessage
-     */
-    public function withMetadata(Metadata $metadata)
-    {
-        if ($metadata === $this->metadata) {
-            return $this;
+        foreach ($data as $key => $value) {
+            $this->assertPropertyExists($key);
+            $this->$key = $value;
         }
-
-        $message = clone $this;
-        $message->metadata = $metadata;
-        return $message;
     }
 
     /**
-     * @return Uuid
+     * Direct read access for protected properties
+     *
+     * @param string $name
+     * @return mixed
      */
-    public function getId()
+    public function __get($name)
     {
-        return $this->id;
+        $this->assertPropertyExists($name);
+        return $this->$name;
     }
 
     /**
-     * @return Metadata
+     * @param string $name
+     * @throws RuntimeException
      */
-    public function getMetadata()
+    protected function throwPropertyIsNotValidException($name)
     {
-        return $this->metadata;
+        throw new RuntimeException(sprintf(
+            'Property "%s" is not a valid property on message "%s"',
+            $name,
+            get_class($this)
+        ));
     }
 
     /**
-     * @return array
+     * @param string $name
+     * @throws RuntimeException
      */
-    public function getPayload()
+    private function assertPropertyExists($name)
     {
-        return $this->extractProperties();
+        if (!property_exists($this, $name)) {
+            $this->throwPropertyIsNotValidException($name);
+        }
     }
 }

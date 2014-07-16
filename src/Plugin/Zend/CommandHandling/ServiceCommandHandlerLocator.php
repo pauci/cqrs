@@ -4,7 +4,6 @@ namespace CQRS\Plugin\Zend\CommandHandling;
 
 use CQRS\CommandHandling\CommandInterface;
 use CQRS\CommandHandling\Locator\CommandHandlerLocatorInterface;
-use CQRS\CommandHandling\CommandType;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
 
@@ -23,9 +22,7 @@ class ServiceCommandHandlerLocator implements
      */
     public function getCommandHandler(CommandInterface $command)
     {
-        $commandType = new CommandType($command);
-
-        $serviceName = $this->getServiceName($commandType);
+        $serviceName = $this->getServiceName(get_class($command));
 
         return $this->serviceLocator->get($serviceName);
     }

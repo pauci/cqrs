@@ -2,19 +2,19 @@
 
 namespace CQRS\EventHandling;
 
-use CQRS\Domain\Message\AbstractEventMessage;
-use CQRS\Domain\Message\EventMessageInterface;
+use CQRS\Domain\Message\AbstractEvent;
+use CQRS\Domain\Message\EventInterface;
 use Exception;
 
 /**
  * @property-read Exception $exception
- * @property-read EventMessageInterface $event
+ * @property-read EventInterface $event
  */
-class EventExecutionFailed extends AbstractEventMessage
+class EventExecutionFailed extends AbstractEvent
 {
     /** @var Exception */
     protected $exception;
 
-    /** @var EventMessageInterface */
+    /** @var EventInterface */
     protected $event;
 }

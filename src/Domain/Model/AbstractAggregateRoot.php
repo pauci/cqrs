@@ -2,12 +2,13 @@
 
 namespace CQRS\Domain\Model;
 
-use CQRS\Domain\Message\DomainEventMessageInterface;
+use CQRS\Domain\Message\AbstractDomainEvent;
+use CQRS\Domain\Message\DomainEventInterface;
 use Rhumsaa\Uuid\Uuid;
 
 abstract class AbstractAggregateRoot implements AggregateRootInterface
 {
-    /** @var DomainEventMessageInterface[] */
+    /** @var DomainEventInterface[] */
     private $events = [];
 
     /** @var bool */
@@ -19,7 +20,7 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
     abstract public function getId();
 
     /**
-     * @return DomainEventMessageInterface[]
+     * @return DomainEventInterface[]
      */
     public function pullDomainEvents()
     {
@@ -37,11 +38,15 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
     }
 
     /**
-     * @param DomainEventMessageInterface $event
+     * @param DomainEventInterface $event
      */
-    protected function raiseDomainEvent(DomainEventMessageInterface $event)
+    protected function raiseDomainEvent(DomainEventInterface $event)
     {
-        $this->events[] = $event->setAggregate($this);
+        if ($event instanceof AbstractDomainEvent) {
+            $event = $event->setAggregate($this);
+        }
+
+        $this->events[] = $event;
     }
 
     protected function markAsDeleted()

@@ -3,9 +3,8 @@
 namespace CQRS\Domain\Message;
 
 use CQRS\Domain\Model\AggregateRootInterface;
-use Rhumsaa\Uuid\Uuid;
 
-abstract class AbstractDomainEventMessage extends AbstractEventMessage implements DomainEventMessageInterface
+abstract class AbstractDomainEvent extends AbstractEvent implements DomainEventInterface
 {
     /** @var AggregateRootInterface */
     private $aggregate;
@@ -13,8 +12,21 @@ abstract class AbstractDomainEventMessage extends AbstractEventMessage implement
     /** @var string */
     private $aggregateType;
 
-    /** @var Uuid|int */
+    /** @var mixed */
     private $aggregateId;
+
+    /**
+     * @param array $data
+     * @param AggregateRootInterface $aggregate
+     */
+    public function __construct(array $data = [], AggregateRootInterface $aggregate = null)
+    {
+        parent::__construct($data);
+
+        if ($aggregate !== null) {
+            $this->setAggregate($aggregate);
+        }
+    }
 
     /**
      * @param AggregateRootInterface $aggregate
@@ -37,7 +49,7 @@ abstract class AbstractDomainEventMessage extends AbstractEventMessage implement
     }
 
     /**
-     * @return Uuid|int
+     * @return mixed
      */
     public function getAggregateId()
     {

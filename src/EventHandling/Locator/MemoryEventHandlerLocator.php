@@ -2,7 +2,6 @@
 
 namespace CQRS\EventHandling\Locator;
 
-use CQRS\EventHandling\EventName;
 use CQRS\Exception\RuntimeException;
 
 /**
@@ -20,10 +19,10 @@ class MemoryEventHandlerLocator implements EventHandlerLocatorInterface
     private $handlers = [];
 
     /**
-     * @param EventName $eventName
+     * @param string $eventName
      * @return Callable[]
      */
-    public function getEventHandlers(EventName $eventName)
+    public function getEventHandlers($eventName)
     {
         $eventName = strtolower($eventName);
 
