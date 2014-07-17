@@ -746,12 +746,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/doctrine2.git",
-                "reference": "c019047d6c85cb39dcb8425b71f35324519cb69e"
+                "reference": "205a5de4e528bb2682d934c258abc96e99317175"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/c019047d6c85cb39dcb8425b71f35324519cb69e",
-                "reference": "c019047d6c85cb39dcb8425b71f35324519cb69e",
+                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/205a5de4e528bb2682d934c258abc96e99317175",
+                "reference": "205a5de4e528bb2682d934c258abc96e99317175",
                 "shasum": ""
             },
             "require": {
@@ -815,7 +815,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2014-07-15 15:06:53"
+            "time": "2014-07-17 09:56:40"
         },
         {
             "name": "phpunit/php-code-coverage",

@@ -2,6 +2,8 @@
 
 namespace CQRS\Serializer;
 
+use CQRS\Domain\Message\AbstractDomainEvent;
+use CQRS\Domain\Message\AbstractEvent;
 use CQRS\Domain\Message\DomainEventInterface;
 use CQRS\Domain\Message\EventInterface;
 use DateTime;
@@ -38,7 +40,7 @@ class ReflectionSerializer implements SerializerInterface
      */
     public function deserialize($eventClass, $data, $format)
     {
-        return $this->fromPhpClassArray(json_decode($data));
+        return $this->fromArray(json_decode($data, true));
     }
 
 
@@ -114,51 +116,83 @@ class ReflectionSerializer implements SerializerInterface
 
     /**
      * @param array $data
-     * @return object
+     * @return array|object
      */
-    private function fromPhpClassArray(array $data)
+    private function fromArray(array $data)
     {
-        switch ($data['php_class']) {
-            case 'DateTime':
-                return DateTime::createFromFormat('Y-m-d H:i:s.u', $data['time'], new DateTimeZone($data['timezone']));
-
-            case 'DateTimeImmutable':
-                return DateTimeImmutable::createFromFormat('Y-m-d H:i:s.u', $data['time'], new DateTimeZone($data['timezone']));
-
-            case 'Rhumsaa\Uuid\Uuid':
-                return Uuid::fromString($data['uuid']);
+        foreach ($data as &$value) {
+            if (is_array($value)) {
+                $value = $this->fromArray($value);
+            }
         }
 
-        return $this->hydrateObjectFromValues($data);
+        if (isset($data['php_class'])) {
+            return $this->toObject($data['php_class'], $data);
+        }
+
+        return $data;
     }
 
     /**
+     * @param string $className
      * @param array $data
      * @return object
      */
-    private function hydrateObjectFromValues(array $data)
+    private function toObject($className, array $data)
     {
-        $reflectionClass = $this->getReflectionClass($data['php_class']);
+        switch ($className) {
+            case DateTime::class:
+                return DateTime::createFromFormat('Y-m-d H:i:s.u', $data['time'], new DateTimeZone($data['timezone']));
 
+            case DateTimeImmutable::class:
+                return DateTimeImmutable::createFromFormat('Y-m-d H:i:s.u', $data['time'], new DateTimeZone($data['timezone']));
+
+            case Uuid::class:
+                return Uuid::fromString($data['uuid']);
+        }
+
+        $reflectionClass = $this->getReflectionClass($className);
         $object = $reflectionClass->newInstanceWithoutConstructor();
 
-        foreach ($reflectionClass->getProperties() as $property) {
+        if (is_subclass_of($className, AbstractEvent::class)) {
+            if (isset($data['event_name'])) {
+                $data['eventName'] = $data['event_name'];
+            }
+            $this->hydrateObjectFromValues($object, $data, AbstractEvent::class);
+
+            if (is_subclass_of($className, AbstractDomainEvent::class)) {
+                if (isset($data['aggregate_id'])) {
+                    $data['aggregateId'] = $data['aggregate_id'];
+                }
+                if (isset($data['aggregate_type'])) {
+                    $data['aggregateType'] = $data['aggregate_type'];
+                }
+                $this->hydrateObjectFromValues($object, $data, AbstractDomainEvent::class);
+            }
+
+            $data = $data['payload'];
+        }
+
+        $this->hydrateObjectFromValues($object, $data, $className);
+        return $object;
+    }
+
+    /**
+     * @param object $object
+     * @param array $data
+     * @param string $className
+     */
+    private function hydrateObjectFromValues($object, array $data, $className)
+    {
+        foreach ($this->getReflectionProperties($className) as $property) {
             $name = $property->getName();
             if (!isset($data[$name])) {
                 continue;
             }
 
-            $value = $data[$name];
-
-            if (isset($value['php_class'])) {
-                $value = $this->fromPhpClassArray($value);
-            }
-
             $property->setAccessible(true);
-            $property->setValue($object, $value);
+            $property->setValue($object, $data[$name]);
         }
-
-        return $object;
     }
 
     /**
@@ -181,7 +215,7 @@ class ReflectionSerializer implements SerializerInterface
     private function getReflectionProperties($className)
     {
         if (!isset($this->reflectionProperties[$className])) {
-            $reflectionClass = new ReflectionClass($className);
+            $reflectionClass = $this->getReflectionClass($className);
             $this->reflectionProperties[$className] = $reflectionClass->getProperties();
             foreach ($this->reflectionProperties[$className] as $reflectionProperty) {
                 $reflectionProperty->setAccessible(true);

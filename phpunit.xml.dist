@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <phpunit
-    bootstrap="./tests/Bootstrap.php"
+    bootstrap="./tests/bootstrap.php"
     colors="true"
     convertErrorsToExceptions="true"
     convertNoticesToExceptions="true"
@@ -11,8 +11,8 @@
     backupGlobals="false"
     syntaxCheck="true"
 >
-    <testsuite name="CQRS tests">
-        <directory>./tests</directory>
+    <testsuite name="CQRS Test Suite">
+        <directory>./tests/CQRSTest</directory>
     </testsuite>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">

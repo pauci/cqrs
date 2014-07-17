@@ -10,10 +10,8 @@ use Zend\Mvc\Service\ServiceManagerConfig;
  */
 class ServiceManagerFactory
 {
-    /**
-     * @var array
-     */
-    protected static $config;
+    /** @var array */
+    protected static $config = [];
 
     /**
      * @param array $config
@@ -26,7 +24,7 @@ class ServiceManagerFactory
     /**
      * Builds a new service manager
      *
-     * @return \Zend\ServiceManager\ServiceManager
+     * @return ServiceManager
      */
     public static function getServiceManager()
     {
@@ -38,10 +36,10 @@ class ServiceManagerFactory
         $serviceManager->setService('ApplicationConfig', static::$config);
         $serviceManager->setFactory('ServiceListener', 'Zend\Mvc\Service\ServiceListenerFactory');
 
-        /** @var $moduleManager \Zend\ModuleManager\ModuleManager */
+        /** @var \Zend\ModuleManager\ModuleManager $moduleManager */
         $moduleManager = $serviceManager->get('ModuleManager');
         $moduleManager->loadModules();
-        //$serviceManager->setAllowOverride(true);
+
         return $serviceManager;
     }
 }

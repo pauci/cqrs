@@ -1,4 +1,6 @@
 <?php
+use CQRS\Plugin\Zend\Controller\NotificationsController;
+
 return [
     'cqrs' => [
         'commandBus' => [
@@ -154,5 +156,39 @@ return [
             ]
         ]
         */
-    ]
+    ],
+
+    'controllers' => [
+        'invokables' => [
+            'CQRS\Controller\Notifications' => NotificationsController::class
+        ]
+    ],
+
+    'router' => [
+        'routes' => [
+            'cqrs' => [
+                'type' => 'literal',
+                'options' => [
+                    'route' => '/cqrs',
+                ],
+                'child_routes' => [
+                    'notifications' => [
+                        'type' => 'segment',
+                        'options' => [
+                            'route' => '/notifications',
+                            'defaults' => [
+                                'controller' => 'CQRS\Controller\Notifications'
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ],
+
+    'view_manager' => [
+        'strategies' => [
+            'ViewJsonStrategy'
+        ]
+    ],
 ];

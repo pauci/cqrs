@@ -52,4 +52,44 @@ class TableEventStore implements EventStoreInterface
             'data'           => $this->serializer->serialize($event, 'json')
         ]);
     }
+
+    /**.
+     * @param int $pageSize
+     * @param int|null $firstId
+     * @return array
+     */
+    public function readPage($pageSize = 10, $firstId = null)
+    {
+        if ($firstId === null) {
+            $firstId = (((int) (($this->getLastId() - 1) / $pageSize)) * $pageSize) + 1;
+        }
+
+        $sql = 'SELECT * FROM ' . $this->table
+            . ' WHERE id >= ?'
+            . ' ORDER BY id ASC'
+            . ' LIMIT ?';
+
+        $events = [];
+
+        $stmt = $this->connection->executeQuery($sql, [$firstId, $pageSize]);
+
+        foreach ($stmt as $row) {
+            $events[$row['id']] = $this->serializer->deserialize('', $row['data'], 'json');
+        }
+
+        return $events;
+    }
+
+    /**
+     * @return int
+     */
+    private function getLastId()
+    {
+        $sql = 'SELECT MAX(id) FROM ' . $this->table;
+
+        $maxId = $this->connection->executeQuery($sql)
+            ->fetchColumn();
+
+        return $maxId ?: 1;
+    }
 }
