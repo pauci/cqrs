@@ -5,9 +5,10 @@ namespace CQRSTest\Domain\Message;
 use CQRS\Domain\Message\AbstractEvent;
 use CQRS\Exception\RuntimeException;
 use DateTimeImmutable;
+use PHPUnit_Framework_TestCase;
 use Rhumsaa\Uuid\Uuid;
 
-class AbstractEventTest extends \PHPUnit_Framework_TestCase
+class AbstractEventTest extends PHPUnit_Framework_TestCase
 {
     public function testGetUuid()
     {

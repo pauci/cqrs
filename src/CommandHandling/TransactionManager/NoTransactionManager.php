@@ -5,7 +5,7 @@ namespace CQRS\CommandHandling\TransactionManager;
 /**
  * @codeCoverageIgnore
  */
-class NoTransactionManagerInterface implements TransactionManagerInterface
+class NoTransactionManager implements TransactionManagerInterface
 {
     public function begin()
     {}

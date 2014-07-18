@@ -5,9 +5,10 @@ namespace CQRSTest\Serializer;
 use CQRS\Domain\Message\AbstractDomainEvent;
 use CQRS\Domain\Model\AbstractAggregateRoot;
 use CQRS\Serializer\ReflectionSerializer;
+use PHPUnit_Framework_TestCase;
 use Rhumsaa\Uuid\Uuid;
 
-class ReflectionSerializerTest extends \PHPUnit_Framework_TestCase
+class ReflectionSerializerTest extends PHPUnit_Framework_TestCase
 {
     public function testSerialize()
     {

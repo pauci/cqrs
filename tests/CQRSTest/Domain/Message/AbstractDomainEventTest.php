@@ -1,10 +1,12 @@
 <?php
+
 namespace CQRSTest\Domain\Message;
 
 use CQRS\Domain\Message\AbstractDomainEvent;
 use CQRS\Domain\Model\AggregateRootInterface;
+use PHPUnit_Framework_TestCase;
 
-class AbstractDomainEventTest extends \PHPUnit_Framework_TestCase
+class AbstractDomainEventTest extends PHPUnit_Framework_TestCase
 {
     public function testItSetsAggregatePassedViaConstructor()
     {

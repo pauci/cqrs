@@ -1,19 +1,21 @@
 <?php
 
-namespace CQRSTest\CommandHandling;
+namespace CQRSTest\CommandHandling\Locator;
 
 use CQRS\CommandHandling\CommandInterface;
 use CQRS\CommandHandling\Locator\MemoryCommandHandlerLocator;
+use CQRS\Exception\RuntimeException;
+use PHPUnit_Framework_TestCase;
 use stdClass;
 
-class MemoryCommandHandlerLocatorTest extends \PHPUnit_Framework_TestCase
+class MemoryCommandHandlerLocatorTest extends PHPUnit_Framework_TestCase
 {
     public function testRegisterAndGetCommandHandler()
     {
         $handler = new stdClass();
 
         $locator = new MemoryCommandHandlerLocator();
-        $locator->register('CQRSTest\CommandHandling\HandleCommand', $handler);
+        $locator->register(HandleCommand::class, $handler);
 
         $this->assertSame($handler, $locator->getCommandHandler(new HandleCommand()));
     }
@@ -21,7 +23,7 @@ class MemoryCommandHandlerLocatorTest extends \PHPUnit_Framework_TestCase
     public function testItThrowsExceptionWhenRegisteredServiceIsNoObject()
     {
         $this->setExpectedException(
-            'CQRS\Exception\RuntimeException',
+            RuntimeException::class,
             'No valid service given for command type "foo"; expected object, got string'
         );
 
@@ -32,8 +34,8 @@ class MemoryCommandHandlerLocatorTest extends \PHPUnit_Framework_TestCase
     public function testItThrowsExceptionWhenNoHandlerIsRegisteredForCommand()
     {
         $this->setExpectedException(
-            'CQRS\Exception\RuntimeException',
-            'No service registered for command type "CQRSTest\CommandHandling\NoHandlerCommand"'
+            RuntimeException::class,
+            'No service registered for command type "CQRSTest\CommandHandling\Locator\NoHandlerCommand"'
         );
 
         $locator = new MemoryCommandHandlerLocator();

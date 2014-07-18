@@ -7,8 +7,9 @@ use CQRS\CommandHandling\Locator\CommandHandlerLocatorInterface;
 use CQRS\CommandHandling\SequentialCommandBus;
 use CQRS\CommandHandling\TransactionManager\TransactionManagerInterface;
 use CQRS\EventHandling\Publisher\EventPublisherInterface;
+use PHPUnit_Framework_TestCase;
 
-class SequentialCommandBusTest extends \PHPUnit_Framework_TestCase
+class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
 {
     /** @var SequentialCommandBus */
     protected $commandBus;

@@ -3,8 +3,9 @@ namespace CQRSTest\Domain\Message;
 
 use CQRS\Domain\Message\AbstractMessage;
 use CQRS\Exception\RuntimeException;
+use PHPUnit_Framework_TestCase;
 
-class AbstractMessageTest extends \PHPUnit_Framework_TestCase
+class AbstractMessageTest extends PHPUnit_Framework_TestCase
 {
     public function testCreateArrayMapsToProperties()
     {

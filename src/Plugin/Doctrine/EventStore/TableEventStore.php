@@ -10,25 +10,30 @@ use Rhumsaa\Uuid\Uuid;
 
 class TableEventStore implements EventStoreInterface
 {
+    /** @var SerializerInterface */
+    private $serializer;
+
     /** @var Connection */
     private $connection;
 
     /** @var string */
     private $table;
 
-    /** @var SerializerInterface */
-    private $serializer;
-
     /**
-     * @param Connection $connection
      * @param SerializerInterface $serializer
      * @param string $table
+     * @param Connection $connection
      */
-    public function __construct(Connection $connection, SerializerInterface $serializer, $table = 'cqrs_domain_event')
+    public function __construct(SerializerInterface $serializer, $table = 'cqrs_domain_event', Connection $connection)
     {
-        $this->connection = $connection;
         $this->serializer = $serializer;
         $this->table      = $table;
+        $this->connection = $connection;
+    }
+
+    public function setConnection(Connection $connection)
+    {
+        $this->connection = $connection;
     }
 
     /**
@@ -74,7 +79,8 @@ class TableEventStore implements EventStoreInterface
         $stmt = $this->connection->executeQuery($sql, [$firstId, $pageSize]);
 
         foreach ($stmt as $row) {
-            $events[$row['id']] = $this->serializer->deserialize('', $row['data'], 'json');
+            $events[$row['id']] = $row['data'];
+            //$events[$row['id']] = $this->serializer->deserialize('', $row['data'], 'json');
         }
 
         return $events;

@@ -1,8 +1,7 @@
 <?php
 
-use CQRSTest\Util\ServiceManagerFactory;
-
 ini_set('error_reporting', E_ALL | E_STRICT);
+
 
 if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     $loader = require __DIR__ . '/../vendor/autoload.php';
@@ -14,12 +13,4 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 
 /** @var \Composer\Autoload\ClassLoader $loader */
 $loader->add('CQRSTest', __DIR__);
-
-if (file_exists(__DIR__ . '/configuration.php')) {
-    $config = require __DIR__ . '/configuration.php';
-} else {
-    $config = require __DIR__ . '/configuration.php.dist';
-}
-
-ServiceManagerFactory::setConfig($config);
-unset($files, $file, $loader, $config);
+unset($loader);

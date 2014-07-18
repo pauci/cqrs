@@ -3,8 +3,9 @@
 namespace CQRSTest\Domain\Message;
 
 use CQRS\Domain\Message\GenericDomainEvent;
+use PHPUnit_Framework_TestCase;
 
-class GenericDomainEventTest extends \PHPUnit_Framework_TestCase
+class GenericDomainEventTest extends PHPUnit_Framework_TestCase
 {
     public function testThrowsExceptionOnNonExistent()
     {

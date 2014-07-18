@@ -3,44 +3,51 @@
 namespace CQRSTest\Plugin\Doctrine\CommandHandling;
 
 use CQRS\Plugin\Doctrine\CommandHandling\ImplicitOrmTransactionManager;
-use CQRSTest\Plugin\Doctrine\Mock\EntityManagerMock;
+use PHPUnit_Framework_TestCase;
 
-class ImplicitOrmTransactionManagerTest extends \PHPUnit_Framework_TestCase
+class ImplicitOrmTransactionManagerTest extends PHPUnit_Framework_TestCase
 {
-    /** @var ImplicitOrmTransactionManager */
-    protected $transactionManager;
-    /** @var EntityManagerMock */
-    protected $entityManager;
-
-    public function setUp()
-    {
-        $this->entityManager = new EntityManagerMock();
-
-        $this->transactionManager = new ImplicitOrmTransactionManager();
-        $this->transactionManager->setEntityManager($this->entityManager);
-    }
-
     public function testBeginTransaction()
     {
-        $this->transactionManager->begin();
+        $entityManager = $this->getMock('Doctrine\ORM\EntityManagerInterface');
+        $entityManager->expects($this->never())
+            ->method('begin');
 
-        $this->assertFalse($this->entityManager->begin);
+        /** @var \Doctrine\ORM\EntityManagerInterface $entityManager */
+        $transactionManager = new ImplicitOrmTransactionManager();
+        $transactionManager->setEntityManager($entityManager);
+
+        $transactionManager->begin();
     }
 
     public function testCommitTransaction()
     {
-        $this->transactionManager->commit();
+        $entityManager = $this->getMock('Doctrine\ORM\EntityManagerInterface');
+        $entityManager->expects($this->once())
+            ->method('flush');
+        $entityManager->expects($this->never())
+            ->method('commit');
 
-        $this->assertTrue($this->entityManager->flush);
-        $this->assertFalse($this->entityManager->commit);
+        /** @var \Doctrine\ORM\EntityManagerInterface $entityManager */
+        $transactionManager = new ImplicitOrmTransactionManager();
+        $transactionManager->setEntityManager($entityManager);
+
+        $transactionManager->commit();
     }
 
     public function testRollbackTransaction()
     {
-        $this->transactionManager->rollback();
+        $entityManager = $this->getMock('Doctrine\ORM\EntityManagerInterface');
+        $entityManager->expects($this->never())
+            ->method('rollback');
+        $entityManager->expects($this->never())
+            ->method('close');
 
-        $this->assertFalse($this->entityManager->rollback);
-        $this->assertFalse($this->entityManager->close);
+        /** @var \Doctrine\ORM\EntityManagerInterface $entityManager */
+        $transactionManager = new ImplicitOrmTransactionManager();
+        $transactionManager->setEntityManager($entityManager);
+
+        $transactionManager->rollback();
     }
 }
 

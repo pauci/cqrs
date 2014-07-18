@@ -5,14 +5,12 @@
     "license": "proprietary",
     "require": {
         "php": ">=5.5",
-        "rhumsaa/uuid": "~2.7"
+        "rhumsaa/uuid": "@stable"
     },
     "require-dev": {
-        "zendframework/zendframework": "2.*",
-        "doctrine/doctrine-orm-module": "0.*",
+        "doctrine/orm": ">=2.4",
         "phpunit/phpunit": "3.7.*"
     },
-    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "CQRS\\": "src/"

@@ -7,8 +7,9 @@ use CQRS\EventHandling\EventExecutionFailed;
 use CQRS\EventHandling\Locator\EventHandlerLocatorInterface;
 use CQRS\EventHandling\SynchronousEventBus;
 use Exception;
+use PHPUnit_Framework_TestCase;
 
-class SynchronousEventBusTest extends \PHPUnit_Framework_TestCase
+class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
 {
     /** @var SynchronousEventBus */
     protected $eventBus;

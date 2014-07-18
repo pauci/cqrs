@@ -5,8 +5,9 @@ namespace CQRSTest\Domain\Model;
 use CQRS\Domain\Message\AbstractDomainEvent;
 use CQRS\Domain\Model\AbstractAggregateRoot;
 use CQRS\Domain\Model\AggregateRootInterface;
+use PHPUnit_Framework_TestCase;
 
-class AbstractAggregateRootTest extends \PHPUnit_Framework_TestCase
+class AbstractAggregateRootTest extends PHPUnit_Framework_TestCase
 {
     public function testRaiseAndPullDomainEvents()
     {

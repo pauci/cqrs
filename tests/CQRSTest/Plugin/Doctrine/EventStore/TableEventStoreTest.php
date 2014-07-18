@@ -7,16 +7,12 @@ use CQRS\Domain\Model\AbstractAggregateRoot;
 use CQRS\Plugin\Doctrine\EventStore\TableEventStore;
 use CQRS\Plugin\Doctrine\EventStore\TableEventStoreSchema;
 use Doctrine\DBAL\DriverManager;
+use PHPUnit_Framework_TestCase;
 
-class TableEventStoreTest extends \PHPUnit_Framework_TestCase
+class TableEventStoreTest extends PHPUnit_Framework_TestCase
 {
     public function testStoreEvent()
     {
-        $conn = DriverManager::getConnection([
-            'driver' => 'pdo_sqlite',
-            'memory' => true
-        ]);
-
         $serializer = $this->getMock('CQRS\Serializer\SerializerInterface');
         $serializer->expects($this->once())
             ->method('serialize')
@@ -24,9 +20,14 @@ class TableEventStoreTest extends \PHPUnit_Framework_TestCase
 
         $schema = new TableEventStoreSchema();
         $tableSchema = $schema->getTableSchema();
+
+        $conn = DriverManager::getConnection([
+            'driver' => 'pdo_sqlite',
+            'memory' => true
+        ]);
         $conn->getSchemaManager()->createTable($tableSchema);
 
-        $eventStore = new TableEventStore($conn, $serializer, $tableSchema->getName());
+        $eventStore = new TableEventStore($serializer, $tableSchema->getName(), $conn);
 
         $event = new GenericDomainEvent('Test');
 
@@ -43,11 +44,6 @@ class TableEventStoreTest extends \PHPUnit_Framework_TestCase
 
     public function testStoreEventWithAggregateIdContainingMultipleKeys()
     {
-        $conn = DriverManager::getConnection([
-            'driver' => 'pdo_sqlite',
-            'memory' => true
-        ]);
-
         $serializer = $this->getMock('CQRS\Serializer\SerializerInterface');
         $serializer->expects($this->once())
             ->method('serialize')
@@ -55,9 +51,14 @@ class TableEventStoreTest extends \PHPUnit_Framework_TestCase
 
         $schema = new TableEventStoreSchema();
         $tableSchema = $schema->getTableSchema();
+
+        $conn = DriverManager::getConnection([
+            'driver' => 'pdo_sqlite',
+            'memory' => true
+        ]);
         $conn->getSchemaManager()->createTable($tableSchema);
 
-        $eventStore = new TableEventStore($conn, $serializer, $tableSchema->getName());
+        $eventStore = new TableEventStore($serializer, $tableSchema->getName(), $conn);
 
         $aggregate = $this->getMock(AbstractAggregateRoot::class);
         $aggregate->expects($this->once())
@@ -75,11 +76,6 @@ class TableEventStoreTest extends \PHPUnit_Framework_TestCase
 
     public function testReadEvents()
     {
-        $conn = DriverManager::getConnection([
-            'driver' => 'pdo_sqlite',
-            'memory' => true
-        ]);
-
         $serializer = $this->getMock('CQRS\Serializer\SerializerInterface');
         $serializer->expects($this->any())
             ->method('serialize')
@@ -90,9 +86,14 @@ class TableEventStoreTest extends \PHPUnit_Framework_TestCase
 
         $schema = new TableEventStoreSchema();
         $tableSchema = $schema->getTableSchema();
+
+        $conn = DriverManager::getConnection([
+            'driver' => 'pdo_sqlite',
+            'memory' => true
+        ]);
         $conn->getSchemaManager()->createTable($tableSchema);
 
-        $eventStore = new TableEventStore($conn, $serializer, $tableSchema->getName());
+        $eventStore = new TableEventStore($serializer, $tableSchema->getName(), $conn);
 
         for ($i = 1; $i <= 13; $i++) {
             $event = new GenericDomainEvent('Test');
@@ -103,9 +104,9 @@ class TableEventStoreTest extends \PHPUnit_Framework_TestCase
 
         $this->assertCount(3, $events);
         $this->assertEquals([
-            11 => 'event',
-            12 => 'event',
-            13 => 'event',
+            11 => '{}',
+            12 => '{}',
+            13 => '{}',
         ], $events);
     }
 }

@@ -3,8 +3,9 @@
 namespace CQRSTest\EventHandling;
 
 use CQRS\EventHandling\Locator\MemoryEventHandlerLocator;
+use PHPUnit_Framework_TestCase;
 
-class MemoryEventHandlerLocatorTest extends \PHPUnit_Framework_TestCase
+class MemoryEventHandlerLocatorTest extends PHPUnit_Framework_TestCase
 {
     public function testItReturnsRegisteredCallbacksSortedByPriority()
     {
