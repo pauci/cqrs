@@ -59,14 +59,14 @@ class TableEventStore implements EventStoreInterface
     }
 
     /**.
-     * @param int $pageSize
-     * @param int|null $firstId
+     * @param int|null $offset
+     * @param int $limit
      * @return array
      */
-    public function readPage($pageSize = 10, $firstId = null)
+    public function read($offset = null, $limit = 10)
     {
-        if ($firstId === null) {
-            $firstId = (((int) (($this->getLastId() - 1) / $pageSize)) * $pageSize) + 1;
+        if ($offset === null) {
+            $offset = (((int) (($this->getLastId() - 1) / $limit)) * $limit) + 1;
         }
 
         $sql = 'SELECT * FROM ' . $this->table
@@ -76,7 +76,7 @@ class TableEventStore implements EventStoreInterface
 
         $events = [];
 
-        $stmt = $this->connection->executeQuery($sql, [$firstId, $pageSize]);
+        $stmt = $this->connection->executeQuery($sql, [$offset, $limit]);
 
         foreach ($stmt as $row) {
             $events[$row['id']] = $row['data'];

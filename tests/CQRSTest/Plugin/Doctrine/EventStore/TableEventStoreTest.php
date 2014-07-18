@@ -94,13 +94,15 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
         $conn->getSchemaManager()->createTable($tableSchema);
 
         $eventStore = new TableEventStore($serializer, $tableSchema->getName(), $conn);
+        $r = new \ReflectionClass($eventStore);
+        echo $r->getFileName();
 
         for ($i = 1; $i <= 13; $i++) {
             $event = new GenericDomainEvent('Test');
             $eventStore->store($event);
         }
 
-        $events = $eventStore->readPage(5);
+        $events = $eventStore->read(11, 5);
 
         $this->assertCount(3, $events);
         $this->assertEquals([
