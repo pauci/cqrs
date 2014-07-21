@@ -6,6 +6,7 @@ use CQRS\Domain\Model\AggregateRootInterface;
 use CQRS\EventHandling\EventBusInterface;
 use CQRS\EventHandling\Publisher\EventPublisherInterface;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\LifecycleEventArgs;
@@ -15,22 +16,40 @@ class OrmDomainEventPublisher implements
     EventPublisherInterface,
     EventSubscriber
 {
-    /** @var AggregateRootInterface[] */
-    private $aggregateRoots = [];
-
     /** @var EventBusInterface */
     private $eventBus;
 
+    /** @var EntityManagerInterface */
+    private $entityManager;
+
+    /** @var AggregateRootInterface[] */
+    private $aggregateRoots = [];
+
+    /** @var bool */
+    private $isPublishing = false;
+
     /**
      * @param EventBusInterface $eventBus
+     * @param EntityManagerInterface $entityManager
      */
-    public function __construct(EventBusInterface $eventBus)
+    public function __construct(EventBusInterface $eventBus, EntityManagerInterface $entityManager)
     {
-        $this->eventBus = $eventBus;
+        $this->eventBus      = $eventBus;
+        $this->entityManager = $entityManager;
+
+        /** @var \Doctrine\Common\EventManager $eventManager */
+        $eventManager = $entityManager->getEventManager();
+        $eventManager->addEventSubscriber($this);
     }
 
     public function publishEvents()
     {
+        $this->isPublishing = true;
+
+        // Events will be published within postFlush doctrine event
+        $this->entityManager->flush();
+
+        $this->isPublishing = false;
     }
 
     /**
@@ -97,6 +116,11 @@ class OrmDomainEventPublisher implements
      */
     public function postFlush(PostFlushEventArgs $event)
     {
+        // Publish only if flush was called within publishEvents() method
+        if (!$this->isPublishing) {
+            return;
+        }
+
         foreach ($this->aggregateRoots as $aggregateRoot) {
             foreach ($aggregateRoot->pullDomainEvents() as $domainEvent) {
                 $this->eventBus->publish($domainEvent);
