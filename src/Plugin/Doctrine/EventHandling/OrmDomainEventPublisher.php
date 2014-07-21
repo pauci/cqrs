@@ -7,7 +7,6 @@ use CQRS\EventHandling\EventBusInterface;
 use CQRS\EventHandling\Publisher\EventPublisherInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
@@ -37,6 +36,7 @@ class OrmDomainEventPublisher implements
         $this->eventBus      = $eventBus;
         $this->entityManager = $entityManager;
 
+        // Subscribe itself with doctrine event manager
         /** @var \Doctrine\Common\EventManager $eventManager */
         $eventManager = $entityManager->getEventManager();
         $eventManager->addEventSubscriber($this);
@@ -58,33 +58,11 @@ class OrmDomainEventPublisher implements
     public function getSubscribedEvents()
     {
         return [
-            Events::preFlush,
             Events::postPersist,
             Events::postUpdate,
             Events::postRemove,
-            Events::postFlush
+            Events::postFlush,
         ];
-    }
-
-    /**
-     * Remove entities marked as deleted
-     *
-     * @param PreFlushEventArgs $event
-     */
-    public function preFlush(PreFlushEventArgs $event)
-    {
-        $entityManager = $event->getEntityManager();
-        $uow = $entityManager->getUnitOfWork();
-
-        foreach ($uow->getIdentityMap() as $class => $entities) {
-            foreach ($entities as $entity) {
-                if ($entity instanceof AggregateRootInterface) {
-                    if ($entity->isDeleted()) {
-                        $entityManager->remove($entity);
-                    }
-                }
-            }
-        }
     }
 
     /**
