@@ -44,7 +44,7 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
 
         $this->tableEventStore->store($event);
 
-        $data = $this->conn->fetchAll('SELECT * FROM cqrs_domain_event');
+        $data = $this->conn->fetchAll('SELECT * FROM cqrs_event');
 
         $this->assertEquals(1, count($data));
         $this->assertEquals($event->getId(), $data[0]['event_id']);
@@ -64,7 +64,7 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
 
         $this->tableEventStore->store($event);
 
-        $data = $this->conn->fetchAll('SELECT * FROM cqrs_domain_event');
+        $data = $this->conn->fetchAll('SELECT * FROM cqrs_event');
 
         $this->assertEquals('{"id":43,"name":"test name"}', $data[0]['aggregate_id']);
     }

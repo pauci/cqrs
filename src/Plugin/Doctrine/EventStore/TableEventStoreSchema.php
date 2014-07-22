@@ -13,7 +13,7 @@ class TableEventStoreSchema
     /**
      * @param string $table
      */
-    public function __construct($table = 'cqrs_domain_event')
+    public function __construct($table = 'cqrs_event')
     {
         $this->table = $table;
     }
