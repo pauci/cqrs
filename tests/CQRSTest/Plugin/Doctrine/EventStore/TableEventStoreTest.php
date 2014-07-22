@@ -6,34 +6,45 @@ use CQRS\Domain\Message\GenericDomainEvent;
 use CQRS\Domain\Model\AbstractAggregateRoot;
 use CQRS\Plugin\Doctrine\EventStore\TableEventStore;
 use CQRS\Plugin\Doctrine\EventStore\TableEventStoreSchema;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use PHPUnit_Framework_TestCase;
 
 class TableEventStoreTest extends PHPUnit_Framework_TestCase
 {
-    public function testStoreEvent()
+    /** @var Connection */
+    private $conn;
+
+    /** @var TableEventStore */
+    private $tableEventStore;
+
+    public function setUp()
     {
         $serializer = $this->getMock('CQRS\Serializer\SerializerInterface');
-        $serializer->expects($this->once())
+        $serializer->expects($this->any())
             ->method('serialize')
             ->will($this->returnValue('{}'));
+        /** @var \CQRS\Serializer\SerializerInterface $serializer */
 
         $schema = new TableEventStoreSchema();
         $tableSchema = $schema->getTableSchema();
 
-        $conn = DriverManager::getConnection([
+        $this->conn = DriverManager::getConnection([
             'driver' => 'pdo_sqlite',
             'memory' => true
         ]);
-        $conn->getSchemaManager()->createTable($tableSchema);
+        $this->conn->getSchemaManager()->createTable($tableSchema);
 
-        $eventStore = new TableEventStore($serializer, $tableSchema->getName(), $conn);
+        $this->tableEventStore = new TableEventStore($serializer, $this->conn, $tableSchema->getName());
+    }
 
+    public function testStoreEvent()
+    {
         $event = new GenericDomainEvent('Test');
 
-        $eventStore->store($event);
+        $this->tableEventStore->store($event);
 
-        $data = $conn->fetchAll('SELECT * FROM cqrs_domain_event');
+        $data = $this->conn->fetchAll('SELECT * FROM cqrs_domain_event');
 
         $this->assertEquals(1, count($data));
         $this->assertEquals($event->getId(), $data[0]['event_id']);
@@ -44,22 +55,6 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
 
     public function testStoreEventWithAggregateIdContainingMultipleKeys()
     {
-        $serializer = $this->getMock('CQRS\Serializer\SerializerInterface');
-        $serializer->expects($this->once())
-            ->method('serialize')
-            ->will($this->returnValue('{}'));
-
-        $schema = new TableEventStoreSchema();
-        $tableSchema = $schema->getTableSchema();
-
-        $conn = DriverManager::getConnection([
-            'driver' => 'pdo_sqlite',
-            'memory' => true
-        ]);
-        $conn->getSchemaManager()->createTable($tableSchema);
-
-        $eventStore = new TableEventStore($serializer, $tableSchema->getName(), $conn);
-
         $aggregate = $this->getMock(AbstractAggregateRoot::class);
         $aggregate->expects($this->once())
             ->method('getId')
@@ -67,42 +62,21 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
 
         $event = new GenericDomainEvent('Test', [], $aggregate);
 
-        $eventStore->store($event);
+        $this->tableEventStore->store($event);
 
-        $data = $conn->fetchAll('SELECT * FROM cqrs_domain_event');
+        $data = $this->conn->fetchAll('SELECT * FROM cqrs_domain_event');
 
         $this->assertEquals('{"id":43,"name":"test name"}', $data[0]['aggregate_id']);
     }
 
     public function testReadEvents()
     {
-        $serializer = $this->getMock('CQRS\Serializer\SerializerInterface');
-        $serializer->expects($this->any())
-            ->method('serialize')
-            ->will($this->returnValue('{}'));
-        $serializer->expects($this->any())
-            ->method('deserialize')
-            ->will($this->returnValue('event'));
-
-        $schema = new TableEventStoreSchema();
-        $tableSchema = $schema->getTableSchema();
-
-        $conn = DriverManager::getConnection([
-            'driver' => 'pdo_sqlite',
-            'memory' => true
-        ]);
-        $conn->getSchemaManager()->createTable($tableSchema);
-
-        $eventStore = new TableEventStore($serializer, $tableSchema->getName(), $conn);
-        $r = new \ReflectionClass($eventStore);
-        echo $r->getFileName();
-
         for ($i = 1; $i <= 13; $i++) {
             $event = new GenericDomainEvent('Test');
-            $eventStore->store($event);
+            $this->tableEventStore->store($event);
         }
 
-        $events = $eventStore->read(11, 5);
+        $events = $this->tableEventStore->read(11, 5);
 
         $this->assertCount(3, $events);
         $this->assertEquals([
