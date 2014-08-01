@@ -14,10 +14,10 @@ interface SerializerInterface
     public function serialize(EventInterface $event, $format);
 
     /**
-     * @param string $eventClass
      * @param string $data
+     * @param string $eventClass
      * @param string $format
      * @return EventInterface
      */
-    public function deserialize($eventClass, $data, $format);
+    public function deserialize($data, $eventClass, $format);
 }

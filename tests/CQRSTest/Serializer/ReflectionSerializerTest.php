@@ -38,7 +38,7 @@ class ReflectionSerializerTest extends PHPUnit_Framework_TestCase
 JSON;
 
         /** @var SomeEvent $event */
-        $event = $serializer->deserialize('', $data, 'json');
+        $event = $serializer->deserialize($data, '', 'json');
 
         $this->assertInstanceOf(SomeEvent::class, $event);
         $this->assertInstanceOf(Uuid::class, $event->getId());

@@ -33,12 +33,12 @@ class ReflectionSerializer implements SerializerInterface
     }
 
     /**
-     * @param string $eventClass
      * @param string $data
+     * @param string $eventClass
      * @param string $format
      * @return string
      */
-    public function deserialize($eventClass, $data, $format)
+    public function deserialize($data, $eventClass, $format)
     {
         return $this->fromArray(json_decode($data, true));
     }
