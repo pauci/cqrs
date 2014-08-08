@@ -82,6 +82,11 @@ class ReflectionSerializer implements SerializerInterface
 
             $data['event_name'] = $object->getEventName();
             $data['payload']    = $this->extractValuesFromObject($object);
+            foreach ($data['payload'] as &$value) {
+                if (is_object($value)) {
+                    $value = $this->toPhpClassArray($value);
+                }
+            }
             return $data;
         }
 
