@@ -25,13 +25,16 @@ class TableEventStoreSchema
     {
         $schema = new Schema();
         $table = $schema->createTable($this->table);
-        $table->addColumn('id', 'integer', ['autoincrement' => true]);
+        $table->addColumn('id', 'integer', ['autoincrement' => true, 'unsigned' => true]);
         $table->addColumn('event_id', 'string', ['notnull' => true]);
         $table->addColumn('event_date', 'datetime', ['notnull' => true]);
+        $table->addColumn('event_date_u', 'integer', ['notnull' => true, 'unsigned' => true]);
         $table->addColumn('aggregate_type', 'string', ['notnull' => false]);
         $table->addColumn('aggregate_id', 'string', ['notnull' => false]);
-        $table->addColumn('event_name', 'string', ['notnull' => true]);
-        $table->addColumn('data', 'text');
+        $table->addColumn('sequence_number', 'integer', ['notnull' => false, 'unsigned' => true]);
+        $table->addColumn('payload_type', 'string', ['notnull' => true]);
+        $table->addColumn('payload', 'text');
+        $table->addColumn('metadata', 'text');
         $table->setPrimaryKey(['id']);
         $table->addIndex(['aggregate_type', 'aggregate_id']);
         return $table;

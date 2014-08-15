@@ -2,9 +2,12 @@
 
 namespace CQRS\Plugin\Doctrine\EventStore;
 
-use CQRS\Domain\Message\DomainEventInterface;
+use CQRS\Domain\Message\DomainEventMessageInterface;
+use CQRS\Domain\Message\GenericDomainEventMessage;
+use CQRS\EventHandling\EventInterface;
 use CQRS\EventStore\EventStoreInterface;
 use CQRS\Serializer\SerializerInterface;
+use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Rhumsaa\Uuid\Uuid;
 
@@ -37,9 +40,9 @@ class TableEventStore implements EventStoreInterface
     }
 
     /**
-     * @param DomainEventInterface $event
+     * @param DomainEventMessageInterface $event
      */
-    public function store(DomainEventInterface $event)
+    public function store(DomainEventMessageInterface $event)
     {
         $aggregateId = $event->getAggregateId();
         if (is_array($aggregateId)) {
@@ -49,19 +52,22 @@ class TableEventStore implements EventStoreInterface
         }
 
         $this->connection->insert($this->table, [
-            'event_id'       => (string) $event->getId(),
-            'event_date'     => $event->getTimestamp()->format('Y-m-d H:i:s'), // looses microseconds precision
-            'aggregate_type' => $event->getAggregateType(),
-            'aggregate_id'   => $aggregateId,
-            'event_name'     => $event->getEventName(),
-            'data'           => $this->serializer->serialize($event, 'json')
+            'event_id'        => (string) $event->getId(),
+            'event_date'      => $event->getTimestamp()->format('Y-m-d H:i:s'), // looses microseconds precision
+            'event_date_u'    => $event->getTimestamp()->format('u'),
+            'aggregate_type'  => $event->getAggregateType(),
+            'aggregate_id'    => $aggregateId,
+            'sequence_number' => $event->getSequenceNumber(),
+            'payload_type'    => $event->getPayloadType(),
+            'payload'         => $this->serializer->serialize($event->getPayload(), 'json'),
+            'metadata'        => $this->serializer->serialize($event->getMetadata(), 'json')
         ]);
     }
 
     /**.
      * @param int|null $offset
      * @param int $limit
-     * @return array
+     * @return GenericDomainEventMessage[]
      */
     public function read($offset = null, $limit = 10)
     {
@@ -79,8 +85,19 @@ class TableEventStore implements EventStoreInterface
         $stmt = $this->connection->executeQuery($sql, [$offset, $limit]);
 
         foreach ($stmt as $row) {
-            $events[$row['id']] = $row['data'];
-            //$events[$row['id']] = $this->serializer->deserialize('', $row['data'], 'json');
+            /** @var EventInterface $payload */
+            $payload  = $this->serializer->deserialize($row['payload'], $row['payload_type'], 'json');
+            $metadata = $this->serializer->deserialize($row['metadata'], 'array', 'json');
+
+            $events[$row['id']] = new GenericDomainEventMessage(
+                $row['aggregate_type'],
+                $row['aggregate_id'],
+                $row['sequence_number'],
+                $payload,
+                $metadata,
+                Uuid::fromString($row['event_id']),
+                DateTimeImmutable::createFromFormat('Y-m-d H:i:s.u', $row['event_date'] . '.' . $row['event_date_u'])
+            );
         }
 
         return $events;

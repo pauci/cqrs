@@ -22,6 +22,14 @@ class SimpleEventPublisher implements EventPublisherInterface
     }
 
     /**
+     * @return EventBusInterface
+     */
+    public function getEventBus()
+    {
+        return $this->eventBus;
+    }
+
+    /**
      * @param AggregateRootInterface $aggregateRoot
      */
     public function registerAggregate(AggregateRootInterface $aggregateRoot)

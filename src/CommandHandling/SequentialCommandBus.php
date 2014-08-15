@@ -42,13 +42,37 @@ class SequentialCommandBus implements CommandBusInterface
     /**
      * @param CommandHandlerLocatorInterface $locator
      * @param TransactionManagerInterface $transactionManager
-     * @param \CQRS\EventHandling\Publisher\EventPublisherInterface $eventPublisher
+     * @param EventPublisherInterface $eventPublisher
      */
     public function __construct(CommandHandlerLocatorInterface $locator, TransactionManagerInterface $transactionManager, EventPublisherInterface $eventPublisher)
     {
-        $this->locator = $locator;
+        $this->locator            = $locator;
         $this->transactionManager = $transactionManager;
-        $this->eventPublisher = $eventPublisher;
+        $this->eventPublisher     = $eventPublisher;
+    }
+
+    /**
+     * @return CommandHandlerLocatorInterface
+     */
+    public function getLocator()
+    {
+        return $this->locator;
+    }
+
+    /**
+     * @return TransactionManagerInterface
+     */
+    public function getTransactionManager()
+    {
+        return $this->transactionManager;
+    }
+
+    /**
+     * @return EventPublisherInterface
+     */
+    public function getEventPublisher()
+    {
+        return $this->eventPublisher;
     }
 
     /**

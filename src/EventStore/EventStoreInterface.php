@@ -2,14 +2,14 @@
 
 namespace CQRS\EventStore;
 
-use CQRS\Domain\Message\DomainEventInterface;
+use CQRS\Domain\Message\DomainEventMessageInterface;
 
 interface EventStoreInterface
 {
     /**
-     * @param DomainEventInterface $event
+     * @param DomainEventMessageInterface $event
      */
-    public function store(DomainEventInterface $event);
+    public function store(DomainEventMessageInterface $event);
 
     /**
      * @param int|null $offset

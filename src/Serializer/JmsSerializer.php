@@ -2,7 +2,6 @@
 
 namespace CQRS\Serializer;
 
-use CQRS\Domain\Message\EventInterface;
 use JMS\Serializer\Serializer;
 
 class JmsSerializer implements SerializerInterface
@@ -19,23 +18,23 @@ class JmsSerializer implements SerializerInterface
     }
 
     /**
-     * @param EventInterface $event
+     * @param object|array $data
      * @param string $format
      * @return string
      */
-    public function serialize(EventInterface $event, $format)
+    public function serialize($data, $format)
     {
-        return $this->serializer->serialize($event, $format);
+        return $this->serializer->serialize($data, $format);
     }
 
     /**
      * @param string $data
-     * @param string $eventClass
+     * @param string $type
      * @param string $format
-     * @return EventInterface
+     * @return object|array
      */
-    public function deserialize($data, $eventClass, $format)
+    public function deserialize($data, $type, $format)
     {
-        return $this->serializer->deserialize($data, $eventClass, $format);
+        return $this->serializer->deserialize($data, $type, $format);
     }
 }

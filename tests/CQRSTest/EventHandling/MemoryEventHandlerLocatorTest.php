@@ -3,6 +3,7 @@
 namespace CQRSTest\EventHandling;
 
 use CQRS\EventHandling\Locator\MemoryEventHandlerLocator;
+use CQRS\Exception\RuntimeException;
 use PHPUnit_Framework_TestCase;
 
 class MemoryEventHandlerLocatorTest extends PHPUnit_Framework_TestCase
@@ -15,11 +16,11 @@ class MemoryEventHandlerLocatorTest extends PHPUnit_Framework_TestCase
         $callback4 = function() {};
 
         $locator = new MemoryEventHandlerLocator();
-        $locator->registerCallback('TestEvent', $callback1, 1);
-        $locator->registerCallback('TestEvent', $callback2, -1);
-        $locator->registerCallback('TestEvent', $callback3, 2);
-        $locator->registerCallback('TestEvent', $callback4);
-        $locator->registerCallback('AnotherEvent', function() {});
+        $locator->addListener('TestEvent', $callback1, 1);
+        $locator->addListener('TestEvent', $callback2, -1);
+        $locator->addListener('TestEvent', $callback3, 2);
+        $locator->addListener('TestEvent', $callback4);
+        $locator->addListener('AnotherEvent', function() {});
 
         $this->assertSame([
             $callback3,
@@ -35,9 +36,9 @@ class MemoryEventHandlerLocatorTest extends PHPUnit_Framework_TestCase
         $subscriber2 = new Subscriber();
 
         $locator = new MemoryEventHandlerLocator();
-        $locator->registerSubscriber($subscriber1);
-        $locator->registerSubscriber($subscriber2, 10);
-        $locator->registerSubscriber(new AnotherSubscriber());
+        $locator->addSubscriber($subscriber1);
+        $locator->addSubscriber($subscriber2, 10);
+        $locator->addSubscriber(new AnotherSubscriber());
 
         $handlers = $locator->getEventHandlers('TestEvent');
 
@@ -57,12 +58,12 @@ class MemoryEventHandlerLocatorTest extends PHPUnit_Framework_TestCase
     public function testItThrowsExceptionWhenRegisteredSubscriberIsNoObject()
     {
         $this->setExpectedException(
-            'CQRS\Exception\RuntimeException',
-            'No valid event handler given; expected object, got string'
+            RuntimeException::class,
+            'No valid event subscriber given; expected object, got string'
         );
 
         $locator = new MemoryEventHandlerLocator();
-        $locator->registerSubscriber('not an object');
+        $locator->addSubscriber('not an object');
     }
 }
 

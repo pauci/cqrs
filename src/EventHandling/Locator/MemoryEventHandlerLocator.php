@@ -3,6 +3,7 @@
 namespace CQRS\EventHandling\Locator;
 
 use CQRS\Exception\RuntimeException;
+use CQRS\Exception\InvalidArgumentException;
 
 /**
  * In Memory Event Handler Locator
@@ -18,19 +19,35 @@ class MemoryEventHandlerLocator implements EventHandlerLocatorInterface
     /** @var array */
     private $handlers = [];
 
+    /** @var array */
+    private $regexpHandlers = [];
+
+    /** @var array */
+    private $globalHandlers = [];
+
     /**
      * @param string $eventName
-     * @return Callable[]
+     * @return callable[]
      */
     public function getEventHandlers($eventName)
     {
         $eventName = strtolower($eventName);
 
-        if (!isset($this->handlers[$eventName])) {
+        $handlersByPriority = [];
+        if (isset($this->handlers[$eventName])) {
+            $handlersByPriority = $this->handlers[$eventName];
+        }
+
+        foreach ($this->regexpHandlers as $regexp => $handlers) {
+            if (preg_match($regexp, $eventName)) {
+                $handlersByPriority = array_merge_recursive($handlersByPriority, $handlers);
+            }
+        }
+
+        if (empty($handlersByPriority)) {
             return [];
         }
 
-        $handlersByPriority = $this->handlers[$eventName];
         // Sort handlers by priority, highest first
         krsort($handlersByPriority);
 
@@ -38,43 +55,69 @@ class MemoryEventHandlerLocator implements EventHandlerLocatorInterface
     }
 
     /**
-     * @param string|array $eventName
-     * @param callable $callback
-     * @param int $priority
+     * @param string|array $events   The event(s) to listen to.
+     * @param callable     $listener The listener callback.
+     * @param int          $priority
      */
-    public function registerCallback($eventName, callable $callback, $priority = 1)
+    public function addListener($events, callable $listener, $priority = 1)
     {
-        $eventNames = (array) $eventName;
+        foreach ((array) $events as $event) {
+            $eventName = strtolower($event);
 
-        foreach ($eventNames as $eventName) {
-            $eventName = strtolower($eventName);
+            if (!preg_match('/^[\*a-z0-9_-]+$/', $eventName)) {
+                throw new InvalidArgumentException(sprintf(
+                    'Invalid event name "%s"', $event
+                ));
+            }
 
-            $this->handlers[$eventName][$priority][] = $callback;
+            if ($eventName == '*') {
+                $this->globalHandlers[$priority][] = $listener;
+                continue;
+            }
+
+            if (strpos($eventName, '*') !== false) {
+                $regexp = '/' . strtr($eventName, ['*' => '[a-z0-9_-]*']) . '/';
+                $this->regexpHandlers[$regexp][$priority][] = $listener;
+                continue;
+            }
+
+            $this->handlers[$eventName][$priority][] = $listener;
         }
     }
 
     /**
-     * @param object $subscriber
-     * @param int $priority
+     * @param object $subscriber The subscriber object.
+     * @param int    $priority
      * @throws RuntimeException
      */
-    public function registerSubscriber($subscriber, $priority = 1)
+    public function addSubscriber($subscriber, $priority = 1)
     {
         if (!is_object($subscriber)) {
             throw new RuntimeException(sprintf(
-                'No valid event handler given; expected object, got %s',
+                'No valid event subscriber given; expected object, got %s',
                 gettype($subscriber)
             ));
         }
 
+        $listeners = [];
         foreach (get_class_methods($subscriber) as $methodName) {
             if (strpos($methodName, 'on') !== 0) {
                 continue;
             }
 
             $eventName = strtolower(substr($methodName, 2));
+            $listeners[$eventName] = [$subscriber, $methodName];
+        }
 
-            $this->registerCallback($eventName, [$subscriber, $methodName], $priority);
+        if (empty($listeners)) {
+            throw new RuntimeException(sprintf(
+                'Event subscriber %s does not contain any event listening methods',
+                get_class($subscriber)
+            ));
+        }
+
+        foreach ($listeners as $eventName => $listener) {
+            $this->addListener($eventName, $listener, $priority);
         }
     }
 }

@@ -2,31 +2,49 @@
 
 namespace CQRS\Domain\Model;
 
-use CQRS\Domain\Message\AbstractDomainEvent;
-use CQRS\Domain\Message\DomainEventInterface;
-use Rhumsaa\Uuid\Uuid;
+use CQRS\Domain\Message\GenericDomainEventMessage;
+use CQRS\EventHandling\EventInterface;
+use CQRS\Exception\RuntimeException;
 
 abstract class AbstractAggregateRoot implements AggregateRootInterface
 {
-    /** @var DomainEventInterface[] */
-    private $events = [];
+    /** @var EventContainer */
+    private $eventContainer;
 
     /** @var bool */
     private $deleted = false;
 
     /**
-     * @return Uuid|int
+     * @return mixed
      */
     abstract public function getId();
 
     /**
-     * @return DomainEventInterface[]
+     * @param EventInterface $event
+     * @param array $metadata
+     */
+    protected function raiseDomainEvent(EventInterface $event, array $metadata = [])
+    {
+        $this->getEventContainer()->addEvent($event, $metadata);
+    }
+
+    /**
+     * @return GenericDomainEventMessage[]
      */
     public function pullDomainEvents()
     {
-        $events = $this->events;
-        $this->events = [];
-        return $events;
+        if ($this->eventContainer === null) {
+            return [];
+        }
+        return $this->eventContainer->pullEvents();
+    }
+
+    /**
+     * Marks this aggregate as deleted, instructing a Repository to remove that aggregate at an appropriate time
+     */
+    protected function markAsDeleted()
+    {
+        $this->deleted = true;
     }
 
     /**
@@ -38,19 +56,18 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
     }
 
     /**
-     * @param DomainEventInterface $event
+     * @return EventContainer
      */
-    protected function raiseDomainEvent(DomainEventInterface $event)
+    private function getEventContainer()
     {
-        if ($event instanceof AbstractDomainEvent) {
-            $event = $event->setAggregate($this);
+        if ($this->eventContainer === null) {
+            $type = get_class($this);
+            $id = $this->getId();
+            if ($id === null) {
+                throw new RuntimeException(sprintf('Aggregate ID is unknown in %s', $type));
+            }
+            $this->eventContainer = new EventContainer($type, $id);
         }
-
-        $this->events[] = $event;
-    }
-
-    protected function markAsDeleted()
-    {
-        $this->deleted = true;
+        return $this->eventContainer;
     }
 }

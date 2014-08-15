@@ -1,6 +1,6 @@
 <?php
 
-namespace CQRS\Domain\Message;
+namespace CQRS\Domain\Payload;
 
 use CQRS\CommandHandling\CommandInterface;
 use CQRS\Exception\RuntimeException;
@@ -21,7 +21,7 @@ use CQRS\Exception\RuntimeException;
  *   $command = new GreetCommand(['personId' => 1]);
  *   $commandBus->handle($command);
  */
-abstract class AbstractCommand extends AbstractMessage implements CommandInterface
+abstract class AbstractCommand extends AbstractPayload implements CommandInterface
 {
     /**
      * @param string $name

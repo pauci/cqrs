@@ -3,12 +3,11 @@
 namespace CQRS\Domain\Model;
 
 use CQRS\Domain\Message\DomainEventMessageInterface;
-use Rhumsaa\Uuid\Uuid;
 
 interface AggregateRootInterface
 {
     /**
-     * @return Uuid|int
+     * @return mixed
      */
     public function getId();
 

@@ -2,13 +2,15 @@
 
 namespace CQRSTest\Plugin\Doctrine\EventStore;
 
-use CQRS\Domain\Message\GenericDomainEvent;
-use CQRS\Domain\Model\AbstractAggregateRoot;
+use CQRS\Domain\Message\GenericDomainEventMessage;
+use CQRS\EventHandling\EventInterface;
 use CQRS\Plugin\Doctrine\EventStore\TableEventStore;
 use CQRS\Plugin\Doctrine\EventStore\TableEventStoreSchema;
+use CQRS\Serializer\SerializerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use PHPUnit_Framework_TestCase;
+use Rhumsaa\Uuid\Uuid;
 
 class TableEventStoreTest extends PHPUnit_Framework_TestCase
 {
@@ -20,10 +22,16 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $serializer = $this->getMock('CQRS\Serializer\SerializerInterface');
+        $serializer = $this->getMock(SerializerInterface::class);
         $serializer->expects($this->any())
             ->method('serialize')
             ->will($this->returnValue('{}'));
+        $serializer->expects($this->any())
+            ->method('deserialize')
+            ->will($this->returnValueMap([
+                ['{}', 'SomeEvent', 'json', new SomeEvent()],
+                ['{}', 'array', 'json', []]
+            ]));
         /** @var \CQRS\Serializer\SerializerInterface $serializer */
 
         $schema = new TableEventStoreSchema();
@@ -40,7 +48,13 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
 
     public function testStoreEvent()
     {
-        $event = new GenericDomainEvent('Test');
+        $serializer = $this->getMock(SerializerInterface::class);
+        $serializer->expects($this->any())
+            ->method('serialize')
+            ->will($this->returnValue('{}'));
+        /** @var \CQRS\Serializer\SerializerInterface $serializer */
+
+        $event = new GenericDomainEventMessage('SomeAggregate', 123, 4, new SomeEvent());
 
         $this->tableEventStore->store($event);
 
@@ -49,40 +63,60 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($data));
         $this->assertEquals($event->getId(), $data[0]['event_id']);
         $this->assertEquals($event->getTimestamp()->format('Y-m-d H:i:s'), $data[0]['event_date']);
-        $this->assertEquals('Test', $data[0]['event_name']);
-        $this->assertEquals('{}', $data[0]['data']);
+        $this->assertEquals($event->getTimestamp()->format('u'), $data[0]['event_date_u']);
+        $this->assertEquals('SomeAggregate', $data[0]['aggregate_type']);
+        $this->assertEquals(123, $data[0]['aggregate_id']);
+        $this->assertEquals(4, $data[0]['sequence_number']);
+        $this->assertEquals(SomeEvent::class, $data[0]['payload_type']);
+        $this->assertEquals('{}', $data[0]['payload']);
+        $this->assertEquals('{}', $data[0]['metadata']);
     }
 
     public function testStoreEventWithAggregateIdContainingMultipleKeys()
     {
-        $aggregate = $this->getMock(AbstractAggregateRoot::class);
-        $aggregate->expects($this->once())
-            ->method('getId')
-            ->will($this->returnValue(['id' => 43, 'name' => 'test name']));
-
-        $event = new GenericDomainEvent('Test', [], $aggregate);
+        $event = new GenericDomainEventMessage('SomeAggregate', ['foo' => 1, 'bar' => 'baz'], 4, new SomeEvent());
 
         $this->tableEventStore->store($event);
 
         $data = $this->conn->fetchAll('SELECT * FROM cqrs_event');
 
-        $this->assertEquals('{"id":43,"name":"test name"}', $data[0]['aggregate_id']);
+        $this->assertEquals('{"foo":1,"bar":"baz"}', $data[0]['aggregate_id']);
     }
 
     public function testReadEvents()
     {
         for ($i = 1; $i <= 13; $i++) {
-            $event = new GenericDomainEvent('Test');
-            $this->tableEventStore->store($event);
+            $this->conn->insert('cqrs_event', [
+                'event_id'        => 'bd0a32dd-37f1-42ab-807f-c3c29261a9fe',
+                'event_date'      => '2014-08-15 09:55:33',
+                'event_date_u'    => 654321,
+                'aggregate_type'  => 'SomeAggregate',
+                'aggregate_id'    => 123,
+                'sequence_number' => $i + 10,
+                'payload_type'    => 'SomeEvent',
+                'payload'         => '{}',
+                'metadata'        => '{}'
+            ]);
         }
 
-        $events = $this->tableEventStore->read(11, 5);
 
+        $events = $this->tableEventStore->read();
         $this->assertCount(3, $events);
-        $this->assertEquals([
-            11 => '{}',
-            12 => '{}',
-            13 => '{}',
-        ], $events);
+        $this->assertEquals([11, 12, 13], array_keys($events));
+        $this->assertContainsOnlyInstancesOf(GenericDomainEventMessage::class, $events);
+
+        $this->assertEquals('bd0a32dd-37f1-42ab-807f-c3c29261a9fe', (string) $events[11]->getId());
+        $this->assertEquals('2014-08-15 09:55:33.654321', $events[11]->getTimestamp()->format('Y-m-d H:i:s.u'));
+        $this->assertEquals('SomeAggregate', $events[11]->getAggregateType());
+        $this->assertEquals(123, $events[11]->getAggregateId());
+        $this->assertEquals(21, $events[11]->getSequenceNumber());
+        $this->assertInstanceOf(SomeEvent::class, $events[11]->getPayload());
+        $this->assertEquals([], $events[11]->getMetadata());
+
+        $events = $this->tableEventStore->read(5, 5);
+        $this->assertCount(5, $events);
     }
 }
+
+class SomeEvent implements EventInterface
+{}

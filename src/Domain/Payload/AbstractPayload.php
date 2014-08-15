@@ -1,15 +1,18 @@
 <?php
 
-namespace CQRS\Domain\Message;
-
+namespace CQRS\Domain\Payload;
 
 use CQRS\Exception\RuntimeException;
 
-abstract class AbstractMessage implements MessageInterface
+/**
+ * Default Implementation for the payload.
+ *
+ * Convenience AbstractPayload that helps with construction by mapping an array input to properties.
+ * If a passed property does not exist on the class an exception is thrown.
+ */
+abstract class AbstractPayload
 {
     /**
-     * Hydrates protected and public properties
-     *
      * @param array $data
      */
     public function __construct(array $data = [])
@@ -39,7 +42,7 @@ abstract class AbstractMessage implements MessageInterface
     protected function throwPropertyIsNotValidException($name)
     {
         throw new RuntimeException(sprintf(
-            'Property "%s" is not a valid property on message "%s"',
+            'Property "%s" is not a valid property on "%s"',
             $name,
             get_class($this)
         ));
@@ -55,4 +58,4 @@ abstract class AbstractMessage implements MessageInterface
             $this->throwPropertyIsNotValidException($name);
         }
     }
-}
+} 

@@ -2,10 +2,6 @@
 
 namespace CQRS\Serializer;
 
-use CQRS\Domain\Message\AbstractDomainEvent;
-use CQRS\Domain\Message\AbstractEvent;
-use CQRS\Domain\Message\DomainEventInterface;
-use CQRS\Domain\Message\EventInterface;
 use DateTime;
 use DateTimeInterface;
 use DateTimeImmutable;
@@ -23,22 +19,22 @@ class ReflectionSerializer implements SerializerInterface
     private $reflectionProperties = [];
 
     /**
-     * @param EventInterface $event
+     * @param object $data
      * @param string $format
      * @return string
      */
-    public function serialize(EventInterface $event, $format)
+    public function serialize($data, $format)
     {
-        return json_encode($this->toPhpClassArray($event));
+        return json_encode($this->toPhpClassArray($data));
     }
 
     /**
      * @param string $data
-     * @param string $eventClass
+     * @param string $type
      * @param string $format
-     * @return string
+     * @return object
      */
-    public function deserialize($data, $eventClass, $format)
+    public function deserialize($data, $type, $format)
     {
         return $this->fromArray(json_decode($data, true));
     }
@@ -69,27 +65,6 @@ class ReflectionSerializer implements SerializerInterface
      */
     private function toArray($object)
     {
-        if ($object instanceof EventInterface) {
-            $data = [
-                'id'        => $object->getId(),
-                'timestamp' => $object->getTimestamp(),
-            ];
-
-            if ($object instanceof DomainEventInterface) {
-                $data['aggregate_type'] = $object->getAggregateType();
-                $data['aggregate_id']   = $object->getAggregateId();
-            }
-
-            $data['event_name'] = $object->getEventName();
-            $data['payload']    = $this->extractValuesFromObject($object);
-            foreach ($data['payload'] as &$value) {
-                if (is_object($value)) {
-                    $value = $this->toPhpClassArray($value);
-                }
-            }
-            return $data;
-        }
-
         if ($object instanceof DateTimeInterface) {
             return [
                 'time'     => $object->format('Y-m-d H:i:s.u'),
@@ -158,25 +133,6 @@ class ReflectionSerializer implements SerializerInterface
 
         $reflectionClass = $this->getReflectionClass($className);
         $object = $reflectionClass->newInstanceWithoutConstructor();
-
-        if (is_subclass_of($className, AbstractEvent::class)) {
-            if (isset($data['event_name'])) {
-                $data['eventName'] = $data['event_name'];
-            }
-            $this->hydrateObjectFromValues($object, $data, AbstractEvent::class);
-
-            if (is_subclass_of($className, AbstractDomainEvent::class)) {
-                if (isset($data['aggregate_id'])) {
-                    $data['aggregateId'] = $data['aggregate_id'];
-                }
-                if (isset($data['aggregate_type'])) {
-                    $data['aggregateType'] = $data['aggregate_type'];
-                }
-                $this->hydrateObjectFromValues($object, $data, AbstractDomainEvent::class);
-            }
-
-            $data = $data['payload'];
-        }
 
         $this->hydrateObjectFromValues($object, $data, $className);
         return $object;

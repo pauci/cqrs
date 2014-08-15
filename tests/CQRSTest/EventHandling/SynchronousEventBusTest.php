@@ -2,8 +2,9 @@
 
 namespace CQRSTest\EventHandling;
 
-use CQRS\Domain\Message\AbstractEvent;
+use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\EventHandling\EventExecutionFailed;
+use CQRS\EventHandling\EventInterface;
 use CQRS\EventHandling\Locator\EventHandlerLocatorInterface;
 use CQRS\EventHandling\SynchronousEventBus;
 use Exception;
@@ -29,7 +30,7 @@ class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
 
     public function testPublishingOfEvent()
     {
-        $this->eventBus->publish(new SynchronousEvent());
+        $this->eventBus->publish(new GenericEventMessage(new SynchronousEvent()));
 
         $this->assertEquals(1, $this->handler->executed);
     }
@@ -38,13 +39,13 @@ class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
     {
         $failureCausingEvent = new FailureCausingEvent();
 
-        $this->eventBus->publish($failureCausingEvent);
+        $this->eventBus->publish(new GenericEventMessage($failureCausingEvent));
 
         $failureEvent = $this->handler->failureEvent;
 
-        $this->assertInstanceOf('CQRS\EventHandling\EventExecutionFailed', $failureEvent);
-        $this->assertInstanceOf('CQRSTest\EventHandling\EventHandlingException', $failureEvent->exception);
-        $this->assertSame($failureCausingEvent, $failureEvent->event);
+        $this->assertInstanceOf(EventExecutionFailed::class, $failureEvent);
+        $this->assertInstanceOf(SomeException::class, $failureEvent->exception);
+        $this->assertSame($failureCausingEvent, $failureEvent->event->getPayload());
     }
 
     public function testItIgnoresErrorWhenHandlingEventExecutionFailedEvent()
@@ -53,7 +54,7 @@ class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
 
         $this->handler->throwErrorOnEventExecutionFailed = true;
 
-        $this->eventBus->publish($failureEvent);
+        $this->eventBus->publish(new GenericEventMessage($failureEvent));
     }
 }
 
@@ -63,7 +64,9 @@ class SynchronousEventHandlerLocatorInterface implements EventHandlerLocatorInte
 
     public function getEventHandlers($eventName)
     {
-        return [[$this->handler, 'on' . $eventName]];
+        return [
+            [$this->handler, "on{$eventName}"]
+        ];
     }
 }
 
@@ -81,24 +84,25 @@ class SynchronousEventHandler
 
     public function onFailureCausing(FailureCausingEvent $event)
     {
-        throw new EventHandlingException();
+        throw new SomeException();
     }
 
     public function onEventExecutionFailed($event)
     {
         if ($this->throwErrorOnEventExecutionFailed) {
-            throw new EventHandlingException();
+            throw new SomeException();
         }
 
         $this->failureEvent = $event;
     }
 }
 
-class SynchronousEvent extends AbstractEvent
+class SynchronousEvent implements EventInterface
+{
+}
+
+class FailureCausingEvent implements EventInterface
 {}
 
-class FailureCausingEvent extends AbstractEvent
-{}
-
-class EventHandlingException extends Exception
+class SomeException extends Exception
 {}

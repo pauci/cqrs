@@ -2,22 +2,20 @@
 
 namespace CQRS\Serializer;
 
-use CQRS\Domain\Message\EventInterface;
-
 interface SerializerInterface
 {
     /**
-     * @param EventInterface $event
+     * @param object|array $data
      * @param string $format
      * @return string
      */
-    public function serialize(EventInterface $event, $format);
+    public function serialize($data, $format);
 
     /**
      * @param string $data
-     * @param string $eventClass
+     * @param string $type
      * @param string $format
-     * @return EventInterface
+     * @return object|array
      */
-    public function deserialize($data, $eventClass, $format);
+    public function deserialize($data, $type, $format);
 }
