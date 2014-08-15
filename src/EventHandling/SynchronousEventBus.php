@@ -67,7 +67,21 @@ class SynchronousEventBus implements EventBusInterface
     private function invokeEventHandler(callable $callback, $event)
     {
         try {
-            $callback($event->getPayload(), $event->getMetadata(), $event->getTimestamp());
+            if ($event instanceof DomainEventMessageInterface) {
+                $callback(
+                    $event->getPayload(),
+                    $event->getMetadata(),
+                    $event->getTimestamp(),
+                    $event->getSequenceNumber(),
+                    $event->getAggregateId()
+                );
+            } else {
+                $callback(
+                    $event->getPayload(),
+                    $event->getMetadata(),
+                    $event->getTimestamp()
+                );
+            }
         } catch (Exception $e) {
             if ($event->getPayload() instanceof EventExecutionFailed) {
                 return;
