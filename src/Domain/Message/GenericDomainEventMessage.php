@@ -26,10 +26,10 @@ class GenericDomainEventMessage extends GenericEventMessage implements DomainEve
      * @param Uuid $id
      * @param DateTimeInterface $timestamp
      */
-    public function __construct($aggregateType, $aggregateId, $sequenceNumber, EventInterface $payload, array $metadata = [], Uuid $id = null, DateTimeInterface $timestamp = null)
+    public function __construct($aggregateType, &$aggregateId, $sequenceNumber, EventInterface $payload, array $metadata = [], Uuid $id = null, DateTimeInterface $timestamp = null)
     {
         $this->aggregateType  = $aggregateType;
-        $this->aggregateId    = $aggregateId;
+        $this->aggregateId    = &$aggregateId;
         $this->sequenceNumber = $sequenceNumber;
 
         parent::__construct($payload, $metadata, $id, $timestamp);
