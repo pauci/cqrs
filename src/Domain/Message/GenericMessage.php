@@ -9,7 +9,7 @@ class GenericMessage implements MessageInterface
     /** @var Uuid */
     private $id;
 
-    /** @var array */
+    /** @var Metadata */
     private $metadata;
 
     /** @var object */
@@ -26,7 +26,7 @@ class GenericMessage implements MessageInterface
     public function __construct($payload, array $metadata = [], Uuid $id = null)
     {
         $this->id          = $id ?: Uuid::uuid4();
-        $this->metadata    = $metadata;
+        $this->metadata    = new Metadata($metadata);
         $this->payload     = $payload;
         $this->payloadType = get_class($payload);
     }
@@ -40,7 +40,7 @@ class GenericMessage implements MessageInterface
     }
 
     /**
-     * @return array
+     * @return Metadata
      */
     public function getMetadata()
     {
@@ -61,5 +61,22 @@ class GenericMessage implements MessageInterface
     public function getPayloadType()
     {
         return $this->payloadType;
+    }
+
+    /**
+     * @param array $metadata
+     * @return static
+     */
+    public function addMetadata(array $metadata)
+    {
+        $metadata = $this->metadata->mergedWith($metadata);
+
+        if ($metadata === $this->metadata) {
+            return $this;
+        }
+
+        $message = clone $this;
+        $message->metadata = $metadata;
+        return $message;
     }
 }
