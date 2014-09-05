@@ -2,6 +2,7 @@
 
 namespace CQRS\EventHandling\Publisher;
 
+use CQRS\Domain\Message\Metadata;
 use CQRS\EventHandling\EventBusInterface;
 use CQRS\EventStore\EventStoreInterface;
 
@@ -23,7 +24,7 @@ class SimpleEventPublisher implements EventPublisherInterface
     private $eventStore;
 
     /**
-     * @var array
+     * @var Metadata
      */
     private $additionalMetadata;
 
@@ -31,18 +32,18 @@ class SimpleEventPublisher implements EventPublisherInterface
      * @param EventBusInterface $eventBus
      * @param EventQueueInterface $queue
      * @param EventStoreInterface $eventStore
-     * @param array $additionalMetadata
+     * @param Metadata|array $additionalMetadata
      */
     public function __construct(
         EventBusInterface $eventBus,
         EventQueueInterface $queue = null,
         EventStoreInterface $eventStore = null,
-        array $additionalMetadata = []
+        $additionalMetadata = null
     ) {
         $this->eventBus           = $eventBus;
         $this->queue              = $queue;
         $this->eventStore         = $eventStore;
-        $this->additionalMetadata = $additionalMetadata;
+        $this->additionalMetadata = Metadata::from($additionalMetadata);
     }
 
     /**
