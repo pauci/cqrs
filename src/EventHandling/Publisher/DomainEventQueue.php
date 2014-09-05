@@ -12,6 +12,14 @@ class DomainEventQueue implements EventQueueInterface
     private $identityMap;
 
     /**
+     * @param IdentityMapInterface $identityMap
+     */
+    public function __construct(IdentityMapInterface $identityMap)
+    {
+        $this->identityMap = $identityMap;
+    }
+
+    /**
      * @return DomainEventMessageInterface[]
      */
     public function dequeueAllEvents()
