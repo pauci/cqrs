@@ -55,7 +55,9 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
             ->will($this->returnValue('{}'));
         /** @var \CQRS\Serializer\SerializerInterface $serializer */
 
-        $event = new GenericDomainEventMessage('SomeAggregate', 123, 4, new SomeEvent());
+        $aggregateId = 123;
+
+        $event = new GenericDomainEventMessage('SomeAggregate', $aggregateId, 4, new SomeEvent());
 
         $this->tableEventStore->store($event);
 
@@ -75,7 +77,9 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
 
     public function testStoreEventWithAggregateIdContainingMultipleKeys()
     {
-        $event = new GenericDomainEventMessage('SomeAggregate', ['foo' => 1, 'bar' => 'baz'], 4, new SomeEvent());
+        $aggregateId = ['foo' => 1, 'bar' => 'baz'];
+
+        $event = new GenericDomainEventMessage('SomeAggregate', $aggregateId, 4, new SomeEvent());
 
         $this->tableEventStore->store($event);
 

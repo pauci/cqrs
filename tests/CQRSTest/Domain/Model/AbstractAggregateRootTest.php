@@ -35,9 +35,10 @@ class AggregateRootUnderTest extends AbstractAggregateRoot
         $this->raiseDomainEvent($event);
     }
 
-    public function getId()
+    public function &getId()
     {
-        return 4;
+        $id = 4;
+        return $id;
     }
 }
 

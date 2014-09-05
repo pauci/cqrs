@@ -4,7 +4,6 @@ namespace CQRS\Domain\Model;
 
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\EventHandling\EventInterface;
-use CQRS\Exception\RuntimeException;
 
 abstract class AbstractAggregateRoot implements AggregateRootInterface
 {
