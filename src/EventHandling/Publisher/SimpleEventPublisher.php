@@ -2,23 +2,47 @@
 
 namespace CQRS\EventHandling\Publisher;
 
-use CQRS\Domain\Model\AggregateRootInterface;
 use CQRS\EventHandling\EventBusInterface;
+use CQRS\EventStore\EventStoreInterface;
 
 class SimpleEventPublisher implements EventPublisherInterface
 {
-    /** @var EventBusInterface */
+    /**
+     * @var EventBusInterface
+     */
     private $eventBus;
 
-    /** @var AggregateRootInterface[] */
-    private $aggregateRoots = [];
+    /**
+     * @var EventQueueInterface
+     */
+    private $queue;
+
+    /**
+     * @var EventStoreInterface
+     */
+    private $eventStore;
+
+    /**
+     * @var array
+     */
+    private $additionalMetadata;
 
     /**
      * @param EventBusInterface $eventBus
+     * @param EventQueueInterface $queue
+     * @param EventStoreInterface $eventStore
+     * @param array $additionalMetadata
      */
-    public function __construct(EventBusInterface $eventBus)
-    {
-        $this->eventBus = $eventBus;
+    public function __construct(
+        EventBusInterface $eventBus,
+        EventQueueInterface $queue = null,
+        EventStoreInterface $eventStore = null,
+        array $additionalMetadata = []
+    ) {
+        $this->eventBus           = $eventBus;
+        $this->queue              = $queue;
+        $this->eventStore         = $eventStore;
+        $this->additionalMetadata = $additionalMetadata;
     }
 
     /**
@@ -29,22 +53,22 @@ class SimpleEventPublisher implements EventPublisherInterface
         return $this->eventBus;
     }
 
-    /**
-     * @param AggregateRootInterface $aggregateRoot
-     */
-    public function registerAggregate(AggregateRootInterface $aggregateRoot)
-    {
-        $this->aggregateRoots[] = $aggregateRoot;
-    }
-
     public function publishEvents()
     {
-        foreach ($this->aggregateRoots as $aggregateRoot) {
-            $events = $aggregateRoot->pullDomainEvents();
+        if (!$this->queue) {
+            return;
+        }
 
-            foreach ($events as $event) {
-                $this->eventBus->publish($event);
+        foreach ($this->queue->dequeueAllEvents() as $event) {
+            if (!empty($this->additionalMetadata)) {
+                $event = $event->addMetadata($this->additionalMetadata);
             }
+
+            if ($this->eventStore) {
+                $this->eventStore->store($event);
+            }
+
+            $this->eventBus->publish($event);
         }
     }
 }
