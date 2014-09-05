@@ -78,7 +78,7 @@ class SynchronousEventBus implements EventBusInterface
                     'exception' => $e,
                     'event'     => $event,
                 ]),
-                $event->getMetadata()
+                $event->getMetadata()->toArray()
             ));
         }
     }

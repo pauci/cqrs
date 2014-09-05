@@ -3,6 +3,7 @@
 namespace CQRSTest\Plugin\Doctrine\EventStore;
 
 use CQRS\Domain\Message\GenericDomainEventMessage;
+use CQRS\Domain\Message\Metadata;
 use CQRS\EventHandling\EventInterface;
 use CQRS\Plugin\Doctrine\EventStore\TableEventStore;
 use CQRS\Plugin\Doctrine\EventStore\TableEventStoreSchema;
@@ -111,7 +112,7 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(123, $events[11]->getAggregateId());
         $this->assertEquals(21, $events[11]->getSequenceNumber());
         $this->assertInstanceOf(SomeEvent::class, $events[11]->getPayload());
-        $this->assertEquals([], $events[11]->getMetadata());
+        $this->assertInstanceOf(Metadata::class, $events[11]->getMetadata());
 
         $events = $this->tableEventStore->read(5, 5);
         $this->assertCount(5, $events);

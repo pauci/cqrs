@@ -11,39 +11,57 @@ use Serializable;
 
 class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializable
 {
-    /** @var array */
-    private $items;
+    /**
+     * @var self
+     */
+    private static $emptyInstance;
 
     /**
-     * @param array $items
+     * @var array
      */
-    public function __construct(array $items)
+    private $values;
+
+    /**
+     * @return Metadata
+     */
+    public static function emptyInstance()
     {
-        ksort($items);
-        $this->items = $items;
+        if (self::$emptyInstance === null) {
+            self::$emptyInstance = new self();
+        }
+        return self::$emptyInstance;
+    }
+
+    /**
+     * @param array|self $metadata
+     * @return Metadata
+     */
+    public static function from($metadata = null)
+    {
+        if ($metadata instanceof self) {
+            return $metadata;
+        }
+        if (empty($metadata)) {
+            return self::emptyInstance();
+        }
+        return new self($metadata);
+    }
+
+    /**
+     * @param array $values
+     */
+    private function __construct(array $values = [])
+    {
+        ksort($values);
+        $this->values = $values;
     }
 
     /**
      * @return array
      */
-    public function getItems()
+    public function toArray()
     {
-        return $this->items;
-    }
-
-    /**
-     * @param array $items
-     * @return self
-     */
-    public function mergedWith(array $items)
-    {
-        $items = array_merge($this->items, $items);
-
-        if ($items == $this->items) {
-            return $this;
-        }
-
-        return new self($items);
+        return $this->values;
     }
 
     /**
@@ -51,7 +69,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      */
     public function getIterator()
     {
-        return new ArrayIterator($this->items);
+        return new ArrayIterator($this->values);
     }
 
     /**
@@ -60,7 +78,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      */
     public function offsetExists($offset)
     {
-        return isset($this->items[$offset]);
+        return isset($this->values[$offset]);
     }
 
     /**
@@ -69,7 +87,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      */
     public function offsetGet($offset)
     {
-        return isset($this->items[$offset]) ? $this->items[$offset] : null;
+        return isset($this->values[$offset]) ? $this->values[$offset] : null;
     }
 
     /**
@@ -94,7 +112,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      */
     public function count()
     {
-        return count($this->items);
+        return count($this->values);
     }
 
     /**
@@ -102,7 +120,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      */
     public function serialize()
     {
-        return serialize($this->items);
+        return serialize($this->values);
     }
 
     /**
@@ -110,7 +128,45 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      */
     public function unserialize($serialized)
     {
-        $this->items = unserialize($serialized);
+        $this->values = unserialize($serialized);
+    }
+
+    /**
+     * Returns a Metadata instance containing values of this, combined with the given additionalMetadata.
+     * If any entries have identical keys, the values from the additionalMetadata will take precedence.
+     *
+     * @param Metadata $additionalMetadata
+     * @return self
+     */
+    public function mergedWith(Metadata $additionalMetadata)
+    {
+        $values = array_merge($this->values, $additionalMetadata->values);
+
+        if ($values == $this->values) {
+            return $this;
+        }
+
+        return new self($values);
+    }
+
+    /**
+     * Returns a Metadata instance with the items with given keys removed. Keys for which there is no
+     * assigned value are ignored.
+     *
+     * This Metadata instance is not influenced by this operation.
+     *
+     * @param array $keys
+     * @return self
+     */
+    public function withoutKeys(array $keys)
+    {
+        $values = array_diff_key($this->values, array_flip($keys));
+
+        if ($values == $this->values) {
+            return $this;
+        }
+
+        return new self($values);
     }
 
     private function raiseImmutabilityException()

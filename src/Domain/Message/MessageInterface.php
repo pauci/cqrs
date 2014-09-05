@@ -27,8 +27,8 @@ interface MessageInterface
     public function getPayloadType();
 
     /**
-     * @param array $metadata
+     * @param Metadata $metadata
      * @return static
      */
-    public function addMetadata(array $metadata);
+    public function addMetadata(Metadata $metadata);
 }

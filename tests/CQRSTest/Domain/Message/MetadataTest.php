@@ -8,7 +8,7 @@ class MetadataTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetItems()
     {
-        $metadata = new Metadata([
+        $metadata = Metadata::from([
             'foo'   => 'bar',
             'first' => 'value',
             'last'  => null
@@ -18,12 +18,12 @@ class MetadataTest extends \PHPUnit_Framework_TestCase
             'first' => 'value',
             'foo'   => 'bar',
             'last'  => null
-        ], $metadata->getItems());
+        ], $metadata->toArray());
     }
 
     public function testArrayAccess()
     {
-        $metadata = new Metadata(['foo' => 'bar']);
+        $metadata = Metadata::from(['foo' => 'bar']);
 
         $this->assertTrue(isset($metadata['foo']));
         $this->assertEquals('bar', $metadata['foo']);
@@ -34,7 +34,7 @@ class MetadataTest extends \PHPUnit_Framework_TestCase
 
     public function testArraySetForImmutability()
     {
-        $metadata = new Metadata(['foo' => 'bar']);
+        $metadata = Metadata::from(['foo' => 'bar']);
 
         $this->setExpectedException('CQRS\Exception\RuntimeException', 'Event metadata is immutable.');
         $metadata['foo'] = 'bar';
@@ -42,7 +42,7 @@ class MetadataTest extends \PHPUnit_Framework_TestCase
 
     public function testArrayUnsetForImmutability()
     {
-        $metadata = new Metadata(['foo' => 'bar']);
+        $metadata = Metadata::from(['foo' => 'bar']);
 
         $this->setExpectedException('CQRS\Exception\RuntimeException', 'Event metadata is immutable.');
         unset($metadata['foo']);
@@ -50,13 +50,13 @@ class MetadataTest extends \PHPUnit_Framework_TestCase
 
     public function testMergedWith()
     {
-        $metadata = new Metadata(['foo' => 'bar']);
+        $metadata = Metadata::from(['foo' => 'bar']);
 
-        $mergedMetadata = $metadata->mergedWith(['foo' => 'baz']);
+        $mergedMetadata = $metadata->mergedWith(Metadata::from(['foo' => 'baz']));
         $this->assertNotSame($metadata, $mergedMetadata);
-        $this->assertEquals($mergedMetadata->getItems(), ['foo' => 'baz']);
+        $this->assertEquals($mergedMetadata->toArray(), ['foo' => 'baz']);
 
-        $this->assertSame($metadata, $metadata->mergedWith(['foo' => 'bar']));
-        $this->assertEquals($metadata->getItems(), ['foo' => 'bar']);
+        $this->assertSame($metadata, $metadata->mergedWith(Metadata::from(['foo' => 'bar'])));
+        $this->assertEquals($metadata->toArray(), ['foo' => 'bar']);
     }
 }

@@ -8,13 +8,19 @@ use Rhumsaa\Uuid\Uuid;
 
 class GenericDomainEventMessage extends GenericEventMessage implements DomainEventMessageInterface
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private $aggregateType;
 
-    /** @var mixed */
+    /**
+     * @var mixed
+     */
     private $aggregateId;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $sequenceNumber;
 
     /**
@@ -22,11 +28,11 @@ class GenericDomainEventMessage extends GenericEventMessage implements DomainEve
      * @param mixed $aggregateId
      * @param int $sequenceNumber
      * @param EventInterface $payload
-     * @param array $metadata
+     * @param Metadata|array $metadata
      * @param Uuid $id
      * @param DateTimeInterface $timestamp
      */
-    public function __construct($aggregateType, $aggregateId, $sequenceNumber, EventInterface $payload, array $metadata = [], Uuid $id = null, DateTimeInterface $timestamp = null)
+    public function __construct($aggregateType, $aggregateId, $sequenceNumber, EventInterface $payload, $metadata = null, Uuid $id = null, DateTimeInterface $timestamp = null)
     {
         $this->aggregateType  = $aggregateType;
         $this->aggregateId    = $aggregateId;

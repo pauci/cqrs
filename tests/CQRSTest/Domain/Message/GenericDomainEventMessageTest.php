@@ -32,7 +32,7 @@ class GenericDomainEventMessageTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame($id, $message->getId());
         $this->assertSame($timestamp, $message->getTimestamp());
-        $this->assertEquals($metadata, $message->getMetadata());
+        $this->assertEquals($metadata, $message->getMetadata()->toArray());
     }
 }
 

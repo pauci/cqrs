@@ -8,7 +8,6 @@ interface EventBusInterface
 {
     /**
      * @param EventMessageInterface $event
-     * @return
      */
     public function publish(EventMessageInterface $event);
 }

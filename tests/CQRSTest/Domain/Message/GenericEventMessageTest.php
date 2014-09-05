@@ -30,7 +30,7 @@ class GenericEventMessageTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame($timestamp, $eventMessage->getTimestamp());
         $this->assertSame($id, $eventMessage->getId());
-        $this->assertEquals($metadata, $eventMessage->getMetadata());
+        $this->assertEquals($metadata, $eventMessage->getMetadata()->toArray());
     }
 }
 

@@ -17,7 +17,7 @@ class GenericMessageTest extends PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf(Uuid::class, $message->getId());
         $this->assertEquals(4, $message->getId()->getVersion());
-        $this->assertEquals([], $message->getMetadata());
+        $this->assertEquals([], $message->getMetadata()->toArray());
     }
 
     public function testReconstructUsingExistingData()
@@ -28,7 +28,7 @@ class GenericMessageTest extends PHPUnit_Framework_TestCase
         $message = new GenericMessage(new SomePayload(), $metadata, $uuid);
 
         $this->assertSame($uuid, $message->getId());
-        $this->assertEquals($metadata, $message->getMetadata());
+        $this->assertEquals($metadata, $message->getMetadata()->toArray());
     }
 }
 

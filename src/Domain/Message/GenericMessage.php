@@ -6,27 +6,35 @@ use Rhumsaa\Uuid\Uuid;
 
 class GenericMessage implements MessageInterface
 {
-    /** @var Uuid */
+    /**
+     * @var Uuid
+     */
     private $id;
 
-    /** @var Metadata */
+    /**
+     * @var Metadata
+     */
     private $metadata;
 
-    /** @var object */
+    /**
+     * @var object
+     */
     private $payload;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $payloadType;
 
     /**
      * @param object $payload
-     * @param array $metadata
-     * @param Uuid|null $id
+     * @param Metadata|array $metadata
+     * @param Uuid $id
      */
-    public function __construct($payload, array $metadata = [], Uuid $id = null)
+    public function __construct($payload, $metadata = null, Uuid $id = null)
     {
         $this->id          = $id ?: Uuid::uuid4();
-        $this->metadata    = new Metadata($metadata);
+        $this->metadata    = Metadata::from($metadata);
         $this->payload     = $payload;
         $this->payloadType = get_class($payload);
     }
@@ -64,10 +72,10 @@ class GenericMessage implements MessageInterface
     }
 
     /**
-     * @param array $metadata
+     * @param Metadata $metadata
      * @return static
      */
-    public function addMetadata(array $metadata)
+    public function addMetadata(Metadata $metadata)
     {
         $metadata = $this->metadata->mergedWith($metadata);
 

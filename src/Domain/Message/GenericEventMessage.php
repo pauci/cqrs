@@ -9,16 +9,18 @@ use Rhumsaa\Uuid\Uuid;
 
 class GenericEventMessage extends GenericMessage implements EventMessageInterface
 {
-    /** @var DateTimeInterface */
+    /**
+     * @var DateTimeInterface
+     */
     private $timestamp;
 
     /**
      * @param EventInterface $payload
-     * @param array $metadata
-     * @param Uuid|null $id
-     * @param DateTimeInterface|null $timestamp
+     * @param Metadata|array $metadata
+     * @param Uuid $id
+     * @param DateTimeInterface $timestamp
      */
-    public function __construct(EventInterface $payload, array $metadata = [], Uuid $id = null, DateTimeInterface $timestamp = null)
+    public function __construct(EventInterface $payload, $metadata = null, Uuid $id = null, DateTimeInterface $timestamp = null)
     {
         parent::__construct($payload, $metadata, $id);
         $this->timestamp = $timestamp ?: MicrosecondsDateTimeFactory::createImmutableNow();
