@@ -6,7 +6,6 @@ use CQRS\Domain\Message\DomainEventMessageInterface;
 use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\EventHandling\Locator\EventHandlerLocatorInterface;
-use CQRS\EventStore\EventStoreInterface;
 use Exception;
 
 class SynchronousEventBus implements EventBusInterface
@@ -14,17 +13,12 @@ class SynchronousEventBus implements EventBusInterface
     /** @var EventHandlerLocatorInterface */
     private $locator;
 
-    /** @var EventStoreInterface */
-    private $eventStore;
-
     /**
      * @param EventHandlerLocatorInterface $locator
-     * @param EventStoreInterface $eventStore
      */
-    public function __construct(EventHandlerLocatorInterface $locator, EventStoreInterface $eventStore = null)
+    public function __construct(EventHandlerLocatorInterface $locator)
     {
         $this->locator    = $locator;
-        $this->eventStore = $eventStore;
     }
 
     /**
@@ -36,22 +30,10 @@ class SynchronousEventBus implements EventBusInterface
     }
 
     /**
-     * @return EventStoreInterface
-     */
-    public function getEventStore()
-    {
-        return $this->eventStore;
-    }
-
-    /**
      * @param EventMessageInterface $event
      */
     public function publish(EventMessageInterface $event)
     {
-        if ($this->eventStore && $event instanceof DomainEventMessageInterface) {
-            $this->eventStore->store($event);
-        }
-
         $eventName = $this->getEventName($event);
         $callbacks = $this->locator->getEventHandlers($eventName);
 
