@@ -62,10 +62,7 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
     {
         if ($this->eventContainer === null) {
             $type = get_class($this);
-            $id = $this->getId();
-            if ($id === null) {
-                throw new RuntimeException(sprintf('Aggregate ID is unknown in %s', $type));
-            }
+            $id = &$this->getId();
             $this->eventContainer = new EventContainer($type, $id);
         }
         return $this->eventContainer;

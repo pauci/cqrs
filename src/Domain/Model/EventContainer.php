@@ -31,10 +31,10 @@ class EventContainer implements Countable
      * @param string $aggregateType
      * @param mixed $aggregateId
      */
-    public function __construct($aggregateType, $aggregateId)
+    public function __construct($aggregateType, &$aggregateId)
     {
         $this->aggregateType = $aggregateType;
-        $this->aggregateId   = $aggregateId;
+        $this->aggregateId   = &$aggregateId;
     }
 
     /**
