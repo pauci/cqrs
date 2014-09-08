@@ -3,6 +3,7 @@
 namespace CQRS\Domain\Model;
 
 use CQRS\Domain\Message\GenericDomainEventMessage;
+use CQRS\Domain\Message\Metadata;
 use CQRS\EventHandling\EventInterface;
 
 abstract class AbstractAggregateRoot implements AggregateRootInterface
@@ -19,10 +20,12 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
     abstract public function getId();
 
     /**
+     * Registers an event to be published when the aggregate is saved.
+     *
      * @param EventInterface $event
-     * @param array $metadata
+     * @param Metadata|array $metadata
      */
-    protected function raiseDomainEvent(EventInterface $event, array $metadata = [])
+    protected function raiseDomainEvent(EventInterface $event, $metadata = null)
     {
         $this->getEventContainer()->addEvent($event, $metadata);
     }
