@@ -6,6 +6,7 @@ use Countable;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\Metadata;
 use CQRS\EventHandling\EventInterface;
+use CQRS\Exception\RuntimeException;
 
 /**
  * Container for events related to a single aggregate. The container will wrap registered event (payload) and metadata
@@ -74,6 +75,25 @@ class EventContainer implements Countable
     }
 
     /**
+     * @return GenericDomainEventMessage[]
+     */
+    public function getEvents()
+    {
+        return $this->events;
+    }
+
+    /**
+     * Clears the events in this container. The sequence number is not modified by this call.
+     */
+    public function commit()
+    {
+        $this->lastCommittedSequenceNumber = $this->getLastSequenceNumber();
+        $this->events = [];
+    }
+
+    /**
+     * Returns the number of events currently inside this container.
+     *
      * @return int
      */
     public function count()
@@ -82,20 +102,24 @@ class EventContainer implements Countable
     }
 
     /**
-     * @return GenericDomainEventMessage[]
+     * Sets the first sequence number that should be assigned to an incoming event.
+     *
+     * @param int $lastKnownSequenceNumber
      */
-    public function pullEvents()
+    public function initializeSequenceNumber($lastKnownSequenceNumber)
     {
-        $this->lastCommittedSequenceNumber = $this->getLastSequenceNumber();
-        $events = $this->events;
-        $this->events = [];
-        return $events;
+        if (!empty($this->events)) {
+            throw new RuntimeException('Cannot set first sequence number if events have already been added');
+        }
+        $this->lastCommittedSequenceNumber = $lastKnownSequenceNumber;
     }
 
     /**
+     * Returns the sequence number of the last committed event, or null if no events have been committed.
+     *
      * @return int
      */
-    private function getLastSequenceNumber()
+    public function getLastSequenceNumber()
     {
         if (empty($this->events)) {
             return $this->lastCommittedSequenceNumber;

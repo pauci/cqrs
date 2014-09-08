@@ -9,14 +9,14 @@ use PHPUnit_Framework_TestCase;
 
 class AbstractAggregateRootTest extends PHPUnit_Framework_TestCase
 {
-    public function testRaiseAndPullDomainEvents()
+    public function testRegisterEvent()
     {
         $event = new SomeDomainEvent();
 
         $aggregateRoot = new AggregateRootUnderTest();
         $aggregateRoot->raise($event);
 
-        $eventMessages = $aggregateRoot->pullDomainEvents();
+        $eventMessages = $aggregateRoot->getUncommittedEvents();
 
         $this->assertCount(1, $eventMessages);
         $this->assertInstanceOf(GenericDomainEventMessage::class, $eventMessages[0]);
@@ -24,7 +24,8 @@ class AbstractAggregateRootTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(4, $eventMessages[0]->getAggregateId());
         $this->assertSame($event, $eventMessages[0]->getPayload());
 
-        $this->assertEmpty($aggregateRoot->pullDomainEvents());
+        $aggregateRoot->commitEvents();
+        $this->assertEmpty($aggregateRoot->getUncommittedEvents());
     }
 }
 
@@ -32,13 +33,12 @@ class AggregateRootUnderTest extends AbstractAggregateRoot
 {
     public function raise($event)
     {
-        $this->raiseDomainEvent($event);
+        $this->registerEvent($event);
     }
 
-    public function &getId()
+    public function getId()
     {
-        $id = 4;
-        return $id;
+        return 4;
     }
 }
 

@@ -27,9 +27,10 @@ class DomainEventQueue implements EventQueueInterface
         $dequeueEvents = [];
 
         foreach ($this->identityMap->all() as $aggregateRoot) {
-            foreach ($aggregateRoot->pullDomainEvents() as $event) {
+            foreach ($aggregateRoot->getUncommittedEvents() as $event) {
                 $dequeueEvents[] = $event;
             }
+            $aggregateRoot->commitEvents();
         }
 
         return $dequeueEvents;

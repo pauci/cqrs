@@ -5,6 +5,8 @@ namespace CQRS\Domain\Model;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\Metadata;
 use CQRS\EventHandling\EventInterface;
+use CQRS\Exception\RuntimeException;
+use Doctrine\ORM\Mapping as ORM;
 
 abstract class AbstractAggregateRoot implements AggregateRootInterface
 {
@@ -19,30 +21,67 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
     private $deleted = false;
 
     /**
+     * @ORM\Column(type = "integer", options = {unsigned = true})
+     * @var int
+     */
+    private $lastEventSequenceNumber;
+
+    /**
+     * @ORM\Version
+     * @ORM\Column(type = "integer", options = {unsigned = true})
+     * @var int
+     */
+    private $version;
+
+    /**
      * @return mixed
      */
     abstract public function getId();
 
     /**
-     * Registers an event to be published when the aggregate is saved.
+     * Registers an event to be published when the aggregate is saved, containing the given payload and optional
+     * metadata.
      *
-     * @param EventInterface $event
+     * @param EventInterface $payload
      * @param Metadata|array $metadata
      */
-    protected function raiseDomainEvent(EventInterface $event, $metadata = null)
+    protected function registerEvent(EventInterface $payload, $metadata = null)
     {
-        $this->getEventContainer()->addEvent($event, $metadata);
+        $this->getEventContainer()->addEvent($payload, $metadata);
     }
 
     /**
+     * {@inheritdoc}
+     *
      * @return GenericDomainEventMessage[]
      */
-    public function pullDomainEvents()
+    public function getUncommittedEvents()
     {
         if ($this->eventContainer === null) {
             return [];
         }
-        return $this->eventContainer->pullEvents();
+        return $this->eventContainer->getEvents();
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return int
+     */
+    public function getUncommittedEventsCount()
+    {
+        return count($this->eventContainer);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function commitEvents()
+    {
+        if ($this->eventContainer !== null) {
+            $this->lastEventSequenceNumber = $this->eventContainer->getLastSequenceNumber();
+            $this->eventContainer->commit();
+        }
     }
 
     /**
@@ -62,6 +101,14 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
     }
 
     /**
+     * @return int
+     */
+    public function getVersion()
+    {
+        return $this->version;
+    }
+
+    /**
      * @return EventContainer
      */
     private function getEventContainer()
@@ -77,6 +124,7 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
                 ));
             }
             $this->eventContainer = new EventContainer($type, $id);
+            $this->eventContainer->initializeSequenceNumber($this->lastEventSequenceNumber);
         }
         return $this->eventContainer;
     }
