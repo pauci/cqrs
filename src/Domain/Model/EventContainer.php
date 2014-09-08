@@ -29,13 +29,16 @@ class EventContainer implements Countable
     private $lastCommittedSequenceNumber;
 
     /**
+     * Initialize an EventContainer for an aggregate with the given aggregateIdentifier. This identifier will be
+     * attached to all incoming events.
+     *
      * @param string $aggregateType
      * @param mixed $aggregateId
      */
-    public function __construct($aggregateType, &$aggregateId)
+    public function __construct($aggregateType, $aggregateId)
     {
         $this->aggregateType = $aggregateType;
-        $this->aggregateId   = &$aggregateId;
+        $this->aggregateId   = $aggregateId;
     }
 
     /**
