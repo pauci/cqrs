@@ -8,10 +8,14 @@ use CQRS\EventHandling\EventInterface;
 
 abstract class AbstractAggregateRoot implements AggregateRootInterface
 {
-    /** @var EventContainer */
+    /**
+     * @var EventContainer
+     */
     private $eventContainer;
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private $deleted = false;
 
     /**

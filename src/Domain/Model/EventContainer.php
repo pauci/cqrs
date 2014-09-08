@@ -13,19 +13,29 @@ use CQRS\EventHandling\EventInterface;
  */
 class EventContainer implements Countable
 {
-    /** @var GenericDomainEventMessage[] */
+    /**
+     * @var GenericDomainEventMessage[]
+     */
     private $events = [];
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $aggregateType;
 
-    /** @var mixed */
+    /**
+     * @var mixed
+     */
     private $aggregateId;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $lastSequenceNumber;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $lastCommittedSequenceNumber;
 
     /**
