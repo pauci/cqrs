@@ -24,14 +24,14 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
     private $deleted = false;
 
     /**
-     * @ORM\Column(type = "integer", options = {unsigned = true})
+     * @ORM\Column(type = "integer", options = {"unsigned" = true})
      * @var int
      */
     private $lastEventSequenceNumber;
 
     /**
      * @ORM\Version
-     * @ORM\Column(type = "integer", options = {unsigned = true})
+     * @ORM\Column(type = "integer", options = {"unsigned" = true})
      * @var int
      */
     private $version;
