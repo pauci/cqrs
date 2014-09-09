@@ -8,6 +8,9 @@ use CQRS\EventHandling\EventInterface;
 use CQRS\Exception\RuntimeException;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @ORM\MappedSuperclass
+ */
 abstract class AbstractAggregateRoot implements AggregateRootInterface
 {
     /**
