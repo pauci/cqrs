@@ -3,42 +3,80 @@
 namespace CQRS\Plugin\Doctrine\EventHandling\Publisher;
 
 use CQRS\Domain\Model\AggregateRootInterface;
-use CQRS\EventHandling\Publisher\IdentityMapInterface;
+use CQRS\EventHandling\Publisher\SimpleIdentityMap;
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\OnClearEventArgs;
+use Doctrine\ORM\Events;
 
-class DoctrineIdentityMap implements IdentityMapInterface
+class DoctrineIdentityMap extends SimpleIdentityMap implements EventSubscriber
 {
-    /**
-     * @var EntityManager
-     */
-    private $entityManager;
-
     /**
      * @param EntityManager $entityManager
      */
     public function __construct(EntityManager $entityManager)
     {
-        $this->entityManager = $entityManager;
+        $entityManager->getEventManager()
+            ->addEventSubscriber($this);
     }
 
     /**
-     * @return AggregateRootInterface[]
+     * @return array
      */
-    public function all()
+    public function getSubscribedEvents()
     {
-        $aggregateRoots = [];
-        $uow            = $this->entityManager->getUnitOfWork();
+        return [
+            Events::postLoad,
+            Events::prePersist,
+            Events::preRemove,
+            Events::onClear,
+        ];
+    }
 
-        foreach ($uow->getIdentityMap() as $class => $entities) {
-            foreach ($entities as $entity) {
-                if (!($entity instanceof AggregateRootInterface)) {
-                    break;
-                }
+    /**
+     * @param LifecycleEventArgs $args
+     */
+    public function postLoad(LifecycleEventArgs $args)
+    {
+        $entity = $args->getEntity();
 
-                $aggregateRoots[] = $entity;
-            }
+        if ($entity instanceof AggregateRootInterface) {
+            $this->add($entity);
         }
+    }
 
-        return $aggregateRoots;
+    /**
+     * @param LifecycleEventArgs $args
+     */
+    public function prePersist(LifecycleEventArgs $args)
+    {
+        $entity = $args->getEntity();
+
+        if ($entity instanceof AggregateRootInterface) {
+            $this->add($entity);
+        }
+    }
+
+    /**
+     * @param LifecycleEventArgs $args
+     */
+    public function preRemove(LifecycleEventArgs $args)
+    {
+        $entity = $args->getEntity();
+
+        if ($entity instanceof AggregateRootInterface) {
+            $this->remove($entity);
+        }
+    }
+
+    /**
+     * @param OnClearEventArgs $args
+     */
+    public function onClear(OnClearEventArgs $args)
+    {
+        if ($args->clearsAllEntities()) {
+            $this->clear();
+        }
     }
 }
