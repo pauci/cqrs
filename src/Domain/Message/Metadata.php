@@ -7,6 +7,7 @@ use ArrayIterator;
 use Countable;
 use CQRS\Exception\RuntimeException;
 use IteratorAggregate;
+use JMS\Serializer\Annotation as JMS;
 use Serializable;
 
 class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializable
@@ -33,6 +34,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
     }
 
     /**
+     * @JMS\HandlerCallback("json", direction = "deserialization")
      * @param array|self $metadata
      * @return Metadata
      */
@@ -57,6 +59,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
     }
 
     /**
+     * @JMS\HandlerCallback("json", direction = "serialization")
      * @return array
      */
     public function toArray()
