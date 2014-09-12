@@ -4,6 +4,7 @@ namespace CQRS\Common;
 
 use DateTime;
 use DateTimeImmutable;
+use DateTimeZone;
 
 class MicrosecondsDateTimeFactory
 {
@@ -12,7 +13,9 @@ class MicrosecondsDateTimeFactory
      */
     public static function createNow()
     {
-        return DateTime::createFromFormat('U.u', sprintf('%.f', microtime(true)));
+        $now = DateTime::createFromFormat('U.u', sprintf('%.f', microtime(true)));
+        $now->setTimezone(new DateTimeZone(date_default_timezone_get()));
+        return $now;
     }
 
     /**
@@ -20,6 +23,6 @@ class MicrosecondsDateTimeFactory
      */
     public static function createImmutableNow()
     {
-        return DateTimeImmutable::createFromFormat('U.u', sprintf('%.f', microtime(true)));
+        return DateTimeImmutable::createFromMutable(self::createNow());
     }
 } 
