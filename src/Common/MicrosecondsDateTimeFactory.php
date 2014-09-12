@@ -13,9 +13,8 @@ class MicrosecondsDateTimeFactory
      */
     public static function createNow()
     {
-        $now = DateTime::createFromFormat('U.u', sprintf('%.f', microtime(true)));
-        $now->setTimezone(new DateTimeZone(date_default_timezone_get()));
-        return $now;
+        return DateTime::createFromFormat('U.u', sprintf('%.f', microtime(true)))
+            ->setTimezone(new DateTimeZone(date_default_timezone_get()));
     }
 
     /**
@@ -23,6 +22,7 @@ class MicrosecondsDateTimeFactory
      */
     public static function createImmutableNow()
     {
-        return DateTimeImmutable::createFromMutable(self::createNow());
+        return DateTimeImmutable::createFromFormat('U.u', sprintf('%.f', microtime(true)))
+            ->setTimezone(new DateTimeZone(date_default_timezone_get()));
     }
 } 
