@@ -4,6 +4,7 @@ namespace CQRSTest\Domain\Model;
 
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Model\AbstractAggregateRoot;
+use CQRS\Domain\Payload\AbstractDomainEvent;
 use CQRS\EventHandling\EventInterface;
 use PHPUnit_Framework_TestCase;
 
@@ -11,7 +12,7 @@ class AbstractAggregateRootTest extends PHPUnit_Framework_TestCase
 {
     public function testRegisterEvent()
     {
-        $event = new SomeDomainEvent();
+        $event = new SomeEvent();
 
         $aggregateRoot = new AggregateRootUnderTest();
         $aggregateRoot->raise($event);
@@ -26,6 +27,16 @@ class AbstractAggregateRootTest extends PHPUnit_Framework_TestCase
 
         $aggregateRoot->commitEvents();
         $this->assertEmpty($aggregateRoot->getUncommittedEvents());
+    }
+
+    public function testRegisterEventInjectsAggregateId()
+    {
+        $domainEvent = new SomeDomainEvent();
+
+        $aggregateRoot = new AggregateRootUnderTest();
+        $aggregateRoot->raise($domainEvent);
+
+        $this->assertEquals(4, $domainEvent->aggregateId);
     }
 }
 
@@ -42,5 +53,8 @@ class AggregateRootUnderTest extends AbstractAggregateRoot
     }
 }
 
-class SomeDomainEvent implements EventInterface
+class SomeEvent implements EventInterface
+{}
+
+class SomeDomainEvent extends AbstractDomainEvent
 {}

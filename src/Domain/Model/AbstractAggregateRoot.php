@@ -4,6 +4,7 @@ namespace CQRS\Domain\Model;
 
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\Metadata;
+use CQRS\Domain\Payload\AbstractDomainEvent;
 use CQRS\EventHandling\EventInterface;
 use CQRS\Exception\RuntimeException;
 use Doctrine\ORM\Mapping as ORM;
@@ -50,6 +51,10 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
      */
     protected function registerEvent(EventInterface $payload, $metadata = null)
     {
+        if ($payload instanceof AbstractDomainEvent) {
+            $payload->setAggregateId($this->getId());
+        }
+
         $this->getEventContainer()->addEvent($payload, $metadata);
     }
 
