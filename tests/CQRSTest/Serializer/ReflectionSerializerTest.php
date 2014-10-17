@@ -74,6 +74,12 @@ class SomeAggregate extends AbstractAggregateRoot
 {
     public function getId()
     {
-        return 4;
+        return $this->getIdReference();
+    }
+
+    protected function &getIdReference()
+    {
+        $id = 4;
+        return $id;
     }
 }

@@ -6,7 +6,6 @@ use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\Metadata;
 use CQRS\Domain\Payload\AbstractDomainEvent;
 use CQRS\EventHandling\EventInterface;
-use CQRS\Exception\RuntimeException;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -43,6 +42,11 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
     abstract public function getId();
 
     /**
+     * @return mixed
+     */
+    abstract protected function &getIdReference();
+
+    /**
      * Registers an event to be published when the aggregate is saved, containing the given payload and optional
      * metadata.
      *
@@ -51,8 +55,8 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
      */
     protected function registerEvent(EventInterface $payload, $metadata = null)
     {
-        if ($payload instanceof AbstractDomainEvent) {
-            $payload->setAggregateId($this->getId());
+        if ($payload instanceof AbstractDomainEvent && null === $payload->aggregateId) {
+            $payload->setAggregateId($this->getIdReference());
         }
 
         $this->getEventContainer()->addEvent($payload, $metadata);
@@ -123,14 +127,7 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
     {
         if ($this->eventContainer === null) {
             $type = get_class($this);
-            $id = $this->getId();
-            if ($id === null) {
-                throw new RuntimeException(sprintf(
-                    'Aggregate identifier is unknown in %s. '
-                    . 'Make sure the Aggregate identifier is initialized before registering events.',
-                    $type
-                ));
-            }
+            $id   = &$this->getIdReference();
             $this->eventContainer = new EventContainer($type, $id);
             $this->eventContainer->initializeSequenceNumber($this->lastEventSequenceNumber);
         }

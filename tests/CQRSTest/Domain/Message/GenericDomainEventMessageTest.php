@@ -12,9 +12,10 @@ class GenericDomainEventMessageTest extends PHPUnit_Framework_TestCase
 {
     public function testCreateFromDomainEvent()
     {
-        $event = new SomeDomainEvent();
+        $aggregateId = 1234;
+        $event       = new SomeDomainEvent();
 
-        $message = new GenericDomainEventMessage('SomeAggregate', 1234, 5, $event);
+        $message = new GenericDomainEventMessage('SomeAggregate', $aggregateId, 5, $event);
 
         $this->assertEquals('SomeAggregate', $message->getAggregateType());
         $this->assertEquals(1234, $message->getAggregateId());
@@ -24,10 +25,11 @@ class GenericDomainEventMessageTest extends PHPUnit_Framework_TestCase
 
     public function testReconstructUsingExistingData()
     {
-        $id        = Uuid::uuid4();
-        $timestamp = new DateTime();
+        $aggregateId = 1234;
+        $id          = Uuid::uuid4();
+        $timestamp   = new DateTime();
 
-        $message = new GenericDomainEventMessage('SomeAggregate', 1234, 5, new SomeDomainEvent(), ['foo' => 'bar'], $id, $timestamp);
+        $message = new GenericDomainEventMessage('SomeAggregate', $aggregateId, 5, new SomeDomainEvent(), ['foo' => 'bar'], $id, $timestamp);
 
         $this->assertSame($id, $message->getId());
         $this->assertSame($timestamp, $message->getTimestamp());

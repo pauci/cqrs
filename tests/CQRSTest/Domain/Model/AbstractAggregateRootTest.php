@@ -42,14 +42,20 @@ class AbstractAggregateRootTest extends PHPUnit_Framework_TestCase
 
 class AggregateRootUnderTest extends AbstractAggregateRoot
 {
+    public function getId()
+    {
+        return $this->getIdReference();
+    }
+
+    protected function &getIdReference()
+    {
+        $id = 4;
+        return $id;
+    }
+
     public function raise($event)
     {
         $this->registerEvent($event);
-    }
-
-    public function getId()
-    {
-        return 4;
     }
 }
 

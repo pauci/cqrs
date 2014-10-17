@@ -19,11 +19,11 @@ abstract class AbstractDomainEvent extends AbstractEvent
      *
      * @param mixed $aggregateId
      */
-    public function setAggregateId($aggregateId)
+    public function setAggregateId(&$aggregateId)
     {
         if (null !== $this->aggregateId) {
             throw new RuntimeException('Aggregate ID has been already assigned to this event');
         }
-        $this->aggregateId = $aggregateId;
+        $this->aggregateId = &$aggregateId;
     }
 } 
