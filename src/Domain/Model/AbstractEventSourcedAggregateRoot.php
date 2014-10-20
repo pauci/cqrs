@@ -34,8 +34,8 @@ abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregateRoot
         }
         $this->$methodName(
             $event->getPayload(),
-            $event->getMetadata(),
-            $event->getTimestamp()
+            $event->getTimestamp(),
+            $event->getMetadata()
         );
     }
 
