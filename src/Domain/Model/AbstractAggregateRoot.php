@@ -2,7 +2,7 @@
 
 namespace CQRS\Domain\Model;
 
-use CQRS\Domain\Message\GenericDomainEventMessage;
+use CQRS\Domain\Message\DomainEventMessageInterface;
 use CQRS\Domain\Message\Metadata;
 use CQRS\Domain\Payload\AbstractDomainEvent;
 use CQRS\EventHandling\EventInterface;
@@ -52,6 +52,7 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
      *
      * @param EventInterface $payload
      * @param Metadata|array $metadata
+     * @return DomainEventMessageInterface
      */
     protected function registerEvent(EventInterface $payload, $metadata = null)
     {
@@ -59,13 +60,13 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
             $payload->setAggregateId($this->getIdReference());
         }
 
-        $this->getEventContainer()->addEvent($payload, $metadata);
+        return $this->getEventContainer()->addEvent($payload, $metadata);
     }
 
     /**
      * {@inheritdoc}
      *
-     * @return GenericDomainEventMessage[]
+     * @return DomainEventMessageInterface[]
      */
     public function getUncommittedEvents()
     {
