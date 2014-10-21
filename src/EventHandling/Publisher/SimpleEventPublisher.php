@@ -2,6 +2,7 @@
 
 namespace CQRS\EventHandling\Publisher;
 
+use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\Metadata;
 use CQRS\EventHandling\EventBusInterface;
 use CQRS\EventStore\EventStoreInterface;
@@ -75,15 +76,33 @@ class SimpleEventPublisher implements EventPublisherInterface
 
     public function publishEvents()
     {
+        $this->dispatchEvents($this->dequeueEvents());
+    }
+
+    /**
+     * @return EventMessageInterface[]
+     */
+    protected function dequeueEvents()
+    {
         if (!$this->queue) {
-            return;
+            return [];
         }
 
-        foreach ($this->queue->dequeueAllEvents() as $event) {
-            if ($this->additionalMetadata) {
+        $events = $this->queue->dequeueAllEvents();
+        if ($this->additionalMetadata) {
+            foreach ($events as &$event) {
                 $event = $event->addMetadata($this->additionalMetadata);
             }
+        }
+        return $events;
+    }
 
+    /**
+     * @param EventMessageInterface[] $events
+     */
+    protected function dispatchEvents(array $events)
+    {
+        foreach ($events as $event) {
             if ($this->eventStore) {
                 $this->eventStore->store($event);
             }
