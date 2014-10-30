@@ -38,7 +38,8 @@ class DoctrineEventPublisher extends SimpleEventPublisher implements EventSubscr
             return;
         }
 
-        $this->dispatchEvents($this->events);
+        $events = $this->events;
         $this->events = [];
+        $this->dispatchEvents($events);
     }
 }
