@@ -7,18 +7,27 @@ use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\EventHandling\Locator\EventHandlerLocatorInterface;
 use Exception;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerTrait;
 
 class SynchronousEventBus implements EventBusInterface
 {
+    use LoggerTrait;
+
     /** @var EventHandlerLocatorInterface */
     private $locator;
 
+    /** @var LoggerInterface */
+    private $logger;
+
     /**
      * @param EventHandlerLocatorInterface $locator
+     * @param LoggerInterface $logger
      */
-    public function __construct(EventHandlerLocatorInterface $locator)
+    public function __construct(EventHandlerLocatorInterface $locator, LoggerInterface $logger)
     {
-        $this->locator    = $locator;
+        $this->locator = $locator;
+        $this->logger  = $logger;
     }
 
     /**
@@ -48,6 +57,16 @@ class SynchronousEventBus implements EventBusInterface
      */
     private function invokeEventHandler(callable $callback, $event)
     {
+        $this->info('Invoke event handler', [
+            'payload'        => get_class($event->getPayload()),
+            'aggregateType'  => $event->getAggregateType(),
+            'aggregateId'    => $event->getAggregateId(),
+            'sequenceNumber' => $event->getSequenceNumber(),
+            'listener'       => is_array($callback) ? get_class($callback[0]) . "::" . $callback[1] : 'closure',
+            'payload'        => $event->getPayload(),
+            'metadata'       => $event->getMetadata()
+        ]);
+
         try {
             if ($event instanceof DomainEventMessageInterface) {
                 $callback(
@@ -97,5 +116,17 @@ class SynchronousEventBus implements EventBusInterface
         }
 
         return $name;
+    }
+
+    /**
+     * Logs with an arbitrary level.
+     * @param mixed $level
+     * @param string $message
+     * @param array $context
+     * @return null
+     */
+    public function log($level, $message, array $context = array())
+    {
+        $this->logger->log($level, $message, $context);
     }
 }
