@@ -96,6 +96,9 @@ class SequentialCommandBus implements CommandBusInterface
      */
     public function handle(CommandInterface $command)
     {
+        $this->debug(sprintf("Handling Command %s",  get_class($command)), [
+            'command' => $command
+        ]);
         $this->commandStack[] = $command;
 
         if ($this->executing) {
@@ -139,9 +142,7 @@ class SequentialCommandBus implements CommandBusInterface
                 ));
             }
 
-            $this->info(sprintf("Handle command %s",  get_class($command)), [
-                'commandClass'  => get_class($command),
-                'handlerClass'  => get_class($service),
+            $this->debug(sprintf("Dispatching Command %s to CommandHandler %s",  get_class($command), get_class($service)), [
                 'handlerMethod' => $method,
                 'command'       => $command
             ]);

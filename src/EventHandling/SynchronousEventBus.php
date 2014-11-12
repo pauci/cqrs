@@ -43,6 +43,13 @@ class SynchronousEventBus implements EventBusInterface
      */
     public function publish(EventMessageInterface $event)
     {
+        $payloadClass  = get_class($event->getPayload());
+
+        $this->debug(sprintf('Publishing Event ', $payloadClass), [
+            'payload'        => $event->getPayload(),
+            'metadata'       => $event->getMetadata()
+        ]);
+
         $eventName = $this->getEventName($event);
         $callbacks = $this->locator->getEventHandlers($eventName);
 
@@ -57,12 +64,10 @@ class SynchronousEventBus implements EventBusInterface
      */
     private function invokeEventHandler(callable $callback, $event)
     {
-        $this->info('Invoke event handler', [
-            'payload'        => get_class($event->getPayload()),
-            'aggregateType'  => $event->getAggregateType(),
-            'aggregateId'    => $event->getAggregateId(),
-            'sequenceNumber' => $event->getSequenceNumber(),
-            'listener'       => is_array($callback) ? get_class($callback[0]) . "::" . $callback[1] : 'closure',
+        $payloadClass  = get_class($event->getPayload());
+        $listenerClass = is_array($callback) ? get_class($callback[0]) . "::" . $callback[1] : 'closure';
+
+        $this->debug(sprintf('Dispatching Event %s to EventListener %s', $payloadClass, $listenerClass), [
             'payload'        => $event->getPayload(),
             'metadata'       => $event->getMetadata()
         ]);
