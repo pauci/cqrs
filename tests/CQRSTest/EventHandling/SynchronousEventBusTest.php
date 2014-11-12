@@ -9,6 +9,7 @@ use CQRS\EventHandling\Locator\EventHandlerLocatorInterface;
 use CQRS\EventHandling\SynchronousEventBus;
 use Exception;
 use PHPUnit_Framework_TestCase;
+use Psr\Log\NullLogger;
 
 class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
 {
@@ -18,6 +19,9 @@ class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
     /** @var SynchronousEventHandler */
     protected $handler;
 
+    /** @var  TestLogger */
+    protected $logger;
+
     public function setUp()
     {
         $this->handler = new SynchronousEventHandler();
@@ -25,7 +29,9 @@ class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
         $locator = new SynchronousEventHandlerLocatorInterface();
         $locator->handler = $this->handler;
 
-        $this->eventBus = new SynchronousEventBus($locator);
+        $this->logger = new NullLogger();
+
+        $this->eventBus = new SynchronousEventBus($locator, $this->logger);
     }
 
     public function testPublishingOfEvent()
