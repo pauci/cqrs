@@ -113,7 +113,7 @@ class SequentialCommandBus implements CommandBusInterface
             $this->eventPublisher->publishEvents();
             $this->transactionManager->commit();
         } catch (Exception $e) {
-            $this->error("Exception ocured while handling command " . get_class($command));
+            $this->logger->error("Exception ocured while handling command " . get_class($command));
             $this->transactionManager->rollback();
             throw $e;
         }
