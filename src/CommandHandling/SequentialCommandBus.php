@@ -7,6 +7,7 @@ use CQRS\CommandHandling\TransactionManager\TransactionManagerInterface;
 use CQRS\EventHandling\Publisher\EventPublisherInterface;
 use CQRS\Exception\RuntimeException;
 use Exception;
+use Psr\Log\LoggerInterface;
 
 /**
  * Process Commands and pass them to their handlers in sequential order.
@@ -39,16 +40,22 @@ class SequentialCommandBus implements CommandBusInterface
     /** @var bool */
     private $executing = false;
 
+    /** @var LoggerInterface */
+    private $logger;
+
     /**
      * @param CommandHandlerLocatorInterface $locator
      * @param TransactionManagerInterface $transactionManager
      * @param EventPublisherInterface $eventPublisher
+     * @param LoggerInterface $logger
      */
-    public function __construct(CommandHandlerLocatorInterface $locator, TransactionManagerInterface $transactionManager, EventPublisherInterface $eventPublisher)
+    public function __construct(CommandHandlerLocatorInterface $locator, TransactionManagerInterface $transactionManager,
+                                EventPublisherInterface $eventPublisher, LoggerInterface $logger)
     {
         $this->locator            = $locator;
         $this->transactionManager = $transactionManager;
         $this->eventPublisher     = $eventPublisher;
+        $this->logger             = $logger;
     }
 
     /**
@@ -86,6 +93,9 @@ class SequentialCommandBus implements CommandBusInterface
      */
     public function handle(CommandInterface $command)
     {
+        $this->logger->debug(sprintf("Handling Command %s",  get_class($command)), [
+            'command' => $command
+        ]);
         $this->commandStack[] = $command;
 
         if ($this->executing) {
@@ -103,6 +113,7 @@ class SequentialCommandBus implements CommandBusInterface
             $this->eventPublisher->publishEvents();
             $this->transactionManager->commit();
         } catch (Exception $e) {
+            $this->logger->error("Exception ocured while handling command " . get_class($command));
             $this->transactionManager->rollback();
             throw $e;
         }
@@ -127,6 +138,11 @@ class SequentialCommandBus implements CommandBusInterface
                     $method
                 ));
             }
+
+            $this->logger->debug(sprintf("Dispatching Command %s to CommandHandler %s",  get_class($command), get_class($service)), [
+                'handlerMethod' => $method,
+                'command'       => $command
+            ]);
 
             $service->$method($command);
 

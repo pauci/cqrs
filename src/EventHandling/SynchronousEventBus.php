@@ -7,18 +7,24 @@ use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\EventHandling\Locator\EventHandlerLocatorInterface;
 use Exception;
+use Psr\Log\LoggerInterface;
 
 class SynchronousEventBus implements EventBusInterface
 {
     /** @var EventHandlerLocatorInterface */
     private $locator;
 
+    /** @var LoggerInterface */
+    private $logger;
+
     /**
      * @param EventHandlerLocatorInterface $locator
+     * @param LoggerInterface $logger
      */
-    public function __construct(EventHandlerLocatorInterface $locator)
+    public function __construct(EventHandlerLocatorInterface $locator, LoggerInterface $logger)
     {
-        $this->locator    = $locator;
+        $this->locator = $locator;
+        $this->logger  = $logger;
     }
 
     /**
@@ -34,6 +40,13 @@ class SynchronousEventBus implements EventBusInterface
      */
     public function publish(EventMessageInterface $event)
     {
+        $payloadClass  = get_class($event->getPayload());
+
+        $this->logger->debug(sprintf('Publishing Event ', $payloadClass), [
+            'payload'        => $event->getPayload(),
+            'metadata'       => $event->getMetadata()
+        ]);
+
         $eventName = $this->getEventName($event);
         $callbacks = $this->locator->getEventHandlers($eventName);
 
@@ -48,6 +61,14 @@ class SynchronousEventBus implements EventBusInterface
      */
     private function invokeEventHandler(callable $callback, $event)
     {
+        $payloadClass  = get_class($event->getPayload());
+        $listenerClass = is_array($callback) ? get_class($callback[0]) . "::" . $callback[1] : 'closure';
+
+        $this->logger->debug(sprintf('Dispatching Event %s to EventListener %s', $payloadClass, $listenerClass), [
+            'payload'        => $event->getPayload(),
+            'metadata'       => $event->getMetadata()
+        ]);
+
         try {
             if ($event instanceof DomainEventMessageInterface) {
                 $callback(
