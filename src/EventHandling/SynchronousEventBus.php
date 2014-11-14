@@ -8,12 +8,9 @@ use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\EventHandling\Locator\EventHandlerLocatorInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Psr\Log\LoggerTrait;
 
 class SynchronousEventBus implements EventBusInterface
 {
-    use LoggerTrait;
-
     /** @var EventHandlerLocatorInterface */
     private $locator;
 
@@ -45,7 +42,7 @@ class SynchronousEventBus implements EventBusInterface
     {
         $payloadClass  = get_class($event->getPayload());
 
-        $this->debug(sprintf('Publishing Event ', $payloadClass), [
+        $this->logger->debug(sprintf('Publishing Event ', $payloadClass), [
             'payload'        => $event->getPayload(),
             'metadata'       => $event->getMetadata()
         ]);
@@ -67,7 +64,7 @@ class SynchronousEventBus implements EventBusInterface
         $payloadClass  = get_class($event->getPayload());
         $listenerClass = is_array($callback) ? get_class($callback[0]) . "::" . $callback[1] : 'closure';
 
-        $this->debug(sprintf('Dispatching Event %s to EventListener %s', $payloadClass, $listenerClass), [
+        $this->logger->debug(sprintf('Dispatching Event %s to EventListener %s', $payloadClass, $listenerClass), [
             'payload'        => $event->getPayload(),
             'metadata'       => $event->getMetadata()
         ]);
@@ -121,17 +118,5 @@ class SynchronousEventBus implements EventBusInterface
         }
 
         return $name;
-    }
-
-    /**
-     * Logs with an arbitrary level.
-     * @param mixed $level
-     * @param string $message
-     * @param array $context
-     * @return null
-     */
-    public function log($level, $message, array $context = array())
-    {
-        $this->logger->log($level, $message, $context);
     }
 }

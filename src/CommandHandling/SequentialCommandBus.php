@@ -8,7 +8,6 @@ use CQRS\EventHandling\Publisher\EventPublisherInterface;
 use CQRS\Exception\RuntimeException;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Psr\Log\LoggerTrait;
 
 /**
  * Process Commands and pass them to their handlers in sequential order.
@@ -26,8 +25,6 @@ use Psr\Log\LoggerTrait;
  */
 class SequentialCommandBus implements CommandBusInterface
 {
-    use LoggerTrait;
-
     /** @var CommandHandlerLocatorInterface */
     private $locator;
 
@@ -96,7 +93,7 @@ class SequentialCommandBus implements CommandBusInterface
      */
     public function handle(CommandInterface $command)
     {
-        $this->debug(sprintf("Handling Command %s",  get_class($command)), [
+        $this->logger->debug(sprintf("Handling Command %s",  get_class($command)), [
             'command' => $command
         ]);
         $this->commandStack[] = $command;
@@ -142,7 +139,7 @@ class SequentialCommandBus implements CommandBusInterface
                 ));
             }
 
-            $this->debug(sprintf("Dispatching Command %s to CommandHandler %s",  get_class($command), get_class($service)), [
+            $this->logger->debug(sprintf("Dispatching Command %s to CommandHandler %s",  get_class($command), get_class($service)), [
                 'handlerMethod' => $method,
                 'command'       => $command
             ]);
@@ -178,17 +175,5 @@ class SequentialCommandBus implements CommandBusInterface
         if ($first) {
             throw $e;
         }
-    }
-
-    /**
-     * Logs with an arbitrary level.
-     * @param mixed $level
-     * @param string $message
-     * @param array $context
-     * @return null
-     */
-    public function log($level, $message, array $context = array())
-    {
-        $this->logger->log($level, $message, $context);
     }
 }
