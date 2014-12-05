@@ -25,22 +25,34 @@ use Psr\Log\LoggerInterface;
  */
 class SequentialCommandBus implements CommandBusInterface
 {
-    /** @var CommandHandlerLocatorInterface */
+    /**
+     * @var CommandHandlerLocatorInterface
+     */
     private $locator;
 
-    /** @var TransactionManagerInterface */
+    /**
+     * @var TransactionManagerInterface
+     */
     private $transactionManager;
 
-    /** @var EventPublisherInterface */
+    /**
+     * @var EventPublisherInterface
+     */
     private $eventPublisher;
 
-    /** @var CommandInterface[] */
+    /**
+     * @var CommandInterface[]
+     */
     private $commandStack = [];
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private $executing = false;
 
-    /** @var LoggerInterface */
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
 
     /**
@@ -93,9 +105,11 @@ class SequentialCommandBus implements CommandBusInterface
      */
     public function handle(CommandInterface $command)
     {
-        $this->logger->debug(sprintf("Handling Command %s",  get_class($command)), [
-            'command' => $command
-        ]);
+        $this->logger->debug(sprintf(
+            'Handling command `%s`',
+            get_class($command)
+        ), ['command' => $command]);
+
         $this->commandStack[] = $command;
 
         if ($this->executing) {
@@ -113,7 +127,12 @@ class SequentialCommandBus implements CommandBusInterface
             $this->eventPublisher->publishEvents();
             $this->transactionManager->commit();
         } catch (Exception $e) {
-            $this->logger->error("Exception ocured while handling command " . get_class($command));
+            $this->logger->error(sprintf(
+                'Exception `%s` caught while handling command `%s`, rolling back.',
+                get_class($e),
+                get_class($command)
+            ));
+
             $this->transactionManager->rollback();
             throw $e;
         }
@@ -133,16 +152,19 @@ class SequentialCommandBus implements CommandBusInterface
 
             if (!method_exists($service, $method)) {
                 throw new RuntimeException(sprintf(
-                    'Service %s has no method %s to handle command',
+                    'Service `%s` has no method `%s` to handle command `%s`',
                     get_class($service),
-                    $method
+                    $method,
+                    get_class($command)
                 ));
             }
 
-            $this->logger->debug(sprintf("Dispatching Command %s to CommandHandler %s",  get_class($command), get_class($service)), [
-                'handlerMethod' => $method,
-                'command'       => $command
-            ]);
+            $this->logger->debug(sprintf(
+                'Invoking command handler `%s::%s` with command `%s`',
+                get_class($command),
+                $method,
+                get_class($command)
+            ));
 
             $service->$method($command);
 

@@ -11,10 +11,14 @@ use Psr\Log\LoggerInterface;
 
 class SynchronousEventBus implements EventBusInterface
 {
-    /** @var EventHandlerLocatorInterface */
+    /**
+     * @var EventHandlerLocatorInterface
+     */
     private $locator;
 
-    /** @var LoggerInterface */
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
 
     /**
@@ -40,11 +44,14 @@ class SynchronousEventBus implements EventBusInterface
      */
     public function publish(EventMessageInterface $event)
     {
-        $payloadClass  = get_class($event->getPayload());
-
-        $this->logger->debug(sprintf('Publishing Event ', $payloadClass), [
-            'payload'        => $event->getPayload(),
-            'metadata'       => $event->getMetadata()
+        $this->logger->debug(sprintf(
+            'Publishing event `%s`',
+            $event->getPayloadType()
+        ), [
+            'event_id'        => $event->getId(),
+            'event_payload'   => $event->getPayload(),
+            'event_metadata'  => $event->getMetadata(),
+            'event_timestamp' => $event->getTimestamp()
         ]);
 
         $eventName = $this->getEventName($event);
@@ -61,13 +68,15 @@ class SynchronousEventBus implements EventBusInterface
      */
     private function invokeEventHandler(callable $callback, $event)
     {
-        $payloadClass  = get_class($event->getPayload());
-        $listenerClass = is_array($callback) ? get_class($callback[0]) . "::" . $callback[1] : 'closure';
+        $handlerName = is_array($callback)
+            ? (is_string($callback[0]) ? $callback[0] : get_class($callback[0])) . '::' . $callback[1]
+            : 'closure';
 
-        $this->logger->debug(sprintf('Dispatching Event %s to EventListener %s', $payloadClass, $listenerClass), [
-            'payload'        => $event->getPayload(),
-            'metadata'       => $event->getMetadata()
-        ]);
+        $this->logger->debug(sprintf(
+            'Invoking event listener `%s` for event `%s`',
+            $handlerName,
+            $event->getPayloadType()
+        ));
 
         try {
             if ($event instanceof DomainEventMessageInterface) {
@@ -86,6 +95,13 @@ class SynchronousEventBus implements EventBusInterface
                 );
             }
         } catch (Exception $e) {
+            $this->logger->error(sprintf(
+                'Exception `%s` caught while handling event `%s` by event handler `%s`.',
+                get_class($e),
+                $event->getPayloadType(),
+                $handlerName
+            ));
+
             if ($event->getPayload() instanceof EventExecutionFailed) {
                 return;
             }
