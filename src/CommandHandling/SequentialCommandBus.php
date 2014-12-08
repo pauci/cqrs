@@ -160,15 +160,14 @@ class SequentialCommandBus implements CommandBusInterface
 
             if (!method_exists($service, $method)) {
                 throw new RuntimeException(sprintf(
-                    'Service `%s` has no method `%s` to handle command `%s`',
+                    'Service %s has no method to handle Command %s',
                     get_class($service),
-                    $method,
                     get_class($command)
                 ));
             }
 
             $this->logger->debug(sprintf(
-                'Invoking command handler `%s::%s` with command `%s`',
+                'Invoking CommandHandler %s::%s',
                 get_class($command),
                 $method,
                 get_class($command)
