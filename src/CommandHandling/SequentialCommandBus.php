@@ -106,9 +106,11 @@ class SequentialCommandBus implements CommandBusInterface
     public function handle(CommandInterface $command)
     {
         $this->logger->debug(sprintf(
-            'Handling command `%s`',
+            'Handling Command %s',
             get_class($command)
-        ), ['command' => $command]);
+        ), [
+            'command_payload' => (array) $command
+        ]);
 
         $this->commandStack[] = $command;
 
@@ -128,10 +130,16 @@ class SequentialCommandBus implements CommandBusInterface
             $this->transactionManager->commit();
         } catch (Exception $e) {
             $this->logger->error(sprintf(
-                'Exception `%s` caught while handling command `%s`, rolling back.',
+                'Uncaught Exception %s while handling Command %s: "%s" at %s line %s',
                 get_class($e),
-                get_class($command)
-            ));
+                get_class($command),
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine()
+            ), [
+                'exception'       => $e,
+                'command_payload' => (array) $command,
+            ]);
 
             $this->transactionManager->rollback();
             throw $e;

@@ -45,13 +45,14 @@ class SynchronousEventBus implements EventBusInterface
     public function publish(EventMessageInterface $event)
     {
         $this->logger->debug(sprintf(
-            'Publishing event `%s`',
+            'Publishing Event %s',
             $event->getPayloadType()
         ), [
-            'event_id'        => $event->getId(),
-            'event_payload'   => $event->getPayload(),
-            'event_metadata'  => $event->getMetadata(),
-            'event_timestamp' => $event->getTimestamp()
+            'event_id'           => $event->getId(),
+            'event_payload_type' => $event->getPayloadType(),
+            'event_payload'      => (array) $event->getPayload(),
+            'event_metadata'     => $event->getMetadata()->toArray(),
+            'event_timestamp'    => $event->getTimestamp()
         ]);
 
         $eventName = $this->getEventName($event);
@@ -73,10 +74,12 @@ class SynchronousEventBus implements EventBusInterface
             : 'closure';
 
         $this->logger->debug(sprintf(
-            'Invoking event listener `%s` for event `%s`',
+            'Invoking EventListener %s',
             $handlerName,
             $event->getPayloadType()
-        ));
+        ), [
+            'event_id' => $event->getId(),
+        ]);
 
         try {
             if ($event instanceof DomainEventMessageInterface) {
@@ -96,11 +99,16 @@ class SynchronousEventBus implements EventBusInterface
             }
         } catch (Exception $e) {
             $this->logger->error(sprintf(
-                'Exception `%s` caught while handling event `%s` by event handler `%s`.',
+                'Uncaught Exception %s while handling Event %s: "%s" at %s line %s',
                 get_class($e),
                 $event->getPayloadType(),
-                $handlerName
-            ));
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine()
+            ), [
+                'exception' => $e,
+                'event_id'  => $event->getId(),
+            ]);
 
             if ($event->getPayload() instanceof EventExecutionFailed) {
                 return;
