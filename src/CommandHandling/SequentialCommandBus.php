@@ -109,7 +109,8 @@ class SequentialCommandBus implements CommandBusInterface
             'Handling Command %s',
             get_class($command)
         ), [
-            'command_payload' => (array) $command
+            'command_payload_type' => get_class($command),
+            'command_payload'      => (array) $command
         ]);
 
         $this->commandStack[] = $command;
@@ -137,8 +138,9 @@ class SequentialCommandBus implements CommandBusInterface
                 $e->getFile(),
                 $e->getLine()
             ), [
-                'exception'       => $e,
-                'command_payload' => (array) $command,
+                'exception'            => $e,
+                'command_payload_type' => get_class($command),
+                'command_payload'      => (array) $command,
             ]);
 
             $this->transactionManager->rollback();
@@ -171,7 +173,10 @@ class SequentialCommandBus implements CommandBusInterface
                 get_class($command),
                 $method,
                 get_class($command)
-            ));
+            ), [
+                'command_payload_type' => get_class($command),
+                'command_payload'      => (array) $command,
+            ]);
 
             $service->$method($command);
 
