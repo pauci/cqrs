@@ -170,9 +170,8 @@ class SequentialCommandBus implements CommandBusInterface
 
             $this->logger->debug(sprintf(
                 'Invoking CommandHandler %s::%s',
-                get_class($command),
-                $method,
-                get_class($command)
+                get_class($service),
+                $method
             ), [
                 'command_payload_type' => get_class($command),
                 'command_payload'      => (array) $command,
