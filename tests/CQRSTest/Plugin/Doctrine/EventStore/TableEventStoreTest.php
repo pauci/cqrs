@@ -11,14 +11,17 @@ use CQRS\Serializer\SerializerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use PHPUnit_Framework_TestCase;
-use Rhumsaa\Uuid\Uuid;
 
 class TableEventStoreTest extends PHPUnit_Framework_TestCase
 {
-    /** @var Connection */
+    /**
+     * @var Connection
+     */
     private $conn;
 
-    /** @var TableEventStore */
+    /**
+     * @var TableEventStore
+     */
     private $tableEventStore;
 
     public function setUp()
@@ -33,7 +36,7 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
                 ['{}', 'SomeEvent', 'json', new SomeEvent()],
                 ['{}', 'array', 'json', []]
             ]));
-        /** @var \CQRS\Serializer\SerializerInterface $serializer */
+        /** @var SerializerInterface $serializer */
 
         $schema = new TableEventStoreSchema();
         $tableSchema = $schema->getTableSchema();
@@ -53,7 +56,7 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
         $serializer->expects($this->any())
             ->method('serialize')
             ->will($this->returnValue('{}'));
-        /** @var \CQRS\Serializer\SerializerInterface $serializer */
+        /** @var SerializerInterface $serializer */
 
         $aggregateId = 123;
 

@@ -15,13 +15,19 @@ use Rhumsaa\Uuid\Uuid;
 
 class TableEventStore implements EventStoreInterface
 {
-    /** @var SerializerInterface */
+    /**
+     * @var SerializerInterface
+     */
     private $serializer;
 
-    /** @var Connection */
+    /**
+     * @var Connection
+     */
     private $connection;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $table;
 
     /**
@@ -47,12 +53,12 @@ class TableEventStore implements EventStoreInterface
     public function store(EventMessageInterface $event)
     {
         $data = [
-            'event_id'        => (string) $event->getId(),
-            'event_date'      => $event->getTimestamp()->format('Y-m-d H:i:s'),
-            'event_date_u'    => $event->getTimestamp()->format('u'),
-            'payload_type'    => $event->getPayloadType(),
-            'payload'         => $this->serializer->serialize($event->getPayload(), 'json'),
-            'metadata'        => $this->serializer->serialize($event->getMetadata(), 'json'),
+            'event_id'     => (string) $event->getId(),
+            'event_date'   => $event->getTimestamp()->format('Y-m-d H:i:s'),
+            'event_date_u' => $event->getTimestamp()->format('u'),
+            'payload_type' => $event->getPayloadType(),
+            'payload'      => $this->serializer->serialize($event->getPayload(), 'json'),
+            'metadata'     => $this->serializer->serialize($event->getMetadata(), 'json'),
         ];
 
         if ($event instanceof DomainEventMessageInterface) {
