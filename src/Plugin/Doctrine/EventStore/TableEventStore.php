@@ -5,6 +5,7 @@ namespace CQRS\Plugin\Doctrine\EventStore;
 use CQRS\Domain\Message\DomainEventMessageInterface;
 use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericDomainEventMessage;
+use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\Domain\Message\Metadata;
 use CQRS\EventHandling\EventInterface;
 use CQRS\EventStore\EventStoreInterface;
@@ -52,30 +53,7 @@ class TableEventStore implements EventStoreInterface
      */
     public function store(EventMessageInterface $event)
     {
-        $data = [
-            'event_id'     => (string) $event->getId(),
-            'event_date'   => $event->getTimestamp()->format('Y-m-d H:i:s'),
-            'event_date_u' => $event->getTimestamp()->format('u'),
-            'payload_type' => $event->getPayloadType(),
-            'payload'      => $this->serializer->serialize($event->getPayload(), 'json'),
-            'metadata'     => $this->serializer->serialize($event->getMetadata(), 'json'),
-        ];
-
-        if ($event instanceof DomainEventMessageInterface) {
-            $aggregateId = $event->getAggregateId();
-            if ($aggregateId instanceof Uuid) {
-                $aggregateId = (string) $aggregateId;
-            } else {
-                $aggregateId = json_encode($aggregateId);
-            }
-
-            $data = array_merge($data, [
-                'aggregate_type'  => $event->getAggregateType(),
-                'aggregate_id'    => $aggregateId,
-                'sequence_number' => $event->getSequenceNumber(),
-            ]);
-
-        }
+        $data = $this->toArray($event);
 
         $this->connection->insert($this->table, $data);
     }
@@ -98,25 +76,77 @@ class TableEventStore implements EventStoreInterface
 
         $events = [];
 
-        $stmt = $this->connection->executeQuery($sql, [$offset, $limit]);
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(1, $offset);
+        $stmt->bindValue(2, $limit);
+        $stmt->execute();
 
-        foreach ($stmt as $row) {
-            /** @var EventInterface $payload */
-            $payload  = $this->serializer->deserialize($row['payload'], $row['payload_type'], 'json');
-            $metadata = $this->serializer->deserialize($row['metadata'], Metadata::class, 'json');
-
-            $events[$row['id']] = new GenericDomainEventMessage(
-                $row['aggregate_type'],
-                $row['aggregate_id'],
-                $row['sequence_number'],
-                $payload,
-                $metadata,
-                Uuid::fromString($row['event_id']),
-                DateTimeImmutable::createFromFormat('Y-m-d H:i:s.u', "{$row['event_date']}.{$row['event_date_u']}")
-            );
+        while ($row = $stmt->fetch()) {
+            $events[$row['id']] = $this->fromArray($row);
         }
 
         return $events;
+    }
+
+    /**
+     * @param EventMessageInterface $event
+     * @return array
+     */
+    private function toArray(EventMessageInterface $event)
+    {
+        $data = [
+            'event_id'     => (string) $event->getId(),
+            'event_date'   => $event->getTimestamp()->format('Y-m-d H:i:s'),
+            'event_date_u' => $event->getTimestamp()->format('u'),
+            'payload_type' => $event->getPayloadType(),
+            'payload'      => $this->serializer->serialize($event->getPayload(), 'json'),
+            'metadata'     => $this->serializer->serialize($event->getMetadata(), 'json'),
+        ];
+
+        if ($event instanceof DomainEventMessageInterface) {
+            $aggregateId = $event->getAggregateId();
+            if ($aggregateId instanceof Uuid) {
+                $aggregateId = (string) $aggregateId;
+            } else {
+                $aggregateId = json_encode($aggregateId);
+            }
+
+            $data = array_merge($data, [
+                'aggregate_type'  => $event->getAggregateType(),
+                'aggregate_id'    => $aggregateId,
+                'sequence_number' => $event->getSequenceNumber(),
+            ]);
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param array $data
+     * @return GenericDomainEventMessage|GenericEventMessage
+     */
+    public function fromArray(array $data)
+    {
+        /** @var EventInterface $payload */
+        $payload   = $this->serializer->deserialize($data['payload'], $data['payload_type'], 'json');
+        /** @var Metadata $metadata */
+        $metadata  = $this->serializer->deserialize($data['metadata'], Metadata::class, 'json');
+        $id        = Uuid::fromString($data['event_id']);
+        $timestamp = DateTimeImmutable::createFromFormat('Y-m-d H:i:s.u', "{$data['event_date']}.{$data['event_date_u']}");
+
+        if (isset($data['aggregate_type'])) {
+            return new GenericDomainEventMessage(
+                $data['aggregate_type'],
+                $data['aggregate_id'],
+                $data['sequence_number'],
+                $payload,
+                $metadata,
+                $id,
+                $timestamp
+            );
+        }
+
+        return new GenericEventMessage($payload, $metadata, $id, $timestamp);
     }
 
     /**
@@ -126,9 +156,9 @@ class TableEventStore implements EventStoreInterface
     {
         $sql = 'SELECT MAX(id) FROM ' . $this->table;
 
-        $maxId = $this->connection->executeQuery($sql)
-            ->fetchColumn();
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute();
 
-        return $maxId ?: 1;
+        return (int) $stmt->fetchColumn() ?: 1;
     }
 }
