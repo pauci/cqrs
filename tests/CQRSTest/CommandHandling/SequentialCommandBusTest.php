@@ -8,6 +8,7 @@ use CQRS\CommandHandling\SequentialCommandBus;
 use CQRS\CommandHandling\TransactionManager\TransactionManagerInterface;
 use CQRS\EventHandling\Publisher\EventPublisherInterface;
 use PHPUnit_Framework_TestCase;
+use Psr\Log\NullLogger;
 
 class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
 {
@@ -31,7 +32,7 @@ class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
 
         $this->eventPublisher = new SequentialEventPublisher();
 
-        $this->commandBus = new SequentialCommandBus($locator, $this->transactionManager, $this->eventPublisher);
+        $this->commandBus = new SequentialCommandBus($locator, $this->transactionManager, $this->eventPublisher, new NullLogger());
         $this->handler->commandBus = $this->commandBus;
     }
 
@@ -82,7 +83,7 @@ class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(
             'CQRS\Exception\RuntimeException',
-            'Service CQRSTest\CommandHandling\SequentialCommandHandler has no method noHandlingMethod to handle command'
+            'Service CQRSTest\CommandHandling\SequentialCommandHandler has no method to handle Command CQRSTest\CommandHandling\NoHandlingMethodCommand'
         );
 
         $this->commandBus->handle(new NoHandlingMethodCommand());
