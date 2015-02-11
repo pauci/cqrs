@@ -4,10 +4,10 @@ namespace CQRSTest\Plugin\Doctrine\EventStore;
 
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\Metadata;
-use CQRS\EventHandling\EventInterface;
 use CQRS\Plugin\Doctrine\EventStore\TableEventStore;
 use CQRS\Plugin\Doctrine\EventStore\TableEventStoreSchema;
 use CQRS\Serializer\SerializerInterface;
+use CQRSTest\EventStore\SomeEvent;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use PHPUnit_Framework_TestCase;
@@ -109,6 +109,7 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
 
 
         $events = $this->tableEventStore->read();
+
         $this->assertCount(3, $events);
         $this->assertEquals([11, 12, 13], array_keys($events));
         $this->assertContainsOnlyInstancesOf(GenericDomainEventMessage::class, $events);
@@ -125,6 +126,3 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
         $this->assertCount(5, $events);
     }
 }
-
-class SomeEvent implements EventInterface
-{}

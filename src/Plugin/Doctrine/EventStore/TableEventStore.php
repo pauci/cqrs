@@ -54,14 +54,13 @@ class TableEventStore implements EventStoreInterface
     public function store(EventMessageInterface $event)
     {
         $data = $this->toArray($event);
-
         $this->connection->insert($this->table, $data);
     }
 
     /**.
      * @param int|null $offset
      * @param int $limit
-     * @return GenericDomainEventMessage[]
+     * @return EventMessageInterface[]
      */
     public function read($offset = null, $limit = 10)
     {
