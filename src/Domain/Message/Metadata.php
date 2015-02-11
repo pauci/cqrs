@@ -59,7 +59,6 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
     }
 
     /**
-     * @JMS\HandlerCallback("json", direction = "serialization")
      * @return array
      */
     public function toArray()
@@ -68,6 +67,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
     }
 
     /**
+     * @JMS\HandlerCallback("json", direction = "serialization")
      * @return ArrayIterator
      */
     public function getIterator()
