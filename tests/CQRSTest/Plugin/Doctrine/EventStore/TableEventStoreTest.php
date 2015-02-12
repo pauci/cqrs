@@ -6,8 +6,8 @@ use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\Metadata;
 use CQRS\Plugin\Doctrine\EventStore\TableEventStore;
 use CQRS\Plugin\Doctrine\EventStore\TableEventStoreSchema;
-use CQRS\Serializer\SerializerInterface;
 use CQRSTest\EventStore\SomeEvent;
+use CQRSTest\EventStore\SomeSerializer;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use PHPUnit_Framework_TestCase;
@@ -26,18 +26,6 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $serializer = $this->getMock(SerializerInterface::class);
-        $serializer->expects($this->any())
-            ->method('serialize')
-            ->will($this->returnValue('{}'));
-        $serializer->expects($this->any())
-            ->method('deserialize')
-            ->will($this->returnValueMap([
-                ['{}', 'SomeEvent', 'json', new SomeEvent()],
-                ['{}', 'array', 'json', []]
-            ]));
-        /** @var SerializerInterface $serializer */
-
         $schema = new TableEventStoreSchema();
         $tableSchema = $schema->getTableSchema();
 
@@ -47,17 +35,11 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
         ]);
         $this->conn->getSchemaManager()->createTable($tableSchema);
 
-        $this->tableEventStore = new TableEventStore($serializer, $this->conn, $tableSchema->getName());
+        $this->tableEventStore = new TableEventStore(new SomeSerializer(), $this->conn, $tableSchema->getName());
     }
 
     public function testStoreEvent()
     {
-        $serializer = $this->getMock(SerializerInterface::class);
-        $serializer->expects($this->any())
-            ->method('serialize')
-            ->will($this->returnValue('{}'));
-        /** @var SerializerInterface $serializer */
-
         $aggregateId = 123;
 
         $event = new GenericDomainEventMessage('SomeAggregate', $aggregateId, 4, new SomeEvent());
@@ -101,12 +83,11 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
                 'aggregate_type'  => 'SomeAggregate',
                 'aggregate_id'    => 123,
                 'sequence_number' => $i + 10,
-                'payload_type'    => 'SomeEvent',
+                'payload_type'    => SomeEvent::class,
                 'payload'         => '{}',
                 'metadata'        => '{}'
             ]);
         }
-
 
         $events = $this->tableEventStore->read();
 

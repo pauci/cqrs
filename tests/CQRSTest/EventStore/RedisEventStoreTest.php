@@ -6,7 +6,6 @@ use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\EventStore\RedisEventStore;
-use CQRS\Serializer\SerializerInterface;
 use DateTimeImmutable;
 use Redis;
 use Rhumsaa\Uuid\Uuid;
@@ -25,22 +24,10 @@ class RedisEventStoreTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $serializer = $this->getMock(SerializerInterface::class);
-        $serializer->expects($this->any())
-            ->method('serialize')
-            ->will($this->returnValue('{}'));
-        $serializer->expects($this->any())
-            ->method('deserialize')
-            ->will($this->returnValueMap([
-                ['{}', SomeEvent::class, 'json', new SomeEvent()],
-                ['{}', 'array', 'json', []]
-            ]));
-        /** @var SerializerInterface $serializer */
-
         $this->redis = new Redis();
         $this->redis->connect('127.0.0.1');
         $this->redis->del('cqrs_event');
-        $this->redisEventStore = new RedisEventStore($serializer, $this->redis);
+        $this->redisEventStore = new RedisEventStore(new SomeSerializer(), $this->redis);
     }
 
     /**

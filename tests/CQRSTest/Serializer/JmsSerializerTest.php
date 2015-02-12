@@ -2,7 +2,6 @@
 
 namespace CQRSTest\Serializer;
 
-use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Serializer\JmsSerializer;
 use JMS\Serializer\Serializer;
 
@@ -10,8 +9,7 @@ class JmsSerializerTest extends \PHPUnit_Framework_TestCase
 {
     public function testSerialize()
     {
-        $event = $this->getMock(EventMessageInterface::class);
-        /** @var EventMessageInterface $event */
+        $event = new SomeEvent();
 
         $serializer = $this->getMock(Serializer::class, [], [], '', false);
         $serializer->expects($this->once())
@@ -26,8 +24,7 @@ class JmsSerializerTest extends \PHPUnit_Framework_TestCase
 
     public function testDeserialize()
     {
-        $event = $this->getMock(EventMessageInterface::class);
-        /** @var EventMessageInterface $event */
+        $event = new SomeEvent();
 
         $serializer = $this->getMock(Serializer::class, [], [], '', false);
         $serializer->expects($this->once())
