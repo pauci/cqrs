@@ -28,18 +28,21 @@ class RedisEventStore implements EventStoreInterface
     /**
      * @var string
      */
-    private $key;
+    private $key = 'cqrs_event';
 
     /**
      * @param SerializerInterface $serializer
      * @param Redis $redis
-     * @param string $key
+     * @param string|null $key
      */
-    public function __construct(SerializerInterface $serializer, Redis $redis, $key = 'cqrs_event')
+    public function __construct(SerializerInterface $serializer, Redis $redis, $key = null)
     {
         $this->serializer = $serializer;
         $this->redis      = $redis;
-        $this->key        = $key;
+
+        if (null !== $key) {
+            $this->key = $key;
+        }
     }
 
     /**

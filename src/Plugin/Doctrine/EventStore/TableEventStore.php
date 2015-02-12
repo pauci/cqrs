@@ -29,23 +29,21 @@ class TableEventStore implements EventStoreInterface
     /**
      * @var string
      */
-    private $table;
+    private $table = 'cqrs_event';
 
     /**
      * @param SerializerInterface $serializer
      * @param Connection $connection
      * @param string $table
      */
-    public function __construct(SerializerInterface $serializer, Connection $connection, $table = 'cqrs_event')
+    public function __construct(SerializerInterface $serializer, Connection $connection, $table = null)
     {
         $this->serializer = $serializer;
         $this->connection = $connection;
-        $this->table      = $table;
-    }
 
-    public function setConnection(Connection $connection)
-    {
-        $this->connection = $connection;
+        if (null !== $table) {
+            $this->table = $table;
+        }
     }
 
     /**
