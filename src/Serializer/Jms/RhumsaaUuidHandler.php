@@ -41,6 +41,10 @@ class RhumsaaUuidHandler implements SubscribingHandlerInterface
 
     public function deserializeUuid(VisitorInterface $visitor, $data,  array $type, Context $context)
     {
+        if (null === $data) {
+            return null;
+        }
+
         return Uuid::fromString($data);
     }
 }
