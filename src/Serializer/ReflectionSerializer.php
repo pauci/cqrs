@@ -12,10 +12,14 @@ use Rhumsaa\Uuid\Uuid;
 
 class ReflectionSerializer implements SerializerInterface
 {
-    /** @var ReflectionClass[] */
+    /**
+     * @var ReflectionClass[]
+     */
     private $classes = [];
 
-    /** @var ReflectionProperty[][] */
+    /**
+     * @var ReflectionProperty[][]
+     */
     private $reflectionProperties = [];
 
     /**
@@ -66,16 +70,11 @@ class ReflectionSerializer implements SerializerInterface
     private function toArray($object)
     {
         if ($object instanceof DateTimeInterface) {
-            return [
-                'time'     => $object->format('Y-m-d H:i:s.u'),
-                'timezone' => $object->getTimezone()->getName()
-            ];
+            return ['time' => $object->format('Y-m-d\TH:i:s.uO')];
         }
 
         if ($object instanceof Uuid) {
-            return [
-                'uuid' => (string) $object,
-            ];
+            return ['uuid' => (string) $object];
         }
 
         return $this->extractValuesFromObject($object);
@@ -122,10 +121,9 @@ class ReflectionSerializer implements SerializerInterface
     {
         switch ($className) {
             case DateTime::class:
-                return DateTime::createFromFormat('Y-m-d H:i:s.u', $data['time'], new DateTimeZone($data['timezone']));
-
             case DateTimeImmutable::class:
-                return DateTimeImmutable::createFromFormat('Y-m-d H:i:s.u', $data['time'], new DateTimeZone($data['timezone']));
+                $timezone = isset($data['timezone']) ? new DateTimeZone($data['timezone']) : null;
+                return new $className($data['time'], $timezone);
 
             case Uuid::class:
                 return Uuid::fromString($data['uuid']);
