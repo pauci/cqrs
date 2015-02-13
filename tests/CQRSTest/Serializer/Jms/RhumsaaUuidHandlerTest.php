@@ -34,9 +34,6 @@ class RhumsaaUuidHandlerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('{"uuid":"34ca79b8-6181-4b93-903a-ac658e0c5c35"}', $json);
     }
 
-    /**
-     * @depends testSerializeJson
-     */
     public function testDeserializeJson()
     {
         $json = '{"uuid":"ed34c88e-78b0-11e3-9ade-406c8f20ad00"}';

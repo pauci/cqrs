@@ -7,7 +7,6 @@ use CQRS\Serializer\Jms\MetadataHandler;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\Handler\HandlerRegistry;
-use Rhumsaa\Uuid\Uuid;
 
 class MetadataHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -33,9 +32,6 @@ class MetadataHandlerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('{"baz":[1,2,3],"foo":"bar"}', $json);
     }
 
-    /**
-     * @depends testSerializeJson
-     */
     public function testDeserializeJson()
     {
         $json = '{"foo":"bar","baz":[1,2,3]}';
