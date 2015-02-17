@@ -14,7 +14,7 @@ interface EventStoreInterface
     /**
      * @param int|null $offset
      * @param int $limit
-     * @return array
+     * @return EventMessageInterface[]
      */
     public function read($offset = null, $limit = 10);
 }

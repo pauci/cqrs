@@ -2,14 +2,9 @@
 
 namespace CQRS\EventStore;
 
-use CQRS\Domain\Message\DomainEventMessageInterface;
 use CQRS\Domain\Message\EventMessageInterface;
-use CQRS\Domain\Message\GenericDomainEventMessage;
-use CQRS\Domain\Message\GenericEventMessage;
-use CQRS\EventHandling\EventInterface;
 use CQRS\Serializer\SerializerInterface;
 use Redis;
-use Rhumsaa\Uuid\Uuid;
 
 class RedisEventStore implements EventStoreInterface
 {
@@ -50,8 +45,8 @@ class RedisEventStore implements EventStoreInterface
      */
     public function store(EventMessageInterface $event)
     {
-        $data = $this->encode($event);
-        $this->redis->lPush($this->key, $data);
+        $record = RedisEventRecord::fromMessage($event, $this->serializer);
+        $this->redis->lPush($this->key, (string) $record);
     }
 
     /**
@@ -67,13 +62,14 @@ class RedisEventStore implements EventStoreInterface
 
         $records = $this->redis->lRange($this->key, $offset, $limit);
 
-        return array_map(function($record) {
-            return $this->decode($record);
+        return array_map(function($data) {
+            $record = new RedisEventRecord($data);
+            return $record->toMessage($this->serializer);
         }, $records);
     }
 
     /**
-     * @return GenericDomainEventMessage|GenericEventMessage|null
+     * @return RedisEventRecord|null
      */
     public function pop()
     {
@@ -83,60 +79,6 @@ class RedisEventStore implements EventStoreInterface
             return null;
         }
 
-        return $this->decode($data[1]);
-    }
-
-    /**
-     * @param EventMessageInterface $event
-     * @return string
-     */
-    private function encode(EventMessageInterface $event)
-    {
-        $data = [
-            'id'           => (string) $event->getId(),
-            'timestamp'    => $event->getTimestamp()->format(self::TIMESTAMP_FORMAT),
-            'payload_type' => $event->getPayloadType(),
-            'payload'      => $this->serializer->serialize($event->getPayload(), 'json'),
-            'metadata'     => $this->serializer->serialize($event->getMetadata(), 'json')
-        ];
-
-        if ($event instanceof DomainEventMessageInterface) {
-            $data['aggregate'] = [
-                'type' => $event->getAggregateType(),
-                'id'   => $event->getAggregateId(),
-                'seq'  => $event->getSequenceNumber()
-            ];
-        }
-
-        return json_encode($data);
-    }
-
-    /**
-     * @param string $data
-     * @return GenericDomainEventMessage|GenericEventMessage
-     */
-    private function decode($data)
-    {
-        $data = json_decode($data, true);
-
-        /** @var EventInterface $payload */
-        $id        = Uuid::fromString($data['id']);
-        $timestamp = \DateTimeImmutable::createFromFormat(self::TIMESTAMP_FORMAT, $data['timestamp']);
-        $payload   = $this->serializer->deserialize($data['payload'], $data['payload_type'], 'json');
-        $metadata  = $this->serializer->deserialize($data['metadata'], 'array', 'json');
-
-        if (isset($data['aggregate'])) {
-            return new GenericDomainEventMessage(
-                $data['aggregate']['type'],
-                $data['aggregate']['id'],
-                $data['aggregate']['seq'],
-                $payload,
-                $metadata,
-                $id,
-                $timestamp
-            );
-        }
-
-        return new GenericEventMessage($payload, $metadata, $id, $timestamp);
+        return new RedisEventRecord($data[1]);
     }
 }
