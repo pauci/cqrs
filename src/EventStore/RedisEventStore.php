@@ -69,11 +69,12 @@ class RedisEventStore implements EventStoreInterface
     }
 
     /**
+     * @param int $timeout
      * @return RedisEventRecord|null
      */
-    public function pop()
+    public function pop($timeout = 0)
     {
-        $data = $this->redis->brPop($this->key, 0);
+        $data = $this->redis->brPop($this->key, (int) $timeout);
 
         if (!isset($data[1])) {
             return null;
