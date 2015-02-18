@@ -26,17 +26,27 @@ class RedisEventStore implements EventStoreInterface
     private $key = 'cqrs_event';
 
     /**
+     * @var int
+     */
+    private $size;
+
+    /**
      * @param SerializerInterface $serializer
      * @param Redis $redis
      * @param string|null $key
+     * @param int|null $size
      */
-    public function __construct(SerializerInterface $serializer, Redis $redis, $key = null)
+    public function __construct(SerializerInterface $serializer, Redis $redis, $key = null, $size = null)
     {
         $this->serializer = $serializer;
         $this->redis      = $redis;
 
         if (null !== $key) {
             $this->key = $key;
+        }
+
+        if (null !== $size) {
+            $this->size = $size;
         }
     }
 
@@ -47,6 +57,10 @@ class RedisEventStore implements EventStoreInterface
     {
         $record = RedisEventRecord::fromMessage($event, $this->serializer);
         $this->redis->lPush($this->key, (string) $record);
+
+        if ($this->size > 0) {
+            $this->redis->lTrim($this->key, 0, $this->size - 1);
+        }
     }
 
     /**

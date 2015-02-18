@@ -27,7 +27,7 @@ class RedisEventStoreTest extends \PHPUnit_Framework_TestCase
         $this->redis = new Redis();
         $this->redis->connect('127.0.0.1');
         $this->redis->del('cqrs_event');
-        $this->redisEventStore = new RedisEventStore(new SomeSerializer(), $this->redis);
+        $this->redisEventStore = new RedisEventStore(new SomeSerializer(), $this->redis, null, 4);
     }
 
     /**
@@ -43,6 +43,17 @@ class RedisEventStoreTest extends \PHPUnit_Framework_TestCase
 
         $this->assertCount(1, $data);
         $this->assertEquals($record, $data[0]);
+    }
+
+    public function testCappedCollection()
+    {
+        for ($i = 1; $i<= 10; $i++) {
+            $event = new GenericEventMessage(new SomeEvent());
+            $this->redisEventStore->store($event);
+        }
+
+        $events = $this->redisEventStore->read();
+        $this->assertCount(4, $events);
     }
 
     /**
@@ -69,7 +80,7 @@ class RedisEventStoreTest extends \PHPUnit_Framework_TestCase
         }
 
         foreach ($data as $record) {
-            $event = $this->redisEventStore->pop();
+            $event = $this->redisEventStore->pop()->toMessage(new SomeSerializer());
             $this->assertEquals($record[0], $event);
         }
 
