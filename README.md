@@ -9,7 +9,7 @@ Install with [Composer](http://getcomposer.org):
 
     {
         "require": {
-            "sygic/cqrs": "dev-master"
+            "pauci/cqrs": "dev-master"
         }
     }
 

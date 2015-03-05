@@ -1,8 +1,8 @@
 {
-    "name": "sygic/cqrs",
+    "name": "pauci/cqrs",
     "description": "CQRS library",
     "type": "library",
-    "license": "proprietary",
+    "license": "MIT",
     "require": {
         "php": ">=5.5",
         "rhumsaa/uuid": "~2.8",
