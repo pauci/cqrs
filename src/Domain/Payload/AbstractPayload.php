@@ -54,7 +54,9 @@ abstract class AbstractPayload
      */
     private function assertPropertyExists($name)
     {
-        if (!property_exists($this, $name)) {
+        $vars = get_object_vars($this);
+
+        if (!array_key_exists($name, $vars)) {
             $this->throwPropertyIsNotValidException($name);
         }
     }
