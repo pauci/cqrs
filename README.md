@@ -1,5 +1,6 @@
 # CQRS library
 
+[![Build Status](https://travis-ci.org/pauci/cqrs.svg?branch=master)](https://travis-ci.org/pauci/cqrs)
 
 ## Installation & Requirements
 
