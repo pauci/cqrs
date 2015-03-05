@@ -12,9 +12,9 @@ interface MessageInterface
     public function getId();
 
     /**
-     * @return Metadata
+     * @return string
      */
-    public function getMetadata();
+    public function getPayloadType();
 
     /**
      * @return object
@@ -22,9 +22,9 @@ interface MessageInterface
     public function getPayload();
 
     /**
-     * @return string
+     * @return Metadata
      */
-    public function getPayloadType();
+    public function getMetadata();
 
     /**
      * @param Metadata $metadata
