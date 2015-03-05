@@ -96,8 +96,8 @@ class TableEventStore implements EventStoreInterface
             'event_date'   => $event->getTimestamp()->format('Y-m-d H:i:s'),
             'event_date_u' => $event->getTimestamp()->format('u'),
             'payload_type' => $event->getPayloadType(),
-            'payload'      => $this->serializer->serialize($event->getPayload(), 'json'),
-            'metadata'     => $this->serializer->serialize($event->getMetadata(), 'json'),
+            'payload'      => $this->serializer->serialize($event->getPayload()),
+            'metadata'     => $this->serializer->serialize($event->getMetadata()),
         ];
 
         if ($event instanceof DomainEventMessageInterface) {
@@ -125,9 +125,9 @@ class TableEventStore implements EventStoreInterface
     public function fromArray(array $data)
     {
         /** @var EventInterface $payload */
-        $payload   = $this->serializer->deserialize($data['payload'], $data['payload_type'], 'json');
+        $payload   = $this->serializer->deserialize($data['payload'], $data['payload_type']);
         /** @var Metadata $metadata */
-        $metadata  = $this->serializer->deserialize($data['metadata'], Metadata::class, 'json');
+        $metadata  = $this->serializer->deserialize($data['metadata'], Metadata::class);
         $id        = Uuid::fromString($data['event_id']);
         $timestamp = DateTimeImmutable::createFromFormat('Y-m-d H:i:s.u', "{$data['event_date']}.{$data['event_date_u']}");
 

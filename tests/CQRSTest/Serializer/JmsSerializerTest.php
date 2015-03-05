@@ -19,7 +19,7 @@ class JmsSerializerTest extends \PHPUnit_Framework_TestCase
         /** @var Serializer $serializer */
 
         $jmsSerializer = new JmsSerializer($serializer);
-        $this->assertEquals('{}', $jmsSerializer->serialize($event, 'json'));
+        $this->assertEquals('{}', $jmsSerializer->serialize($event));
     }
 
     public function testDeserialize()
@@ -34,6 +34,6 @@ class JmsSerializerTest extends \PHPUnit_Framework_TestCase
         /** @var Serializer $serializer */
 
         $jmsSerializer = new JmsSerializer($serializer);
-        $this->assertSame($event, $jmsSerializer->deserialize('{}', 'TestEvent', 'json'));
+        $this->assertSame($event, $jmsSerializer->deserialize('{}', 'TestEvent'));
     }
 } 

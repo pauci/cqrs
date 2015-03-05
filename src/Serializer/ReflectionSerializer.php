@@ -24,10 +24,9 @@ class ReflectionSerializer implements SerializerInterface
 
     /**
      * @param object $data
-     * @param string $format
      * @return string
      */
-    public function serialize($data, $format)
+    public function serialize($data)
     {
         return json_encode($this->toPhpClassArray($data));
     }
@@ -35,10 +34,9 @@ class ReflectionSerializer implements SerializerInterface
     /**
      * @param string $data
      * @param string $type
-     * @param string $format
      * @return object
      */
-    public function deserialize($data, $type, $format)
+    public function deserialize($data, $type)
     {
         return $this->fromArray(json_decode($data, true));
     }

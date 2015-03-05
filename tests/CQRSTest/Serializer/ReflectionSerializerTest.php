@@ -22,7 +22,7 @@ class ReflectionSerializerTest extends PHPUnit_Framework_TestCase
         ]);
 
         $serializer = new ReflectionSerializer();
-        $data = $serializer->serialize($event, 'json');
+        $data = $serializer->serialize($event);
 
         $this->assertEquals(
             '{"php_class":"CQRSTest\\\Serializer\\\SomeEvent","foo":"bar","id":{"php_class":"Rhumsaa\\\Uuid\\\Uuid",'
@@ -40,7 +40,7 @@ class ReflectionSerializerTest extends PHPUnit_Framework_TestCase
 
         $serializer = new ReflectionSerializer();
         /** @var SomeEvent $event */
-        $event = $serializer->deserialize($data, '', 'json');
+        $event = $serializer->deserialize($data, '');
 
         $this->assertInstanceOf(SomeEvent::class, $event);
         $this->assertEquals('bar', $event->foo);
@@ -56,7 +56,7 @@ class ReflectionSerializerTest extends PHPUnit_Framework_TestCase
 
         $serializer = new ReflectionSerializer();
         /** @var DateTime $dateTime */
-        $dateTime = $serializer->deserialize($data, '', 'json');
+        $dateTime = $serializer->deserialize($data, '');
 
         $this->assertInstanceOf(DateTime::class, $dateTime);
         $this->assertEquals('2014-08-15T10:12:14.020300+1000', $dateTime->format('Y-m-d\TH:i:s.uO'));

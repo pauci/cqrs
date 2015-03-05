@@ -6,6 +6,7 @@ use CQRS\Domain\Message\DomainEventMessageInterface;
 use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\GenericEventMessage;
+use CQRS\Domain\Message\Metadata;
 use CQRS\EventHandling\EventInterface;
 use CQRS\Serializer\SerializerInterface;
 use DateTimeImmutable;
@@ -31,8 +32,8 @@ class RedisEventRecord
             'id'           => (string) $event->getId(),
             'timestamp'    => $event->getTimestamp()->format(self::TIMESTAMP_FORMAT),
             'payload_type' => $event->getPayloadType(),
-            'payload'      => $serializer->serialize($event->getPayload(), 'json'),
-            'metadata'     => $serializer->serialize($event->getMetadata(), 'json')
+            'payload'      => $serializer->serialize($event->getPayload()),
+            'metadata'     => $serializer->serialize($event->getMetadata())
         ];
 
         if ($event instanceof DomainEventMessageInterface) {
@@ -81,8 +82,8 @@ class RedisEventRecord
         /** @var EventInterface $payload */
         $id        = Uuid::fromString($data['id']);
         $timestamp = DateTimeImmutable::createFromFormat(self::TIMESTAMP_FORMAT, $data['timestamp']);
-        $payload   = $serializer->deserialize($data['payload'], $data['payload_type'], 'json');
-        $metadata  = $serializer->deserialize($data['metadata'], 'array', 'json');
+        $payload   = $serializer->deserialize($data['payload'], $data['payload_type']);
+        $metadata  = $serializer->deserialize($data['metadata'], Metadata::class);
 
         if (isset($data['aggregate'])) {
             return new GenericDomainEventMessage(

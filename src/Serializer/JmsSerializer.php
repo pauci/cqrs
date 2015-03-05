@@ -6,35 +6,45 @@ use JMS\Serializer\Serializer;
 
 class JmsSerializer implements SerializerInterface
 {
-    /** @var Serializer */
+    /**
+     * @var Serializer
+     */
     private $serializer;
 
     /**
-     * @param Serializer $serializer
+     * @var string
      */
-    public function __construct(Serializer $serializer)
+    private $format = 'json';
+
+    /**
+     * @param Serializer $serializer
+     * @param string $format
+     */
+    public function __construct(Serializer $serializer, $format = null)
     {
         $this->serializer = $serializer;
+
+        if (null !== $format) {
+            $this->format = $format;
+        }
     }
 
     /**
      * @param object|array $data
-     * @param string $format
      * @return string
      */
-    public function serialize($data, $format)
+    public function serialize($data)
     {
-        return $this->serializer->serialize($data, $format);
+        return $this->serializer->serialize($data, $this->format);
     }
 
     /**
      * @param string $data
      * @param string $type
-     * @param string $format
      * @return object|array
      */
-    public function deserialize($data, $type, $format)
+    public function deserialize($data, $type)
     {
-        return $this->serializer->deserialize($data, $type, $format);
+        return $this->serializer->deserialize($data, $type, $this->format);
     }
 }
