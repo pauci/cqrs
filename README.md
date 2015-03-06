@@ -14,33 +14,6 @@ Install with [Composer](http://getcomposer.org):
         }
     }
 
-## Setup
-```php
-return [
-    'cqrs' => [
-        'commandHandlerLocator' => [
-            'cqrs_default' => [
-                'handlers' => [
-                    'UserService' => [
-                        'ChangeUserName'
-                    ]
-                ]
-            ]
-        ],
-        'eventHandlerLocator' => [
-            'cqrs_default' => [
-                'services' => [
-                    'EchoEventListener' => [
-                        'UserNameChanged'
-                    ]
-                ]
-            ]
-        ]
-    ]
-];
-```
-
-
 
 ## Usage
 
