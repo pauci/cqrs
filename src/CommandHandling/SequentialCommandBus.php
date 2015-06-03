@@ -41,7 +41,7 @@ class SequentialCommandBus implements CommandBusInterface
     private $eventPublisher;
 
     /**
-     * @var CommandInterface[]
+     * @var array
      */
     private $commandStack = [];
 
@@ -100,10 +100,10 @@ class SequentialCommandBus implements CommandBusInterface
      * If an exception occurs in any command it will be put on a stack
      * of exceptions that is thrown only when all the commands are processed.
      *
-     * @param CommandInterface $command
+     * @param object $command
      * @throws Exception
      */
-    public function handle(CommandInterface $command)
+    public function handle($command)
     {
         $this->logger->debug(sprintf(
             'Handling Command %s',
@@ -149,10 +149,10 @@ class SequentialCommandBus implements CommandBusInterface
     }
 
     /**
-     * @param CommandInterface $command
+     * @param object $command
      * @param bool $first
      */
-    protected function invokeHandler(CommandInterface $command, $first)
+    protected function invokeHandler($command, $first)
     {
         try {
             $this->executing = true;
@@ -188,10 +188,10 @@ class SequentialCommandBus implements CommandBusInterface
     }
 
     /**
-     * @param CommandInterface $command
+     * @param object $command
      * @return string
      */
-    protected function getHandlerMethodName(CommandInterface $command)
+    protected function getHandlerMethodName($command)
     {
         $parts = explode('\\', get_class($command));
 

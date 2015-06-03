@@ -2,7 +2,6 @@
 
 namespace CQRS\CommandHandling\Locator;
 
-use CQRS\CommandHandling\CommandInterface;
 use CQRS\Exception\RuntimeException;
 
 class MemoryCommandHandlerLocator implements CommandHandlerLocatorInterface
@@ -11,11 +10,11 @@ class MemoryCommandHandlerLocator implements CommandHandlerLocatorInterface
     private $handlers = [];
 
     /**
-     * @param CommandInterface $command
+     * @param object $command
      * @return object
      * @throws RuntimeException
      */
-    public function getCommandHandler(CommandInterface $command)
+    public function getCommandHandler($command)
     {
         $commandType = get_class($command);
         $key = strtolower($commandType);

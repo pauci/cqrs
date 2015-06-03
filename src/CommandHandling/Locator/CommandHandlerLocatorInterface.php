@@ -2,14 +2,12 @@
 
 namespace CQRS\CommandHandling\Locator;
 
-use CQRS\CommandHandling\CommandInterface;
-
 interface CommandHandlerLocatorInterface
 {
     /**
-     * @param CommandInterface $command
+     * @param object $command
      * @return object
      * @throws \CQRS\Exception\RuntimeException
      */
-    public function getCommandHandler(CommandInterface $command);
+    public function getCommandHandler($command);
 }

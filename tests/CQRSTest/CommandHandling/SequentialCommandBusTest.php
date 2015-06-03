@@ -2,7 +2,6 @@
 
 namespace CQRSTest\CommandHandling;
 
-use CQRS\CommandHandling\CommandInterface;
 use CQRS\CommandHandling\Locator\CommandHandlerLocatorInterface;
 use CQRS\CommandHandling\SequentialCommandBus;
 use CQRS\CommandHandling\TransactionManager\TransactionManagerInterface;
@@ -90,26 +89,26 @@ class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
     }
 }
 
-class DoSimpleCommand implements CommandInterface
+class DoSimpleCommand
 {}
 
-class DoSequentialCommand implements CommandInterface
+class DoSequentialCommand
 {}
 
-class DoFailureCommand implements CommandInterface
+class DoFailureCommand
 {}
 
-class DoSequentialFailureCommand implements CommandInterface
+class DoSequentialFailureCommand
 {}
 
-class NoHandlingMethodCommand implements CommandInterface
+class NoHandlingMethodCommand
 {}
 
 class SequentialCommandHandlerLocator implements CommandHandlerLocatorInterface
 {
     public $handler;
 
-    public function getCommandHandler(CommandInterface $command)
+    public function getCommandHandler($command)
     {
         return $this->handler;
     }

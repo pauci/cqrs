@@ -5,7 +5,9 @@ namespace CQRS\CommandHandling;
 interface CommandBusInterface
 {
     /**
-     * @param CommandInterface $command
+     * Dispatches the command to appropriate command handler
+     *
+     * @param object $command
      */
-    public function handle(CommandInterface $command);
+    public function handle($command);
 }

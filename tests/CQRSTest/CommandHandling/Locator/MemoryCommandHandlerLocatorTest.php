@@ -2,7 +2,6 @@
 
 namespace CQRSTest\CommandHandling\Locator;
 
-use CQRS\CommandHandling\CommandInterface;
 use CQRS\CommandHandling\Locator\MemoryCommandHandlerLocator;
 use CQRS\Exception\RuntimeException;
 use PHPUnit_Framework_TestCase;
@@ -43,8 +42,8 @@ class MemoryCommandHandlerLocatorTest extends PHPUnit_Framework_TestCase
     }
 }
 
-class HandleCommand implements CommandInterface
+class HandleCommand
 {}
 
-class NoHandlerCommand implements CommandInterface
+class NoHandlerCommand
 {}
