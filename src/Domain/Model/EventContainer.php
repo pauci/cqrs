@@ -5,7 +5,6 @@ namespace CQRS\Domain\Model;
 use Countable;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\Metadata;
-use CQRS\EventHandling\EventInterface;
 use CQRS\Exception\RuntimeException;
 
 /**
@@ -55,11 +54,11 @@ class EventContainer implements Countable
     /**
      * Add an event to this container.
      *
-     * @param EventInterface $payload
+     * @param object $payload
      * @param Metadata|array $metadata
      * @return GenericDomainEventMessage
      */
-    public function addEvent(EventInterface $payload, $metadata = null)
+    public function addEvent($payload, $metadata = null)
     {
         $event = new GenericDomainEventMessage(
             $this->aggregateType,

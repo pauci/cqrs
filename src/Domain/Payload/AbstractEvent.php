@@ -2,7 +2,6 @@
 
 namespace CQRS\Domain\Payload;
 
-use CQRS\EventHandling\EventInterface;
 use CQRS\Exception\RuntimeException;
 
 /**
@@ -20,7 +19,7 @@ use CQRS\Exception\RuntimeException;
  *   $event = new GreetedEvent(['personId' => 1]);
  *   $eventBus->handle($event);
  */
-abstract class AbstractEvent extends AbstractPayload implements EventInterface
+abstract class AbstractEvent extends AbstractPayload
 {
     /**
      * @param string $name

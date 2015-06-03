@@ -3,7 +3,6 @@
 namespace CQRSTest\Domain\Message;
 
 use CQRS\Domain\Message\GenericDomainEventMessage;
-use CQRS\EventHandling\EventInterface;
 use DateTime;
 use PHPUnit_Framework_TestCase;
 use Rhumsaa\Uuid\Uuid;
@@ -37,5 +36,5 @@ class GenericDomainEventMessageTest extends PHPUnit_Framework_TestCase
     }
 }
 
-class SomeDomainEvent implements EventInterface
+class SomeDomainEvent
 {}

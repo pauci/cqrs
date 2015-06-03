@@ -3,7 +3,6 @@
 namespace CQRSTest\Domain\Message;
 
 use CQRS\Domain\Message\GenericEventMessage;
-use CQRS\EventHandling\EventInterface;
 use DateTime;
 use DateTimeImmutable;
 use PHPUnit_Framework_TestCase;
@@ -34,5 +33,5 @@ class GenericEventMessageTest extends PHPUnit_Framework_TestCase
     }
 }
 
-class SomeEvent implements EventInterface
+class SomeEvent
 {}

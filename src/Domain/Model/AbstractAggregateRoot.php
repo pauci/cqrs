@@ -5,7 +5,6 @@ namespace CQRS\Domain\Model;
 use CQRS\Domain\Message\DomainEventMessageInterface;
 use CQRS\Domain\Message\Metadata;
 use CQRS\Domain\Payload\AbstractDomainEvent;
-use CQRS\EventHandling\EventInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -50,11 +49,11 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
      * Registers an event to be published when the aggregate is saved, containing the given payload and optional
      * metadata.
      *
-     * @param EventInterface $payload
+     * @param object $payload
      * @param Metadata|array $metadata
      * @return DomainEventMessageInterface
      */
-    protected function registerEvent(EventInterface $payload, $metadata = null)
+    protected function registerEvent($payload, $metadata = null)
     {
         if ($payload instanceof AbstractDomainEvent && null === $payload->aggregateId) {
             $payload->setAggregateId($this->getIdReference());

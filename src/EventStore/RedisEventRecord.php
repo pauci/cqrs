@@ -7,7 +7,6 @@ use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\Domain\Message\Metadata;
-use CQRS\EventHandling\EventInterface;
 use CQRS\Serializer\SerializerInterface;
 use DateTimeImmutable;
 use Rhumsaa\Uuid\Uuid;
@@ -79,7 +78,6 @@ class RedisEventRecord
     {
         $data = $this->toArray();
 
-        /** @var EventInterface $payload */
         $id        = Uuid::fromString($data['id']);
         $timestamp = DateTimeImmutable::createFromFormat(self::TIMESTAMP_FORMAT, $data['timestamp']);
         $payload   = $serializer->deserialize($data['payload'], $data['payload_type']);

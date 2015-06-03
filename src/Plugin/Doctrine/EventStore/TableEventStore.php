@@ -7,7 +7,6 @@ use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\Domain\Message\Metadata;
-use CQRS\EventHandling\EventInterface;
 use CQRS\EventStore\EventStoreInterface;
 use CQRS\Serializer\SerializerInterface;
 use DateTimeImmutable;
@@ -124,7 +123,6 @@ class TableEventStore implements EventStoreInterface
      */
     public function fromArray(array $data)
     {
-        /** @var EventInterface $payload */
         $payload   = $this->serializer->deserialize($data['payload'], $data['payload_type']);
         /** @var Metadata $metadata */
         $metadata  = $this->serializer->deserialize($data['metadata'], Metadata::class);

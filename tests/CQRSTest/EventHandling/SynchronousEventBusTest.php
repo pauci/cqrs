@@ -4,7 +4,6 @@ namespace CQRSTest\EventHandling;
 
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\EventHandling\EventExecutionFailed;
-use CQRS\EventHandling\EventInterface;
 use CQRS\EventHandling\Locator\EventHandlerLocatorInterface;
 use CQRS\EventHandling\SynchronousEventBus;
 use Exception;
@@ -19,7 +18,7 @@ class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
     /** @var SynchronousEventHandler */
     protected $handler;
 
-    /** @var  TestLogger */
+    /** @var NullLogger */
     protected $logger;
 
     public function setUp()
@@ -71,7 +70,7 @@ class SynchronousEventHandlerLocatorInterface implements EventHandlerLocatorInte
     public function getEventHandlers($eventName)
     {
         return [
-            [$this->handler, "on{$eventName}"]
+            [$this->handler, 'on' . $eventName]
         ];
     }
 }
@@ -103,11 +102,11 @@ class SynchronousEventHandler
     }
 }
 
-class SynchronousEvent implements EventInterface
+class SynchronousEvent
 {
 }
 
-class FailureCausingEvent implements EventInterface
+class FailureCausingEvent
 {}
 
 class SomeException extends Exception

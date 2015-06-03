@@ -4,16 +4,15 @@ namespace CQRS\Domain\Model;
 
 use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\Metadata;
-use CQRS\EventHandling\EventInterface;
 use CQRS\Exception\BadMethodCallException;
 
 abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregateRoot
 {
     /**
-     * @param EventInterface $payload
+     * @param object $payload
      * @param Metadata|array $metadata
      */
-    protected function apply(EventInterface $payload, $metadata = null)
+    protected function apply($payload, $metadata = null)
     {
         $event = $this->registerEvent($payload, $metadata);
         $this->handle($event);
