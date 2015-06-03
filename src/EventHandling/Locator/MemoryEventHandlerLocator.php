@@ -16,13 +16,19 @@ use CQRS\Exception\InvalidArgumentException;
  */
 class MemoryEventHandlerLocator implements EventHandlerLocatorInterface
 {
-    /** @var array */
+    /**
+     * @var array
+     */
     private $handlers = [];
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private $regexpHandlers = [];
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private $globalHandlers = [];
 
     /**
@@ -82,6 +88,19 @@ class MemoryEventHandlerLocator implements EventHandlerLocatorInterface
             }
 
             $this->handlers[$eventName][$priority][] = $listener;
+        }
+    }
+
+    public function removeListener(callable $listener)
+    {
+        foreach ($this->handlers as $eventName => $eventHandlers) {
+            foreach ($eventHandlers as $priority => $priorityHandlers) {
+                foreach ($priorityHandlers as $key => $handler) {
+                    if ($handler === $listener) {
+                        unset($this->handlers[$eventName][$priority][$key]);
+                    }
+                }
+            }
         }
     }
 
