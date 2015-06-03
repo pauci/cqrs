@@ -37,7 +37,7 @@ class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
 
     public function testHandlingOfSequentialCommand()
     {
-        $this->commandBus->handle(new DoSequentialCommand());
+        $this->commandBus->dispatch(new DoSequentialCommand());
 
         $this->assertEquals(1, $this->handler->sequential);
         $this->assertEquals(1, $this->handler->simple);
@@ -54,7 +54,7 @@ class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('CQRSTest\CommandHandling\CommandFailureTestException');
 
         try {
-            $this->commandBus->handle(new DoFailureCommand());
+            $this->commandBus->dispatch(new DoFailureCommand());
         } catch (CommandFailureTestException $e) {
 
             $this->assertEquals(1, $this->transactionManager->begin);
@@ -69,7 +69,7 @@ class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
 
     public function testItIgnoresErrorOnSequentialFailure()
     {
-        $this->commandBus->handle(new DoSequentialFailureCommand());
+        $this->commandBus->dispatch(new DoSequentialFailureCommand());
 
         $this->assertEquals(1, $this->transactionManager->begin);
         $this->assertEquals(1, $this->transactionManager->commit);
@@ -85,7 +85,7 @@ class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
             'Service CQRSTest\CommandHandling\SequentialCommandHandler has no method to handle Command CQRSTest\CommandHandling\NoHandlingMethodCommand'
         );
 
-        $this->commandBus->handle(new NoHandlingMethodCommand());
+        $this->commandBus->dispatch(new NoHandlingMethodCommand());
     }
 }
 
@@ -130,7 +130,7 @@ class SequentialCommandHandler
     public function doSequential(DoSequentialCommand $command)
     {
         $this->sequential++;
-        $this->commandBus->handle(new DoSimpleCommand());
+        $this->commandBus->dispatch(new DoSimpleCommand());
     }
 
     public function doFailure(DoFailureCommand $command)
@@ -140,7 +140,7 @@ class SequentialCommandHandler
 
     public function doSequentialFailure(DoSequentialFailureCommand $command)
     {
-        $this->commandBus->handle(new DoFailureCommand());
+        $this->commandBus->dispatch(new DoFailureCommand());
     }
 }
 

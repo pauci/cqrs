@@ -103,7 +103,7 @@ class SequentialCommandBus implements CommandBusInterface
      * @param object $command
      * @throws Exception
      */
-    public function handle($command)
+    public function dispatch($command)
     {
         $this->logger->debug(sprintf(
             'Handling Command %s',
