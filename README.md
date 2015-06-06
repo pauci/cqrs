@@ -69,8 +69,12 @@ class EchoEventListener
     }
 }
 
+// $commandBus is instance of \CQRS\CommandHandling\CommandBusInterface
 $commandBus = $this->getServiceLocator()->get('cqrs.commandBus.cqrs_default');
 
-$command = new ChangeUserName(['id' => 1, 'name' => 'Jozko Mrkvicka']);
-$commandBus->handler($command);
+$command = new ChangeUserName([
+    'id' => 1,
+    'name' => 'Jozko Mrkvicka'
+]);
+$commandBus->handle($command);
 ```
