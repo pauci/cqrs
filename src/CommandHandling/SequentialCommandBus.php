@@ -119,13 +119,10 @@ class SequentialCommandBus implements CommandBusInterface
             return;
         }
 
-        $first = true;
-
         $this->transactionManager->begin();
         try {
             while ($command = array_shift($this->commandStack)) {
-                $this->invokeHandler($command, $first);
-                $first = false;
+                $this->invokeHandler($command);
             }
             $this->eventPublisher->publishEvents();
             $this->transactionManager->commit();
@@ -150,9 +147,9 @@ class SequentialCommandBus implements CommandBusInterface
 
     /**
      * @param object $command
-     * @param bool $first
+     * @throws Exception
      */
-    protected function invokeHandler($command, $first)
+    protected function invokeHandler($command)
     {
         try {
             $this->executing = true;
@@ -181,7 +178,7 @@ class SequentialCommandBus implements CommandBusInterface
 
         } catch (Exception $e) {
             $this->executing = false;
-            $this->handleException($e, $first);
+            throw $e;
         }
 
         $this->executing = false;
@@ -196,17 +193,5 @@ class SequentialCommandBus implements CommandBusInterface
         $parts = explode('\\', get_class($command));
 
         return str_replace('Command', '', lcfirst(end($parts)));
-    }
-
-    /**
-     * @param Exception $e
-     * @param bool $first
-     * @throws Exception
-     */
-    protected function handleException(Exception $e, $first)
-    {
-        if ($first) {
-            throw $e;
-        }
     }
 }
