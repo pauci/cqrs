@@ -67,8 +67,10 @@ class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testItIgnoresErrorOnSequentialFailure()
+    public function testItDoesntIgnoreErrorOnSequentialFailure()
     {
+        $this->setExpectedException('CQRSTest\CommandHandling\CommandFailureTestException');
+
         $this->commandBus->dispatch(new DoSequentialFailureCommand());
 
         $this->assertEquals(1, $this->transactionManager->begin);
