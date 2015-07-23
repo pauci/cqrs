@@ -11,6 +11,8 @@ use CQRS\EventStore\EventStoreInterface;
 use CQRS\Serializer\SerializerInterface;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types\Type;
+use PDO;
 use Rhumsaa\Uuid\Uuid;
 
 class TableEventStore implements EventStoreInterface
@@ -73,8 +75,8 @@ class TableEventStore implements EventStoreInterface
         $events = [];
 
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue(1, $offset);
-        $stmt->bindValue(2, $limit);
+        $stmt->bindValue(1, $offset, Type::INTEGER);
+        $stmt->bindValue(2, $limit, Type::INTEGER);
         $stmt->execute();
 
         while ($row = $stmt->fetch()) {
