@@ -22,6 +22,7 @@ class DoctrineEventPublisher extends SimpleEventPublisher implements EventSubscr
     public function getSubscribedEvents()
     {
         return [
+            Events::preFlush,
             Events::postFlush
         ];
     }
@@ -32,10 +33,13 @@ class DoctrineEventPublisher extends SimpleEventPublisher implements EventSubscr
         // Actual event dispatching is postponed until doctrine's postFlush event.
     }
 
-    public function postFlush()
+    public function preFlush()
     {
         $this->publishEvents();
+    }
 
+    public function postFlush()
+    {
         if (empty($this->events)) {
             return;
         }
