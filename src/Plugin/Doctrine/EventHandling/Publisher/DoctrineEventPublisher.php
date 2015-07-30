@@ -34,6 +34,8 @@ class DoctrineEventPublisher extends SimpleEventPublisher implements EventSubscr
 
     public function postFlush()
     {
+        $this->publishEvents();
+
         if (empty($this->events)) {
             return;
         }
