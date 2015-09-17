@@ -121,6 +121,8 @@ class SynchronousEventBus implements EventBusInterface
                 ]),
                 $event->getMetadata()
             ));
+
+            throw $e;
         }
     }
 
