@@ -3,12 +3,12 @@
 namespace CQRSTest\Serializer\Jms;
 
 use JMS\Serializer\Annotation as JMS;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class ObjectWithUuid
 {
     /**
-     * @JMS\Type("Rhumsaa\Uuid\Uuid")
+     * @JMS\Type("Ramsey\Uuid\Uuid")
      */
     protected $uuid;
 

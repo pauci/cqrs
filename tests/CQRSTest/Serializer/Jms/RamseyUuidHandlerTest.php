@@ -2,13 +2,13 @@
 
 namespace CQRSTest\Serializer\Jms;
 
-use CQRS\Serializer\Jms\RhumsaaUuidHandler;
+use CQRS\Serializer\Jms\RamseyUuidHandler;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\Handler\HandlerRegistry;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
-class RhumsaaUuidHandlerTest extends \PHPUnit_Framework_TestCase
+class RamseyUuidHandlerTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Serializer
@@ -19,7 +19,7 @@ class RhumsaaUuidHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $this->serializer = SerializerBuilder::create()
             ->configureHandlers(function(HandlerRegistry $registry) {
-                $registry->registerSubscribingHandler(new RhumsaaUuidHandler());
+                $registry->registerSubscribingHandler(new RamseyUuidHandler());
             })
             ->build();
     }

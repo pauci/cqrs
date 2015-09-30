@@ -9,7 +9,7 @@ use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\Domain\Message\Metadata;
 use CQRS\Serializer\SerializerInterface;
 use DateTimeImmutable;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class RedisEventRecord
 {

@@ -6,9 +6,9 @@ use DateTime;
 use DateTimeInterface;
 use DateTimeImmutable;
 use DateTimeZone;
+use Ramsey\Uuid\Uuid;
 use ReflectionClass;
 use ReflectionProperty;
-use Rhumsaa\Uuid\Uuid;
 
 class ReflectionSerializer implements SerializerInterface
 {

@@ -2,7 +2,7 @@
 
 namespace CQRS\Domain\Message;
 
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 interface MessageInterface
 {

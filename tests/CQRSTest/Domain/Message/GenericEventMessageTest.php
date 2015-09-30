@@ -6,7 +6,7 @@ use CQRS\Domain\Message\GenericEventMessage;
 use DateTime;
 use DateTimeImmutable;
 use PHPUnit_Framework_TestCase;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class GenericEventMessageTest extends PHPUnit_Framework_TestCase
 {

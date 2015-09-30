@@ -5,7 +5,7 @@ namespace CQRSTest\Domain\Message;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use DateTime;
 use PHPUnit_Framework_TestCase;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class GenericDomainEventMessageTest extends PHPUnit_Framework_TestCase
 {

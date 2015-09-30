@@ -7,8 +7,8 @@ use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\EventStore\RedisEventStore;
 use DateTimeImmutable;
+use Ramsey\Uuid\Uuid;
 use Redis;
-use Rhumsaa\Uuid\Uuid;
 
 class RedisEventStoreTest extends \PHPUnit_Framework_TestCase
 {

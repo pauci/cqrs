@@ -7,7 +7,7 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
 use PHPUnit_Framework_TestCase;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use stdClass;
 
 class ReflectionSerializerTest extends PHPUnit_Framework_TestCase
@@ -25,7 +25,7 @@ class ReflectionSerializerTest extends PHPUnit_Framework_TestCase
         $data = $serializer->serialize($event);
 
         $this->assertEquals(
-            '{"php_class":"CQRSTest\\\Serializer\\\SomeEvent","foo":"bar","id":{"php_class":"Rhumsaa\\\Uuid\\\Uuid",'
+            '{"php_class":"CQRSTest\\\Serializer\\\SomeEvent","foo":"bar","id":{"php_class":"Ramsey\\\Uuid\\\Uuid",'
             . '"uuid":"bd0a32dd-37f1-42ab-807f-c3c29261a9fe"},"time":{"php_class":"DateTimeImmutable",'
             . '"time":"2014-08-15T10:12:14.654321+1000"},"object":{"php_class":"stdClass"}}',
             $data
@@ -34,7 +34,7 @@ class ReflectionSerializerTest extends PHPUnit_Framework_TestCase
 
     public function testDeserialize()
     {
-        $data = '{"php_class":"CQRSTest\\\Serializer\\\SomeEvent","foo":"bar","id":{"php_class":"Rhumsaa\\\Uuid\\\Uuid",'
+        $data = '{"php_class":"CQRSTest\\\Serializer\\\SomeEvent","foo":"bar","id":{"php_class":"Ramsey\\\Uuid\\\Uuid",'
             . '"uuid":"d97f7374-b4d9-418a-8dc7-dfda0bcb785a"},"time":{"php_class":"DateTimeImmutable",'
             . '"time":"2014-08-15T10:12:14.020300+0300"},"object":{"php_class":"stdClass"}}';
 

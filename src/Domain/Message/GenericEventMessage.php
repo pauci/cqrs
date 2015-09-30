@@ -4,7 +4,7 @@ namespace CQRS\Domain\Message;
 
 use CQRS\Common\MicrosecondsDateTimeFactory;
 use DateTimeInterface;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class GenericEventMessage extends GenericMessage implements EventMessageInterface
 {

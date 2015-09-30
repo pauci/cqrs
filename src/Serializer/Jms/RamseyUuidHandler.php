@@ -6,9 +6,9 @@ use JMS\Serializer\Context;
 use JMS\Serializer\GraphNavigator;
 use JMS\Serializer\Handler\SubscribingHandlerInterface;
 use JMS\Serializer\VisitorInterface;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
-class RhumsaaUuidHandler implements SubscribingHandlerInterface
+class RamseyUuidHandler implements SubscribingHandlerInterface
 {
     public static function getSubscribingMethods()
     {

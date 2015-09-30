@@ -1,9 +1,10 @@
 <?php
 
 namespace CQRSTest\Serializer;
+
 use CQRS\Domain\Payload\AbstractEvent;
-use Rhumsaa\Uuid\Uuid;
 use DateTime;
+use Ramsey\Uuid\Uuid;
 use stdClass;
 
 /**

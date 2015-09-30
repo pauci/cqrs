@@ -3,7 +3,7 @@ namespace CQRSTest\Domain\Message;
 
 use CQRS\Domain\Message\GenericMessage;
 use PHPUnit_Framework_TestCase;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 class GenericMessageTest extends PHPUnit_Framework_TestCase
 {
