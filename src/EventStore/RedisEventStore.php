@@ -3,8 +3,11 @@
 namespace CQRS\EventStore;
 
 use CQRS\Domain\Message\EventMessageInterface;
+use CQRS\Exception;
 use CQRS\Serializer\SerializerInterface;
+use Ramsey\Uuid\Uuid;
 use Redis;
+use Traversable;
 
 class RedisEventStore implements EventStoreInterface
 {
@@ -95,5 +98,14 @@ class RedisEventStore implements EventStoreInterface
         }
 
         return new RedisEventRecord($data[1]);
+    }
+
+    /**
+     * @param Uuid|null $previousEventId
+     * @return Traversable
+     */
+    public function iterate(Uuid $previousEventId = null)
+    {
+        throw new Exception\BadMethodCallException('Method is not implemented');
     }
 }

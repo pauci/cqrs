@@ -8,11 +8,12 @@ use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\Domain\Message\Metadata;
 use CQRS\EventStore\EventStoreInterface;
+use CQRS\Exception\OutOfBoundsException;
 use CQRS\Serializer\SerializerInterface;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
-use PDO;
+use Generator;
 use Ramsey\Uuid\Uuid;
 
 class TableEventStore implements EventStoreInterface
@@ -64,7 +65,7 @@ class TableEventStore implements EventStoreInterface
     public function read($offset = null, $limit = 10)
     {
         if ($offset === null) {
-            $offset = (((int) (($this->getLastId() - 1) / $limit)) * $limit) + 1;
+            $offset = (((int) (($this->getLastRowId() - 1) / $limit)) * $limit) + 1;
         }
 
         $sql = 'SELECT * FROM ' . $this->table
@@ -84,6 +85,27 @@ class TableEventStore implements EventStoreInterface
         }
 
         return $events;
+    }
+
+    /**
+     * @param Uuid|null $previousEventId
+     * @return Generator
+     */
+    public function iterate(Uuid $previousEventId = null)
+    {
+        $id = $previousEventId ? $this->getRowIdByEventId($previousEventId) : 0;
+
+        $sql = 'SELECT * FROM ' . $this->table
+            . ' WHERE id > ?'
+            . ' ORDER BY id ASC';
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(1, $id, Type::INTEGER);
+        $stmt->execute();
+
+        while ($row = $stmt->fetch()) {
+            yield $this->fromArray($row);
+        }
     }
 
     /**
@@ -149,13 +171,34 @@ class TableEventStore implements EventStoreInterface
     /**
      * @return int
      */
-    private function getLastId()
+    private function getLastRowId()
     {
         $sql = 'SELECT MAX(id) FROM ' . $this->table;
 
         $stmt = $this->connection->prepare($sql);
         $stmt->execute();
 
-        return (int) $stmt->fetchColumn() ?: 1;
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * @param Uuid $eventId
+     * @return int
+     */
+    private function getRowIdByEventId(Uuid $eventId)
+    {
+        $eventId = (string) $eventId;
+
+        $sql = "SELECT id FROM {$this->table} WHERE event_id = ? LIMIT 1";
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(1, $eventId, Type::STRING);
+        $stmt->execute();
+
+        $id = $stmt->fetchColumn();
+        if (false === $id) {
+            throw new OutOfBoundsException(sprintf('Record for event %s not found', $eventId));
+        }
+        return (int) $id;
     }
 }
