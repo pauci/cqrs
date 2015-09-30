@@ -187,7 +187,13 @@ class TableEventStore implements EventStoreInterface
      */
     private function getRowIdByEventId(Uuid $eventId)
     {
+        static $lastEventId, $lastRowId;
+
         $eventId = (string) $eventId;
+
+        if ($lastEventId == $eventId) {
+            return $lastRowId;
+        }
 
         $sql = "SELECT id FROM {$this->table} WHERE event_id = ? LIMIT 1";
 
@@ -195,10 +201,12 @@ class TableEventStore implements EventStoreInterface
         $stmt->bindValue(1, $eventId, Type::STRING);
         $stmt->execute();
 
-        $id = $stmt->fetchColumn();
-        if (false === $id) {
+        $rowId = $stmt->fetchColumn();
+        if (false === $rowId) {
             throw new OutOfBoundsException(sprintf('Record for event %s not found', $eventId));
         }
-        return (int) $id;
+
+        $lastEventId = $eventId;
+        return $lastRowId = (int) $rowId;
     }
 }
