@@ -7,9 +7,10 @@ use ArrayIterator;
 use Countable;
 use CQRS\Exception\RuntimeException;
 use IteratorAggregate;
+use JsonSerializable;
 use Serializable;
 
-class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializable
+class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializable, JsonSerializable
 {
     /**
      * @var self
@@ -48,12 +49,29 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
     }
 
     /**
+     * @param array $data
+     * @return Metadata
+     */
+    public static function jsonDeserialize(array $data)
+    {
+        return new self($data);
+    }
+
+    /**
      * @param array $values
      */
     private function __construct(array $values = [])
     {
         ksort($values);
         $this->values = $values;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return $this->toArray();
     }
 
     /**
