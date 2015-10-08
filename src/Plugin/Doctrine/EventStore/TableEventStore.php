@@ -128,10 +128,8 @@ class TableEventStore implements EventStoreInterface
 
         if ($event instanceof DomainEventMessageInterface) {
             $aggregateId = $event->getAggregateId();
-            if ($aggregateId instanceof Uuid) {
+            if (!is_int($aggregateId)) {
                 $aggregateId = (string) $aggregateId;
-            } else {
-                $aggregateId = json_encode($aggregateId);
             }
 
             $data = array_merge($data, [
