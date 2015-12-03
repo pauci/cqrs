@@ -7,13 +7,12 @@ use Doctrine\ORM\EntityManagerInterface;
 
 abstract class AbstractOrmTransactionManager implements TransactionManagerInterface
 {
-    /** @var EntityManagerInterface */
+    /**
+     * @var EntityManagerInterface
+     */
     protected $entityManager;
 
-    /**
-     * @param EntityManagerInterface $entityManager
-     */
-    public function setEntityManager(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
     }

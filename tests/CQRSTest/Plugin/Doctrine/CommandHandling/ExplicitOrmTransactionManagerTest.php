@@ -14,8 +14,7 @@ class ExplicitOrmTransactionManagerTest extends PHPUnit_Framework_TestCase
             ->method('beginTransaction');
 
         /** @var \Doctrine\ORM\EntityManagerInterface $entityManager */
-        $transactionManager = new ExplicitOrmTransactionManager();
-        $transactionManager->setEntityManager($entityManager);
+        $transactionManager = new ExplicitOrmTransactionManager($entityManager);
 
         $transactionManager->begin();
     }
@@ -29,8 +28,7 @@ class ExplicitOrmTransactionManagerTest extends PHPUnit_Framework_TestCase
             ->method('commit');
 
         /** @var \Doctrine\ORM\EntityManagerInterface $entityManager */
-        $transactionManager = new ExplicitOrmTransactionManager();
-        $transactionManager->setEntityManager($entityManager);
+        $transactionManager = new ExplicitOrmTransactionManager($entityManager);
 
         $transactionManager->commit();
     }
@@ -44,8 +42,7 @@ class ExplicitOrmTransactionManagerTest extends PHPUnit_Framework_TestCase
             ->method('close');
 
         /** @var \Doctrine\ORM\EntityManagerInterface $entityManager */
-        $transactionManager = new ExplicitOrmTransactionManager();
-        $transactionManager->setEntityManager($entityManager);
+        $transactionManager = new ExplicitOrmTransactionManager($entityManager);
 
         $transactionManager->rollback();
     }
