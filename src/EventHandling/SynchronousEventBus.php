@@ -66,6 +66,7 @@ class SynchronousEventBus implements EventBusInterface
     /**
      * @param Callable $callback
      * @param EventMessageInterface $event
+     * @throws Exception
      */
     private function invokeEventHandler(callable $callback, $event)
     {

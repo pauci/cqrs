@@ -40,6 +40,9 @@ class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $this->handler->executed);
     }
 
+    /**
+     * @expectedException \CQRSTest\EventHandling\SomeException
+     */
     public function testItRaisesEventExecutionFailedOnFailure()
     {
         $failureCausingEvent = new FailureCausingEvent();

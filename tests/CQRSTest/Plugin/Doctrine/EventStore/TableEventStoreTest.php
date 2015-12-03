@@ -60,19 +60,6 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('{}', $data[0]['metadata']);
     }
 
-    public function testStoreEventWithAggregateIdContainingMultipleKeys()
-    {
-        $aggregateId = ['foo' => 1, 'bar' => 'baz'];
-
-        $event = new GenericDomainEventMessage('SomeAggregate', $aggregateId, 4, new SomeEvent());
-
-        $this->tableEventStore->store($event);
-
-        $data = $this->conn->fetchAll('SELECT * FROM cqrs_event');
-
-        $this->assertEquals('{"foo":1,"bar":"baz"}', $data[0]['aggregate_id']);
-    }
-
     public function testReadEvents()
     {
         for ($i = 1; $i <= 13; $i++) {
