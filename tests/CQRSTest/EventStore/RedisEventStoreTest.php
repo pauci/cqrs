@@ -93,13 +93,26 @@ class RedisEventStoreTest extends \PHPUnit_Framework_TestCase
 
         return [
             [
-                new GenericEventMessage(new SomeEvent(), null, Uuid::fromString('777bb61d-b9fa-4023-937e-1b6e4fc9f7b4'), new DateTimeImmutable('2015-02-11T15:23:42.195819+0100')),
+                new GenericEventMessage(
+                    new SomeEvent(),
+                    null,
+                    Uuid::fromString('777bb61d-b9fa-4023-937e-1b6e4fc9f7b4'),
+                    new DateTimeImmutable('2015-02-11T15:23:42.195819+0100')
+                ),
                 '{"id":"777bb61d-b9fa-4023-937e-1b6e4fc9f7b4","timestamp":"2015-02-11T15:23:42.195819+0100","payload_type":"CQRSTest\\\EventStore\\\SomeEvent","payload":"{}","metadata":"{}"}'
             ],
             [
-                new GenericDomainEventMessage('SomeAggregate', $aggregateId, 4, new SomeEvent(), null, Uuid::fromString('eabd641e-4181-4b5f-b191-ecdd40d82b1b'), new DateTimeImmutable('2015-02-11T13:40:29.658819+0100')),
+                new GenericDomainEventMessage(
+                    'SomeAggregate',
+                    $aggregateId,
+                    4,
+                    new SomeEvent(),
+                    null,
+                    Uuid::fromString('eabd641e-4181-4b5f-b191-ecdd40d82b1b'),
+                    new DateTimeImmutable('2015-02-11T13:40:29.658819+0100')
+                ),
                 '{"id":"eabd641e-4181-4b5f-b191-ecdd40d82b1b","timestamp":"2015-02-11T13:40:29.658819+0100","payload_type":"CQRSTest\\\EventStore\\\SomeEvent","payload":"{}","metadata":"{}","aggregate":{"type":"SomeAggregate","id":123,"seq":4}}'
-            ]
+            ],
         ];
     }
 }
