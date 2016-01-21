@@ -1,8 +1,13 @@
 <?xml version="1.0"?>
-<phpunit bootstrap="./tests/bootstrap.php">
+<phpunit colors="true" bootstrap="vendor/autoload.php">
     <testsuites>
-        <testsuite name="CQRS Test Suite">
+        <testsuite name="CQRS Tests">
             <directory>./tests/CQRSTest</directory>
         </testsuite>
     </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src</directory>
+        </whitelist>
+    </filter>
 </phpunit>

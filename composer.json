@@ -22,7 +22,12 @@
             "CQRS\\": "src/"
         }
     },
-    "extra": {
+    "autoload-dev": {
+        "psr-4": {
+            "CQRSTest\\": "tests/CQRSTest/"
+        }
+    },
+    "extras": {
         "branch-alias": {
             "dev-master": "0.1.x-dev"
         }
