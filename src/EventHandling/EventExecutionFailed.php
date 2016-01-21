@@ -12,9 +12,13 @@ use Exception;
  */
 class EventExecutionFailed extends AbstractEvent
 {
-    /** @var Exception */
+    /**
+     * @var Exception
+     */
     protected $exception;
 
-    /** @var EventMessageInterface */
+    /**
+     * @var EventMessageInterface
+     */
     protected $event;
 }

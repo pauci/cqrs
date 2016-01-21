@@ -16,6 +16,7 @@ use Doctrine\DBAL\Types\Type;
 use Generator;
 use PDO;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class TableEventStore implements EventStoreInterface
 {
@@ -89,10 +90,10 @@ class TableEventStore implements EventStoreInterface
     }
 
     /**
-     * @param Uuid|null $previousEventId
+     * @param UuidInterface|null $previousEventId
      * @return Generator
      */
-    public function iterate(Uuid $previousEventId = null)
+    public function iterate(UuidInterface $previousEventId = null)
     {
         $id = $previousEventId ? $this->getRowIdByEventId($previousEventId) : 0;
 
@@ -183,23 +184,21 @@ class TableEventStore implements EventStoreInterface
     }
 
     /**
-     * @param Uuid $eventId
+     * @param UuidInterface $eventId
      * @return int
      */
-    private function getRowIdByEventId(Uuid $eventId)
+    private function getRowIdByEventId(UuidInterface $eventId)
     {
         static $lastEventId, $lastRowId;
 
-        $eventId = (string) $eventId;
-
-        if ($lastEventId == $eventId) {
+        if ($eventId->equals($lastEventId)) {
             return $lastRowId;
         }
 
         $sql = "SELECT id FROM {$this->table} WHERE event_id = ? LIMIT 1";
 
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue(1, $eventId, Type::STRING);
+        $stmt->bindValue(1, (string) $eventId, Type::STRING);
         $stmt->execute();
 
         $rowId = $stmt->fetchColumn();
@@ -208,6 +207,7 @@ class TableEventStore implements EventStoreInterface
         }
 
         $lastEventId = $eventId;
-        return $lastRowId = (int) $rowId;
+        $lastRowId = (int) $rowId;
+        return $lastRowId;
     }
 }

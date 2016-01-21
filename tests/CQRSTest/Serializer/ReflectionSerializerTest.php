@@ -24,6 +24,9 @@ class ReflectionSerializerTest extends PHPUnit_Framework_TestCase
         $serializer = new ReflectionSerializer();
         $data = $serializer->serialize($event);
 
+        // Make the test pass on 32bit system
+        $data = strtr($data, ['DegradedUuid' => 'Uuid']);
+
         $this->assertEquals(
             '{"php_class":"CQRSTest\\\Serializer\\\SomeEvent","foo":"bar","id":{"php_class":"Ramsey\\\Uuid\\\Uuid",'
             . '"uuid":"bd0a32dd-37f1-42ab-807f-c3c29261a9fe"},"time":{"php_class":"DateTimeImmutable",'

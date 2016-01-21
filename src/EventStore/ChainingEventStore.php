@@ -4,7 +4,7 @@ namespace CQRS\EventStore;
 
 use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Exception;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use Traversable;
 
 class ChainingEventStore implements EventStoreInterface
@@ -43,10 +43,10 @@ class ChainingEventStore implements EventStoreInterface
     }
 
     /**
-     * @param Uuid|null $previousEventId
+     * @param null|UuidInterface $previousEventId
      * @return Traversable
      */
-    public function iterate(Uuid $previousEventId = null)
+    public function iterate(UuidInterface $previousEventId = null)
     {
         throw new Exception\BadMethodCallException(sprintf('%s does not support iterating', self::class));
     }

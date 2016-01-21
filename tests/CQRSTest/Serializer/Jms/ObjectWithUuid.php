@@ -3,21 +3,16 @@
 namespace CQRSTest\Serializer\Jms;
 
 use JMS\Serializer\Annotation as JMS;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class ObjectWithUuid
 {
     /**
      * @JMS\Type("Ramsey\Uuid\Uuid")
      */
-    protected $uuid;
+    private $uuid;
 
-    public function __construct(Uuid $uuid)
-    {
-        $this->uuid = $uuid;
-    }
-
-    public function setUuid(Uuid $uuid)
+    public function __construct(UuidInterface $uuid)
     {
         $this->uuid = $uuid;
     }

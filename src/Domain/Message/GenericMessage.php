@@ -3,11 +3,12 @@
 namespace CQRS\Domain\Message;
 
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class GenericMessage implements MessageInterface
 {
     /**
-     * @var Uuid
+     * @var UuidInterface
      */
     private $id;
 
@@ -29,9 +30,9 @@ class GenericMessage implements MessageInterface
     /**
      * @param object $payload
      * @param Metadata|array $metadata
-     * @param Uuid $id
+     * @param UuidInterface|null $id
      */
-    public function __construct($payload, $metadata = null, Uuid $id = null)
+    public function __construct($payload, $metadata = null, UuidInterface $id = null)
     {
         $this->id          = $id ?: Uuid::uuid4();
         $this->payloadType = get_class($payload);
@@ -40,7 +41,7 @@ class GenericMessage implements MessageInterface
     }
 
     /**
-     * @return Uuid
+     * @return UuidInterface
      */
     public function getId()
     {

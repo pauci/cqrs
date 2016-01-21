@@ -3,7 +3,7 @@
 namespace CQRS\EventStore;
 
 use CQRS\Domain\Message\EventMessageInterface;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use Traversable;
 
 interface EventStoreInterface
@@ -21,8 +21,8 @@ interface EventStoreInterface
     public function read($offset = null, $limit = 10);
 
     /**
-     * @param Uuid|null $previousEventId
+     * @param null|UuidInterface $previousEventId
      * @return Traversable
      */
-    public function iterate(Uuid $previousEventId = null);
+    public function iterate(UuidInterface $previousEventId = null);
 }

@@ -3,7 +3,7 @@
 namespace CQRS\EventStore;
 
 use CQRS\Domain\Message\EventMessageInterface;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use Traversable;
 
 class FilteringEventStore implements EventStoreInterface
@@ -49,10 +49,10 @@ class FilteringEventStore implements EventStoreInterface
     }
 
     /**
-     * @param Uuid|null $previousEventId
+     * @param null|UuidInterface $previousEventId
      * @return Traversable
      */
-    public function iterate(Uuid $previousEventId = null)
+    public function iterate(UuidInterface $previousEventId = null)
     {
         return $this->eventStore->iterate($previousEventId);
     }

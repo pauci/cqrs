@@ -6,7 +6,7 @@ use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\EventStore\EventStoreInterface;
 use Generator;
 use IteratorAggregate;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class EventStoreEventStream implements IteratorAggregate, EventStreamInterface
 {
@@ -16,15 +16,15 @@ class EventStoreEventStream implements IteratorAggregate, EventStreamInterface
     private $eventStore;
 
     /**
-     * @var Uuid
+     * @var UuidInterface
      */
     private $previousEventId;
 
     /**
      * @param EventStoreInterface $eventStore
-     * @param Uuid|null           $previousEventId
+     * @param UuidInterface|null $previousEventId
      */
-    public function __construct(EventStoreInterface $eventStore, Uuid $previousEventId = null)
+    public function __construct(EventStoreInterface $eventStore, UuidInterface $previousEventId = null)
     {
         $this->eventStore = $eventStore;
         $this->previousEventId = $previousEventId;

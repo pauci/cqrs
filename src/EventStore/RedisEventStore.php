@@ -5,14 +5,12 @@ namespace CQRS\EventStore;
 use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Exception;
 use CQRS\Serializer\SerializerInterface;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use Redis;
 use Traversable;
 
 class RedisEventStore implements EventStoreInterface
 {
-    const TIMESTAMP_FORMAT = 'Y-m-d\TH:i:s.uO';
-
     /**
      * @var SerializerInterface
      */
@@ -42,7 +40,7 @@ class RedisEventStore implements EventStoreInterface
     public function __construct(SerializerInterface $serializer, Redis $redis, $key = null, $size = null)
     {
         $this->serializer = $serializer;
-        $this->redis      = $redis;
+        $this->redis = $redis;
 
         if (null !== $key) {
             $this->key = $key;
@@ -93,7 +91,7 @@ class RedisEventStore implements EventStoreInterface
     {
         $data = $this->redis->brPop($this->key, (int) $timeout);
 
-        if (!isset($data[1])) {
+        if (!array_key_exists(1, $data)) {
             return null;
         }
 
@@ -101,10 +99,10 @@ class RedisEventStore implements EventStoreInterface
     }
 
     /**
-     * @param Uuid|null $previousEventId
+     * @param null|UuidInterface $previousEventId
      * @return Traversable
      */
-    public function iterate(Uuid $previousEventId = null)
+    public function iterate(UuidInterface $previousEventId = null)
     {
         throw new Exception\BadMethodCallException('Method is not implemented');
     }

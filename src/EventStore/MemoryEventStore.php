@@ -4,7 +4,7 @@ namespace CQRS\EventStore;
 
 use ArrayIterator;
 use CQRS\Domain\Message\EventMessageInterface;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class MemoryEventStore implements EventStoreInterface
 {
@@ -32,10 +32,10 @@ class MemoryEventStore implements EventStoreInterface
     }
 
     /**
-     * @param Uuid|null $previousEventId
      * @return ArrayIterator
+     * @param UuidInterface|null $previousEventId
      */
-    public function iterate(Uuid $previousEventId = null)
+    public function iterate(UuidInterface $previousEventId = null)
     {
         return new ArrayIterator($this->events);
     }

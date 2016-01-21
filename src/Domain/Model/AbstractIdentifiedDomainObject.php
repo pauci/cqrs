@@ -12,7 +12,7 @@ abstract class AbstractIdentifiedDomainObject
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
-     * @ORM\Column(type = "integer")
+     * @ORM\Column(type="integer")
      * @var int
      */
     private $id;

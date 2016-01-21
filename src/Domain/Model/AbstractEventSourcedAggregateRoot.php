@@ -28,7 +28,9 @@ abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregateRoot
 
         if (!method_exists($this, $methodName)) {
             throw new BadMethodCallException(sprintf(
-                'Aggregate root %s has no method to apply event %s', get_class($this), $eventName
+                'Aggregate root %s has no method to apply event %s',
+                get_class($this),
+                $eventName
             ));
         }
         $this->$methodName(

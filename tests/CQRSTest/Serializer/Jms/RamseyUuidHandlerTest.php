@@ -3,10 +3,12 @@
 namespace CQRSTest\Serializer\Jms;
 
 use CQRS\Serializer\Jms\RamseyUuidHandler;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\Handler\HandlerRegistry;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class RamseyUuidHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,6 +19,8 @@ class RamseyUuidHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        AnnotationRegistry::registerLoader('class_exists');
+
         $this->serializer = SerializerBuilder::create()
             ->configureHandlers(function(HandlerRegistry $registry) {
                 $registry->registerSubscribingHandler(new RamseyUuidHandler());
@@ -42,7 +46,7 @@ class RamseyUuidHandlerTest extends \PHPUnit_Framework_TestCase
         $object = $this->serializer->deserialize($json, ObjectWithUuid::class, 'json');
         $uuid   = $object->getUuid();
 
-        $this->assertInstanceOf(Uuid::class, $uuid);
+        $this->assertInstanceOf(UuidInterface::class, $uuid);
         $this->assertEquals('ed34c88e-78b0-11e3-9ade-406c8f20ad00', (string) $uuid);
     }
 }

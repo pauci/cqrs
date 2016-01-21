@@ -7,6 +7,7 @@ use DateTimeInterface;
 use DateTimeImmutable;
 use DateTimeZone;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use ReflectionClass;
 use ReflectionProperty;
 
@@ -71,7 +72,7 @@ class ReflectionSerializer implements SerializerInterface
             return ['time' => $object->format('Y-m-d\TH:i:s.uO')];
         }
 
-        if ($object instanceof Uuid) {
+        if ($object instanceof UuidInterface) {
             return ['uuid' => (string) $object];
         }
 

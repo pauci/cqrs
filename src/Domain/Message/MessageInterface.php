@@ -2,12 +2,12 @@
 
 namespace CQRS\Domain\Message;
 
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 interface MessageInterface
 {
     /**
-     * @return Uuid
+     * @return UuidInterface
      */
     public function getId();
 
