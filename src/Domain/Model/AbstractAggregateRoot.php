@@ -23,14 +23,14 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
     private $deleted = false;
 
     /**
-     * @ORM\Column(type = "integer", options = {"unsigned" = true})
+     * @ORM\Column(type="integer", options={"unsigned"=true})
      * @var int
      */
     private $lastEventSequenceNumber;
 
     /**
      * @ORM\Version
-     * @ORM\Column(type = "integer", options = {"unsigned" = true})
+     * @ORM\Column(type="integer", options={"unsigned"=true})
      * @var int
      */
     private $version;
@@ -39,11 +39,6 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
      * @return mixed
      */
     abstract public function getId();
-
-    /**
-     * @return mixed
-     */
-    abstract protected function &getIdReference();
 
     /**
      * Registers an event to be published when the aggregate is saved, containing the given payload and optional
@@ -56,7 +51,7 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
     protected function registerEvent($payload, $metadata = null)
     {
         if ($payload instanceof AbstractDomainEvent && null === $payload->aggregateId) {
-            $payload->setAggregateId($this->getIdReference());
+            $payload->setAggregateId($this->getId());
         }
 
         return $this->getEventContainer()->addEvent($payload, $metadata);
@@ -126,9 +121,10 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
     private function getEventContainer()
     {
         if ($this->eventContainer === null) {
-            $type = get_class($this);
-            $id   = &$this->getIdReference();
-            $this->eventContainer = new EventContainer($type, $id);
+            $this->eventContainer = new EventContainer(
+                get_class($this),
+                $this->getId()
+            );
             $this->eventContainer->initializeSequenceNumber($this->lastEventSequenceNumber);
         }
         return $this->eventContainer;
