@@ -18,7 +18,7 @@ class GenericMessage implements MessageInterface
     private $payloadType;
 
     /**
-     * @var object
+     * @var mixed
      */
     private $payload;
 
@@ -28,16 +28,29 @@ class GenericMessage implements MessageInterface
     private $metadata;
 
     /**
-     * @param object $payload
-     * @param Metadata|array $metadata
+     * @param mixed $payload
+     * @param Metadata|array|null $metadata
      * @param UuidInterface|null $id
      */
     public function __construct($payload, $metadata = null, UuidInterface $id = null)
     {
-        $this->id          = $id ?: Uuid::uuid4();
+        $this->id = $id ?: Uuid::uuid4();
         $this->payloadType = get_class($payload);
-        $this->payload     = $payload;
-        $this->metadata    = Metadata::from($metadata);
+        $this->payload = $payload;
+        $this->metadata = Metadata::from($metadata);
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'payloadType' => $this->payloadType,
+            'payload' => $this->payload,
+            'metadata' => $this->metadata,
+        ];
     }
 
     /**
@@ -57,7 +70,7 @@ class GenericMessage implements MessageInterface
     }
 
     /**
-     * @return object
+     * @return mixed
      */
     public function getPayload()
     {

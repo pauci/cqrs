@@ -2,9 +2,10 @@
 
 namespace CQRS\Domain\Message;
 
+use JsonSerializable;
 use Ramsey\Uuid\UuidInterface;
 
-interface MessageInterface
+interface MessageInterface extends JsonSerializable
 {
     /**
      * @return UuidInterface
@@ -17,7 +18,7 @@ interface MessageInterface
     public function getPayloadType();
 
     /**
-     * @return object
+     * @return mixed
      */
     public function getPayload();
 

@@ -2,7 +2,6 @@
 
 namespace CQRS\Domain\Message;
 
-use DateTimeInterface;
 use Ramsey\Uuid\UuidInterface;
 
 class GenericDomainEventMessage extends GenericEventMessage implements DomainEventMessageInterface
@@ -26,13 +25,20 @@ class GenericDomainEventMessage extends GenericEventMessage implements DomainEve
      * @param string $aggregateType
      * @param mixed $aggregateId
      * @param int $sequenceNumber
-     * @param object $payload
-     * @param Metadata|array $metadata
+     * @param mixed $payload
+     * @param Metadata|array|null $metadata
      * @param UuidInterface|null $id
-     * @param DateTimeInterface $timestamp
+     * @param Timestamp|null $timestamp
      */
-    public function __construct($aggregateType, $aggregateId, $sequenceNumber, $payload, $metadata = null, UuidInterface $id = null, DateTimeInterface $timestamp = null)
-    {
+    public function __construct(
+        $aggregateType,
+        $aggregateId,
+        $sequenceNumber,
+        $payload,
+        $metadata = null,
+        UuidInterface $id = null,
+        Timestamp $timestamp = null
+    ) {
         $this->aggregateType = $aggregateType;
         $this->aggregateId = $aggregateId;
         $this->sequenceNumber = $sequenceNumber;

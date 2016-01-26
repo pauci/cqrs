@@ -2,12 +2,10 @@
 
 namespace CQRS\Domain\Message;
 
-use DateTimeInterface;
-
 interface EventMessageInterface extends MessageInterface
 {
     /**
-     * @return DateTimeInterface
+     * @return Timestamp
      */
     public function getTimestamp();
 }

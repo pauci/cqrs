@@ -7,8 +7,8 @@ use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\Domain\Message\Metadata;
+use CQRS\Domain\Message\Timestamp;
 use CQRS\Serializer\SerializerInterface;
-use DateTimeImmutable;
 use Ramsey\Uuid\Uuid;
 
 class RedisEventRecord
@@ -28,18 +28,19 @@ class RedisEventRecord
     public static function fromMessage(EventMessageInterface $event, SerializerInterface $serializer)
     {
         $data = [
-            'id'           => (string) $event->getId(),
-            'timestamp'    => $event->getTimestamp()->format(self::TIMESTAMP_FORMAT),
+            'id' => (string) $event->getId(),
+            'timestamp' => $event->getTimestamp()
+                ->format(self::TIMESTAMP_FORMAT),
             'payload_type' => $event->getPayloadType(),
-            'payload'      => $serializer->serialize($event->getPayload()),
-            'metadata'     => $serializer->serialize($event->getMetadata())
+            'payload' => $serializer->serialize($event->getPayload()),
+            'metadata' => $serializer->serialize($event->getMetadata()),
         ];
 
         if ($event instanceof DomainEventMessageInterface) {
             $data['aggregate'] = [
                 'type' => $event->getAggregateType(),
                 'id'   => $event->getAggregateId(),
-                'seq'  => $event->getSequenceNumber()
+                'seq'  => $event->getSequenceNumber(),
             ];
         }
 
@@ -78,12 +79,12 @@ class RedisEventRecord
     {
         $data = $this->toArray();
 
-        $id        = Uuid::fromString($data['id']);
-        $timestamp = DateTimeImmutable::createFromFormat(self::TIMESTAMP_FORMAT, $data['timestamp']);
-        $payload   = $serializer->deserialize($data['payload'], $data['payload_type']);
-        $metadata  = $serializer->deserialize($data['metadata'], Metadata::class);
+        $id = Uuid::fromString($data['id']);
+        $timestamp = new Timestamp($data['timestamp']);
+        $payload = $serializer->deserialize($data['payload'], $data['payload_type']);
+        $metadata = $serializer->deserialize($data['metadata'], Metadata::class);
 
-        if (isset($data['aggregate'])) {
+        if (array_key_exists('aggregate', $data)) {
             return new GenericDomainEventMessage(
                 $data['aggregate']['type'],
                 $data['aggregate']['id'],

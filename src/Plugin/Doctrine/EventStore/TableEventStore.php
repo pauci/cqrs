@@ -7,10 +7,10 @@ use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\Domain\Message\Metadata;
+use CQRS\Domain\Message\Timestamp;
 use CQRS\EventStore\EventStoreInterface;
 use CQRS\Exception\OutOfBoundsException;
 use CQRS\Serializer\SerializerInterface;
-use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Generator;
@@ -153,9 +153,9 @@ class TableEventStore implements EventStoreInterface
         /** @var Metadata $metadata */
         $metadata  = $this->serializer->deserialize($data['metadata'], Metadata::class);
         $id        = Uuid::fromString($data['event_id']);
-        $timestamp = DateTimeImmutable::createFromFormat('Y-m-d H:i:s.u', "{$data['event_date']}.{$data['event_date_u']}");
+        $timestamp = new Timestamp("{$data['event_date']}.{$data['event_date_u']}");
 
-        if (isset($data['aggregate_type'])) {
+        if (array_key_exists('aggregate_type', $data)) {
             return new GenericDomainEventMessage(
                 $data['aggregate_type'],
                 $data['aggregate_id'],

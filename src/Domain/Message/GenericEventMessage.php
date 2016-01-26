@@ -2,31 +2,39 @@
 
 namespace CQRS\Domain\Message;
 
-use CQRS\Common\MicrosecondsDateTimeFactory;
-use DateTimeInterface;
 use Ramsey\Uuid\UuidInterface;
 
 class GenericEventMessage extends GenericMessage implements EventMessageInterface
 {
     /**
-     * @var DateTimeInterface
+     * @var Timestamp
      */
     private $timestamp;
 
     /**
-     * @param object $payload
+     * @param mixed $payload
      * @param Metadata|array|null $metadata
      * @param UuidInterface|null $id
-     * @param DateTimeInterface $timestamp
+     * @param Timestamp|null $timestamp
      */
-    public function __construct($payload, $metadata = null, UuidInterface $id = null, DateTimeInterface $timestamp = null)
+    public function __construct($payload, $metadata = null, UuidInterface $id = null, Timestamp $timestamp = null)
     {
         parent::__construct($payload, $metadata, $id);
-        $this->timestamp = $timestamp ?: MicrosecondsDateTimeFactory::createImmutableNow();
+        $this->timestamp = $timestamp ?: new Timestamp();
     }
 
     /**
-     * @return DateTimeInterface
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $data = parent::jsonSerialize();
+        $data['timestamp'] = $this->timestamp;
+        return $data;
+    }
+
+    /**
+     * @return Timestamp
      */
     public function getTimestamp()
     {
