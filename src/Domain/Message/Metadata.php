@@ -27,10 +27,15 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      */
     public static function emptyInstance()
     {
-        if (self::$emptyInstance === null) {
-            self::$emptyInstance = new self();
+        if (static::$emptyInstance === null) {
+            static::$emptyInstance = new static();
         }
-        return self::$emptyInstance;
+        return static::$emptyInstance;
+    }
+
+    public static function resetEmptyInstance()
+    {
+        static::$emptyInstance = null;
     }
 
     /**
@@ -39,13 +44,13 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      */
     public static function from($metadata = null)
     {
-        if ($metadata instanceof self) {
+        if ($metadata instanceof static) {
             return $metadata;
         }
-        if (empty($metadata)) {
-            return self::emptyInstance();
+        if ($metadata === null || $metadata === []) {
+            return static::emptyInstance();
         }
-        return new self($metadata);
+        return new static($metadata);
     }
 
     /**
@@ -54,7 +59,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      */
     public static function jsonDeserialize(array $data)
     {
-        return new self($data);
+        return new static($data);
     }
 
     /**
@@ -111,18 +116,20 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
     /**
      * @param string $offset
      * @param mixed $value
+     * @throws RuntimeException
      */
     public function offsetSet($offset, $value)
     {
-        $this->raiseImmutabilityException();
+        throw new RuntimeException('Event metadata is immutable.');
     }
 
     /**
      * @param string $offset
+     * @throws RuntimeException
      */
     public function offsetUnset($offset)
     {
-        $this->raiseImmutabilityException();
+        throw new RuntimeException('Event metadata is immutable.');
     }
 
     /**
@@ -160,11 +167,11 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
     {
         $values = array_merge($this->values, $additionalMetadata->values);
 
-        if ($values == $this->values) {
+        if ($values === $this->values) {
             return $this;
         }
 
-        return new self($values);
+        return new static($values);
     }
 
     /**
@@ -180,15 +187,10 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
     {
         $values = array_diff_key($this->values, array_flip($keys));
 
-        if ($values == $this->values) {
+        if ($values === $this->values) {
             return $this;
         }
 
-        return new self($values);
-    }
-
-    private function raiseImmutabilityException()
-    {
-        throw new RuntimeException('Event metadata is immutable.');
+        return new static($values);
     }
 }
