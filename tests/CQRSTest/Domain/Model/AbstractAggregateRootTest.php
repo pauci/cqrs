@@ -4,7 +4,6 @@ namespace CQRSTest\Domain\Model;
 
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Model\AbstractAggregateRoot;
-use CQRS\Domain\Payload\AbstractDomainEvent;
 use PHPUnit_Framework_TestCase;
 
 class AbstractAggregateRootTest extends PHPUnit_Framework_TestCase
@@ -52,8 +51,3 @@ class AggregateRootUnderTest extends AbstractAggregateRoot
     }
 }
 
-class SomeEvent
-{}
-
-class SomeDomainEvent extends AbstractDomainEvent
-{}

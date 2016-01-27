@@ -2,7 +2,6 @@
 
 namespace CQRSTest\Domain\Message;
 
-use CQRS\Domain\Payload\AbstractCommand;
 use CQRS\Exception\RuntimeException;
 use PHPUnit_Framework_TestCase;
 
@@ -30,6 +29,3 @@ class AbstractCommandTest extends PHPUnit_Framework_TestCase
         $command->bar;
     }
 }
-
-class TestAbstractCommand extends \CQRS\Domain\Payload\AbstractCommand
-{}

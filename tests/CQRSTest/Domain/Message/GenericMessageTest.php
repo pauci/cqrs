@@ -32,6 +32,3 @@ class GenericMessageTest extends PHPUnit_Framework_TestCase
         $this->assertSame($metadata, $message->getMetadata());
     }
 }
-
-class SomePayload
-{}
