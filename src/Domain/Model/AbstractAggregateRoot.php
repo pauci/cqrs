@@ -5,6 +5,7 @@ namespace CQRS\Domain\Model;
 use CQRS\Domain\Message\DomainEventMessageInterface;
 use CQRS\Domain\Message\Metadata;
 use CQRS\Domain\Payload\AbstractDomainEvent;
+use CQRS\Exception\RuntimeException;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -54,7 +55,18 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
             $payload->setAggregateId($this->getId());
         }
 
-        return $this->getEventContainer()->addEvent($payload, $metadata);
+        return $this->getEventContainer()
+            ->addEvent($payload, $metadata);
+    }
+
+    /**
+     * @param DomainEventMessageInterface $eventMessage
+     * @return DomainEventMessageInterface
+     */
+    protected function registerEventMessage(DomainEventMessageInterface $eventMessage)
+    {
+        return $this->getEventContainer()
+            ->addEventMessage($eventMessage);
     }
 
     /**
@@ -126,8 +138,8 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
             $aggregateType = get_class($this);
             if ($aggregateId === null) {
                 throw new RuntimeException(sprintf(
-                    'Aggregate id is unknown in %s. '
-                    . 'Make sure the Aggregate id is initialized before registering events.',
+                    'Aggregate ID is unknown in %s. '
+                    . 'Make sure the Aggregate ID is initialized before registering events.',
                     $aggregateType
                 ));
             }

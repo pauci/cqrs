@@ -3,27 +3,37 @@
 namespace CQRS\Domain\Model;
 
 use CQRS\Domain\Message\EventMessageInterface;
+use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\Metadata;
 use CQRS\Exception\BadMethodCallException;
 
 abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregateRoot
 {
     /**
-     * @param object $payload
+     * @param mixed $payload
      * @param Metadata|array $metadata
      */
     protected function apply($payload, $metadata = null)
     {
-        $event = $this->registerEvent($payload, $metadata);
-        $this->handle($event);
+        $message = new GenericDomainEventMessage(
+            get_class($this),
+            null,
+            0,
+            $payload,
+            $metadata
+        );
+
+        $this->handle($message);
+        $this->registerEventMessage($message);
     }
 
     /**
-     * @param EventMessageInterface $event
+     * @param EventMessageInterface $eventMessage
+     * @throws BadMethodCallException
      */
-    private function handle(EventMessageInterface $event)
+    private function handle(EventMessageInterface $eventMessage)
     {
-        $eventName  = $this->getEventName($event);
+        $eventName  = $this->getEventName($eventMessage);
         $methodName = 'apply' . $eventName;
 
         if (!method_exists($this, $methodName)) {
@@ -34,9 +44,9 @@ abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregateRoot
             ));
         }
         $this->$methodName(
-            $event->getPayload(),
-            $event->getTimestamp(),
-            $event->getMetadata()
+            $eventMessage->getPayload(),
+            $eventMessage->getTimestamp(),
+            $eventMessage->getMetadata()
         );
     }
 
@@ -53,7 +63,7 @@ abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregateRoot
             $name = substr($name, $pos + 1);
         }
 
-        if (substr($name, -5) == 'Event') {
+        if (substr($name, -5) === 'Event') {
             $name = substr($name, 0, -5);
         }
 
