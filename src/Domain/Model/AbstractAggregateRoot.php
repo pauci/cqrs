@@ -117,14 +117,22 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
 
     /**
      * @return EventContainer
+     * @throws RuntimeException
      */
     private function getEventContainer()
     {
         if ($this->eventContainer === null) {
-            $this->eventContainer = new EventContainer(
-                get_class($this),
-                $this->getId()
-            );
+            $aggregateId = $this->getId();
+            $aggregateType = get_class($this);
+            if ($aggregateId === null) {
+                throw new RuntimeException(sprintf(
+                    'Aggregate id is unknown in %s. '
+                    . 'Make sure the Aggregate id is initialized before registering events.',
+                    $aggregateType
+                ));
+            }
+
+            $this->eventContainer = new EventContainer($aggregateType, $aggregateId);
             $this->eventContainer->initializeSequenceNumber($this->lastEventSequenceNumber);
         }
         return $this->eventContainer;
