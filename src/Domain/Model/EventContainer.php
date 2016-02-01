@@ -3,8 +3,10 @@
 namespace CQRS\Domain\Model;
 
 use Countable;
+use CQRS\Domain\Message\DomainEventMessageInterface;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\Metadata;
+use CQRS\Exception\InvalidArgumentException;
 use CQRS\Exception\RuntimeException;
 
 /**
@@ -54,13 +56,13 @@ class EventContainer implements Countable
     /**
      * Add an event to this container.
      *
-     * @param object $payload
+     * @param mixed $payload
      * @param Metadata|array $metadata
      * @return GenericDomainEventMessage
      */
     public function addEvent($payload, $metadata = null)
     {
-        $event = new GenericDomainEventMessage(
+        $domainEventMessage = new GenericDomainEventMessage(
             $this->aggregateType,
             $this->aggregateId,
             $this->newSequenceNumber(),
@@ -68,9 +70,39 @@ class EventContainer implements Countable
             $metadata
         );
 
-        $this->lastSequenceNumber = $event->getSequenceNumber();
-        $this->events[] = $event;
-        return $event;
+        $this->addEventMessage($domainEventMessage);
+    }
+
+    /**
+     * @param DomainEventMessageInterface $domainEventMessage
+     * @return DomainEventMessageInterface
+     * @throws InvalidArgumentException
+     */
+    public function addEventMessage(DomainEventMessageInterface $domainEventMessage)
+    {
+        if ($domainEventMessage->getAggregateType() !== $this->aggregateType) {
+            throw new InvalidArgumentException(sprintf(
+                'Trying to add an event message of aggregate %s to the event container of aggregate %s',
+                $domainEventMessage->getAggregateType(),
+                $this->aggregateType
+            ));
+        }
+
+        if ($domainEventMessage->getAggregateId() === null) {
+            $domainEventMessage = new GenericDomainEventMessage(
+                $domainEventMessage->getAggregateType(),
+                $this->aggregateId,
+                $domainEventMessage->getSequenceNumber(),
+                $domainEventMessage->getPayload(),
+                $domainEventMessage->getMetadata(),
+                $domainEventMessage->getId(),
+                $domainEventMessage->getTimestamp()
+            );
+        }
+
+        $this->lastSequenceNumber = $domainEventMessage->getSequenceNumber();
+        $this->events[] = $domainEventMessage;
+        return $domainEventMessage;
     }
 
     /**
@@ -104,10 +136,11 @@ class EventContainer implements Countable
      * Sets the first sequence number that should be assigned to an incoming event.
      *
      * @param int $lastKnownSequenceNumber
+     * @throws RuntimeException
      */
     public function initializeSequenceNumber($lastKnownSequenceNumber)
     {
-        if (!empty($this->events)) {
+        if (count($this) !== 0) {
             throw new RuntimeException('Cannot set first sequence number if events have already been added');
         }
         $this->lastCommittedSequenceNumber = $lastKnownSequenceNumber;
@@ -120,7 +153,7 @@ class EventContainer implements Countable
      */
     public function getLastSequenceNumber()
     {
-        if (empty($this->events)) {
+        if (count($this->events) === 0) {
             return $this->lastCommittedSequenceNumber;
         }
         if ($this->lastSequenceNumber === null) {
