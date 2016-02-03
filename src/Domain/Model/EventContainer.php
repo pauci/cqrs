@@ -71,6 +71,7 @@ class EventContainer implements Countable
         );
 
         $this->addEventMessage($domainEventMessage);
+        return $domainEventMessage;
     }
 
     /**
