@@ -6,25 +6,39 @@ use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\Metadata;
 use CQRS\Exception\BadMethodCallException;
+use CQRS\Exception\DomainException;
 
 abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregateRoot
 {
     /**
      * @param mixed $payload
      * @param Metadata|array $metadata
+     * @throws DomainException
      */
     protected function apply($payload, $metadata = null)
     {
-        $message = new GenericDomainEventMessage(
-            get_class($this),
-            null,
-            0,
-            $payload,
-            $metadata
-        );
+        if ($this->getId() === null) {
+            if ($this->getUncommittedEventsCount() > 0 || $this->getVersion() !== null) {
+                throw new DomainException(
+                    'The Aggregate ID has not been initialized. '
+                    . 'It must be initialized at the latest when the first event is applied.'
+                );
+            }
 
-        $this->handle($message);
-        $this->registerEventMessage($message);
+            $message = new GenericDomainEventMessage(
+                get_class($this),
+                null,
+                0,
+                $payload,
+                $metadata
+            );
+
+            $this->handle($message);
+            $this->registerEventMessage($message);
+        } else {
+            $message = $this->registerEvent($payload, $metadata);
+            $this->handle($message);
+        }
     }
 
     /**
