@@ -70,12 +70,13 @@ class SynchronousEventBus implements EventBusInterface
      */
     private function invokeEventHandler(callable $callback, $event)
     {
-        $handlerName = is_array($callback)
-            ? (is_string($callback[0]) ? $callback[0] : get_class($callback[0])) . '::' . $callback[1]
-            : 'closure';
+        $handlerName = 'closure';
+        if (is_array($callback)) {
+            $handlerName = (is_string($callback[0]) ? $callback[0] : get_class($callback[0])) . '::' . $callback[1]
+        }
 
         $this->logger->debug(sprintf(
-            'Invoking EventListener %s',
+            'Invoking EventListener %s for event %s',
             $handlerName,
             $event->getPayloadType()
         ), [
@@ -116,10 +117,7 @@ class SynchronousEventBus implements EventBusInterface
             }
 
             $this->publish(new GenericEventMessage(
-                new EventExecutionFailed([
-                    'exception' => $e,
-                    'event'     => $event,
-                ]),
+                new EventExecutionFailed($event, $e),
                 $event->getMetadata()
             ));
 
@@ -140,7 +138,7 @@ class SynchronousEventBus implements EventBusInterface
             $name = substr($name, $pos + 1);
         }
 
-        if (substr($name, -5) == 'Event') {
+        if (substr($name, -5) === 'Event') {
             $name = substr($name, 0, -5);
         }
 

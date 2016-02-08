@@ -12,14 +12,20 @@ use Psr\Log\NullLogger;
 
 class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
 {
-    /** @var SynchronousEventBus */
-    protected $eventBus;
+    /**
+     * @var SynchronousEventBus
+     */
+    private $eventBus;
 
-    /** @var SynchronousEventHandler */
-    protected $handler;
+    /**
+     * @var SynchronousEventHandler
+     */
+    private $handler;
 
-    /** @var NullLogger */
-    protected $logger;
+    /**
+     * @var NullLogger
+     */
+    private $logger;
 
     public function setUp()
     {
@@ -52,13 +58,13 @@ class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
         $failureEvent = $this->handler->failureEvent;
 
         $this->assertInstanceOf(EventExecutionFailed::class, $failureEvent);
-        $this->assertInstanceOf(SomeException::class, $failureEvent->exception);
-        $this->assertSame($failureCausingEvent, $failureEvent->event->getPayload());
+        $this->assertInstanceOf(SomeException::class, $failureEvent->getException());
+        $this->assertSame($failureCausingEvent, $failureEvent->getEvent()->getPayload());
     }
 
     public function testItIgnoresErrorWhenHandlingEventExecutionFailedEvent()
     {
-        $failureEvent = new EventExecutionFailed();
+        $failureEvent = new EventExecutionFailed(new GenericEventMessage(new FailureCausingEvent()), new SomeException());
 
         $this->handler->throwErrorOnEventExecutionFailed = true;
 
