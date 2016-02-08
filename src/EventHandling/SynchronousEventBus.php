@@ -72,7 +72,7 @@ class SynchronousEventBus implements EventBusInterface
     {
         $handlerName = 'closure';
         if (is_array($callback)) {
-            $handlerName = (is_string($callback[0]) ? $callback[0] : get_class($callback[0])) . '::' . $callback[1]
+            $handlerName = (is_string($callback[0]) ? $callback[0] : get_class($callback[0])) . '::' . $callback[1];
         }
 
         $this->logger->debug(sprintf(
