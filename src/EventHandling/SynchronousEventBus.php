@@ -9,7 +9,7 @@ use CQRS\EventHandling\Locator\EventHandlerLocatorInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
 
-class SynchronousEventBus implements EventBusInterface
+class SynchronousEventBus extends AbstractEventBus
 {
     /**
      * @var EventHandlerLocatorInterface
