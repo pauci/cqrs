@@ -4,9 +4,15 @@ namespace CQRS\EventStream;
 
 use Generator;
 use IteratorAggregate;
+use Ramsey\Uuid\UuidInterface;
 
-class ContinuousEventStream extends AbstractNestedEventStream implements IteratorAggregate
+class ContinuousEventStream implements IteratorAggregate, EventStreamInterface
 {
+    /**
+     * @var EventStreamInterface
+     */
+    private $eventStream;
+
     /**
      * @var int
      */
@@ -18,8 +24,16 @@ class ContinuousEventStream extends AbstractNestedEventStream implements Iterato
      */
     public function __construct(EventStreamInterface $eventStream, $pauseMicroseconds = 500000)
     {
-        parent::__construct($eventStream);
+        $this->eventStream = $eventStream;
         $this->pauseMicroseconds = $pauseMicroseconds;
+    }
+
+    /**
+     * @return UuidInterface|null
+     */
+    public function getLastEventId()
+    {
+        return $this->eventStream->getLastEventId();
     }
 
     /**

@@ -5,9 +5,15 @@ namespace CQRS\EventStream;
 use CQRS\Domain\Message\EventMessageInterface;
 use Generator;
 use IteratorAggregate;
+use Ramsey\Uuid\UuidInterface;
 
-class DelayedEventStream extends AbstractNestedEventStream implements IteratorAggregate
+class DelayedEventStream implements IteratorAggregate, EventStreamInterface
 {
+    /**
+     * @var EventStreamInterface
+     */
+    private $eventStream;
+
     /**
      * @var int
      */
@@ -19,8 +25,16 @@ class DelayedEventStream extends AbstractNestedEventStream implements IteratorAg
      */
     public function __construct(EventStreamInterface $eventStream, $delaySeconds)
     {
-        parent::__construct($eventStream);
+        $this->eventStream = $eventStream;
         $this->delaySeconds = $delaySeconds;
+    }
+
+    /**
+     * @return UuidInterface|null
+     */
+    public function getLastEventId()
+    {
+        return $this->eventStream->getLastEventId();
     }
 
     /**
