@@ -5,13 +5,8 @@ namespace CQRS\EventStream;
 use Generator;
 use IteratorAggregate;
 
-class ContinuousEventStream implements IteratorAggregate, EventStreamInterface
+class ContinuousEventStream extends AbstractNestedEventStream implements IteratorAggregate
 {
-    /**
-     * @var EventStreamInterface
-     */
-    private $eventStream;
-
     /**
      * @var int
      */
@@ -19,11 +14,11 @@ class ContinuousEventStream implements IteratorAggregate, EventStreamInterface
 
     /**
      * @param EventStreamInterface $eventStream
-     * @param int                  $pauseMicroseconds
+     * @param int $pauseMicroseconds
      */
     public function __construct(EventStreamInterface $eventStream, $pauseMicroseconds = 500000)
     {
-        $this->eventStream = $eventStream;
+        parent::__construct($eventStream);
         $this->pauseMicroseconds = $pauseMicroseconds;
     }
 

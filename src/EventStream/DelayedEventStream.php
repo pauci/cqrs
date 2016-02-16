@@ -6,13 +6,8 @@ use CQRS\Domain\Message\EventMessageInterface;
 use Generator;
 use IteratorAggregate;
 
-class DelayedEventStream implements IteratorAggregate, EventStreamInterface
+class DelayedEventStream extends AbstractNestedEventStream implements IteratorAggregate
 {
-    /**
-     * @var EventStreamInterface
-     */
-    private $eventStream;
-
     /**
      * @var int
      */
@@ -20,11 +15,11 @@ class DelayedEventStream implements IteratorAggregate, EventStreamInterface
 
     /**
      * @param EventStreamInterface $eventStream
-     * @param int                  $delaySeconds
+     * @param int $delaySeconds
      */
     public function __construct(EventStreamInterface $eventStream, $delaySeconds)
     {
-        $this->eventStream = $eventStream;
+        parent::__construct($eventStream);
         $this->delaySeconds = $delaySeconds;
     }
 

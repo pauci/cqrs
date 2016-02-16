@@ -16,9 +16,9 @@ class EventStoreEventStream implements IteratorAggregate, EventStreamInterface
     private $eventStore;
 
     /**
-     * @var UuidInterface
+     * @var UuidInterface|null
      */
-    private $previousEventId;
+    private $lastEventId;
 
     /**
      * @param EventStoreInterface $eventStore
@@ -27,7 +27,15 @@ class EventStoreEventStream implements IteratorAggregate, EventStreamInterface
     public function __construct(EventStoreInterface $eventStore, UuidInterface $previousEventId = null)
     {
         $this->eventStore = $eventStore;
-        $this->previousEventId = $previousEventId;
+        $this->lastEventId = $previousEventId;
+    }
+
+    /**
+     * @return UuidInterface|null
+     */
+    public function getLastEventId()
+    {
+        return $this->lastEventId;
     }
 
     /**
@@ -35,12 +43,12 @@ class EventStoreEventStream implements IteratorAggregate, EventStreamInterface
      */
     public function getIterator()
     {
-        $eventIterator = $this->eventStore->iterate($this->previousEventId);
+        $eventIterator = $this->eventStore->iterate($this->lastEventId);
 
         /** @var EventMessageInterface $event */
         foreach ($eventIterator as $event) {
-            $this->previousEventId = $event->getId();
+            $this->lastEventId = $event->getId();
             yield $event;
         }
-}
+    }
 }
