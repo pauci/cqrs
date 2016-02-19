@@ -1,13 +1,28 @@
+sudo: false
+
 language: php
 
-php:
-  - 5.6
-  - 7.0
+matrix:
+  fast_finish: true
+  include:
+    - php: 5.6
+      env:
+        - EXECUTE_CS_CHECK=true
+    - php: 7
+    - php: hhvm
+  allow_failures:
+    - php: hhvm
 
-services:
-  - redis-server
-
-before_script:
+before_install:
   - phpenv config-add ./tests/travis/php.ini
   - composer self-update
-  - composer install --prefer-source
+
+install:
+  - travis_retry composer install --no-interaction --prefer-source
+
+script:
+  - composer test
+  - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then composer cs ; fi
+
+notifications:
+  email: true

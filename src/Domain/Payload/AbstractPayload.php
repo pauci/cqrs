@@ -60,4 +60,4 @@ abstract class AbstractPayload
             $this->throwPropertyIsNotValidException($name);
         }
     }
-} 
+}

@@ -77,7 +77,7 @@ class RedisEventStore implements EventStoreInterface
 
         $records = $this->redis->lRange($this->key, $offset, $limit);
 
-        return array_map(function($data) {
+        return array_map(function ($data) {
             $record = new RedisEventRecord($data);
             return $record->toMessage($this->serializer);
         }, $records);

@@ -43,4 +43,4 @@ class MemoryCommandHandlerLocator implements CommandHandlerLocatorInterface
 
         $this->handlers[strtolower($commandType)] = $service;
     }
-} 
+}

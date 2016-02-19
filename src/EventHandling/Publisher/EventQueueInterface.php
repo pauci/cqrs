@@ -10,4 +10,4 @@ interface EventQueueInterface
      * @return EventMessageInterface[]
      */
     public function dequeueAllEvents();
-} 
+}

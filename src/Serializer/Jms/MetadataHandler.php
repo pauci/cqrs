@@ -23,12 +23,12 @@ class MetadataHandler implements SubscribingHandlerInterface
                 'method'    => 'serializeMetadata'
             ];
 
-            $methods[] = array(
+            $methods[] = [
                 'type'      => Metadata::class,
                 'direction' => GraphNavigator::DIRECTION_DESERIALIZATION,
                 'format'    => $format,
                 'method'    => 'deserializeMetadata'
-            );
+            ];
         }
 
         return $methods;
@@ -39,7 +39,7 @@ class MetadataHandler implements SubscribingHandlerInterface
         return $visitor->visitArray($metadata->toArray(), $type, $context);
     }
 
-    public function deserializeMetadata(VisitorInterface $visitor, $data,  array $type, Context $context)
+    public function deserializeMetadata(VisitorInterface $visitor, $data, array $type, Context $context)
     {
         if (null === $data) {
             return null;

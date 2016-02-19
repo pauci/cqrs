@@ -35,4 +35,4 @@ class DomainEventQueue implements EventQueueInterface
 
         return $dequeueEvents;
     }
-} 
+}

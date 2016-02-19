@@ -9,4 +9,4 @@ interface TransactionManagerInterface
     public function commit();
 
     public function rollback();
-} 
+}

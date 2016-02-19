@@ -25,4 +25,4 @@ class MicrosecondsDateTimeFactory
         return DateTimeImmutable::createFromFormat('U.u', sprintf('%.f', microtime(true)))
             ->setTimezone(new DateTimeZone(date_default_timezone_get()));
     }
-} 
+}

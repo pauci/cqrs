@@ -72,7 +72,8 @@ class MemoryEventHandlerLocator implements EventHandlerLocatorInterface
 
             if (!preg_match('/^[\*a-z0-9_-]+$/', $eventName)) {
                 throw new InvalidArgumentException(sprintf(
-                    'Invalid event name "%s"', $event
+                    'Invalid event name "%s"',
+                    $event
                 ));
             }
 

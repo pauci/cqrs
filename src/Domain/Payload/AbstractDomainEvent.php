@@ -26,4 +26,4 @@ abstract class AbstractDomainEvent extends AbstractEvent
         }
         $this->aggregateId = $aggregateId;
     }
-} 
+}

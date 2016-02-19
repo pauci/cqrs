@@ -24,4 +24,4 @@ abstract class AbstractIdentifiedDomainObject
     {
         return $this->id;
     }
-} 
+}

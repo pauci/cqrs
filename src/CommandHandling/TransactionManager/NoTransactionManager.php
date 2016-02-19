@@ -8,11 +8,14 @@ namespace CQRS\CommandHandling\TransactionManager;
 class NoTransactionManager implements TransactionManagerInterface
 {
     public function begin()
-    {}
+    {
+    }
 
     public function commit()
-    {}
+    {
+    }
 
     public function rollback()
-    {}
-} 
+    {
+    }
+}

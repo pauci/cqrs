@@ -44,7 +44,7 @@ class RamseyUuidHandler implements SubscribingHandlerInterface
         return $visitor->visitString($uuid->toString(), $type, $context);
     }
 
-    public function deserializeUuid(VisitorInterface $visitor, $data,  array $type, Context $context)
+    public function deserializeUuid(VisitorInterface $visitor, $data, array $type, Context $context)
     {
         if (null === $data) {
             return null;

@@ -20,4 +20,4 @@ class ExplicitOrmTransactionManager extends AbstractOrmTransactionManager
         $this->entityManager->rollback();
         $this->entityManager->close();
     }
-} 
+}
