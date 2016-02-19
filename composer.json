@@ -9,7 +9,6 @@
         "psr/log": "^1.0.0"
     },
     "require-dev": {
-        "ext-redis": "*",
         "doctrine/orm": "^2.4.8",
         "phpunit/phpunit": "^5.1.4",
         "jms/serializer": "^1.1.0"

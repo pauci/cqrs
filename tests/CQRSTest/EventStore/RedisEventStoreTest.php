@@ -24,6 +24,10 @@ class RedisEventStoreTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        if (!extension_loaded('redis')) {
+            $this->markTestSkipped('The Redis extension is not available.');
+        }
+
         $this->redis = new Redis();
         $this->redis->connect('127.0.0.1');
         $this->redis->del('cqrs_event');
