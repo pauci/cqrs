@@ -13,6 +13,9 @@ matrix:
   allow_failures:
     - php: hhvm
 
+services:
+  - redis-server
+
 before_install:
   - phpenv config-add ./tests/travis/php.ini
   - composer self-update
