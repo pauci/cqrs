@@ -2,11 +2,11 @@
 
 namespace CQRS\CommandHandling;
 
-use CQRS\CommandHandling\Locator\CommandHandlerLocatorInterface;
 use CQRS\CommandHandling\TransactionManager\TransactionManagerInterface;
 use CQRS\EventHandling\Publisher\EventPublisherInterface;
 use CQRS\Exception\RuntimeException;
 use Exception;
+use Interop\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -26,7 +26,7 @@ use Psr\Log\LoggerInterface;
 class SequentialCommandBus implements CommandBusInterface
 {
     /**
-     * @var CommandHandlerLocatorInterface
+     * @var ContainerInterface
      */
     private $locator;
 
@@ -56,26 +56,26 @@ class SequentialCommandBus implements CommandBusInterface
     private $logger;
 
     /**
-     * @param CommandHandlerLocatorInterface $locator
+     * @param ContainerInterface $locator
      * @param TransactionManagerInterface $transactionManager
      * @param EventPublisherInterface $eventPublisher
      * @param LoggerInterface $logger
      */
     public function __construct(
-        CommandHandlerLocatorInterface $locator,
+        ContainerInterface $locator,
         TransactionManagerInterface $transactionManager,
         EventPublisherInterface $eventPublisher,
         LoggerInterface $logger
     ) {
 
-        $this->locator            = $locator;
+        $this->locator = $locator;
         $this->transactionManager = $transactionManager;
-        $this->eventPublisher     = $eventPublisher;
-        $this->logger             = $logger;
+        $this->eventPublisher = $eventPublisher;
+        $this->logger = $logger;
     }
 
     /**
-     * @return CommandHandlerLocatorInterface
+     * @return ContainerInterface
      */
     public function getLocator()
     {
@@ -158,27 +158,22 @@ class SequentialCommandBus implements CommandBusInterface
         try {
             $this->executing = true;
 
-            $service = $this->locator->getCommandHandler($command);
-            $method  = $this->getHandlerMethodName($command);
+            $commandType = get_class($command);
+            $handler = $this->locator->get($commandType);
 
-            if (!method_exists($service, $method)) {
+            if (!is_callable($handler)) {
                 throw new RuntimeException(sprintf(
-                    'Service %s has no method to handle Command %s',
-                    get_class($service),
-                    get_class($command)
+                    'Command handler %s is not invokable',
+                    is_object($handler) ? get_class($handler) : gettype($handler)
                 ));
             }
 
-            $this->logger->debug(sprintf(
-                'Invoking CommandHandler %s::%s',
-                get_class($service),
-                $method
-            ), [
+            $this->logger->debug('Invoking command handler', [
                 'command_payload_type' => get_class($command),
-                'command_payload'      => (array) $command,
+                'command_payload' => (array) $command,
             ]);
 
-            $service->$method($command);
+            $handler($command);
 
         } catch (Exception $e) {
             $this->executing = false;
@@ -186,16 +181,5 @@ class SequentialCommandBus implements CommandBusInterface
         }
 
         $this->executing = false;
-    }
-
-    /**
-     * @param object $command
-     * @return string
-     */
-    protected function getHandlerMethodName($command)
-    {
-        $parts = explode('\\', get_class($command));
-
-        return str_replace('Command', '', lcfirst(end($parts)));
     }
 }

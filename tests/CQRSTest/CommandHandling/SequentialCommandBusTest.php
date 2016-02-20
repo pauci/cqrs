@@ -6,6 +6,7 @@ use CQRS\CommandHandling\Locator\CommandHandlerLocatorInterface;
 use CQRS\CommandHandling\SequentialCommandBus;
 use CQRS\CommandHandling\TransactionManager\TransactionManagerInterface;
 use CQRS\EventHandling\Publisher\EventPublisherInterface;
+use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase;
 use Psr\Log\NullLogger;
 
@@ -25,7 +26,13 @@ class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
         $this->handler = new SequentialCommandHandler();
 
         $locator = new SequentialCommandHandlerLocator();
-        $locator->handler = $this->handler;
+        $locator->handlers = [
+            DoSimpleCommand::class => [$this->handler, 'doSimple'],
+            DoSequentialCommand::class => [$this->handler, 'doSequential'],
+            DoFailureCommand::class => [$this->handler, 'doFailure'],
+            DoSequentialFailureCommand::class => [$this->handler, 'doSequentialFailure'],
+            NotInvokableCommand::class => 'notInvokable',
+        ];
 
         $this->transactionManager = new SequentialTransactionManager();
 
@@ -84,10 +91,10 @@ class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(
             'CQRS\Exception\RuntimeException',
-            'Service CQRSTest\CommandHandling\SequentialCommandHandler has no method to handle Command CQRSTest\CommandHandling\NoHandlingMethodCommand'
+            'Command handler string is not invokable'
         );
 
-        $this->commandBus->dispatch(new NoHandlingMethodCommand());
+        $this->commandBus->dispatch(new NotInvokableCommand());
     }
 }
 
@@ -103,16 +110,21 @@ class DoFailureCommand
 class DoSequentialFailureCommand
 {}
 
-class NoHandlingMethodCommand
+class NotInvokableCommand
 {}
 
-class SequentialCommandHandlerLocator implements CommandHandlerLocatorInterface
+class SequentialCommandHandlerLocator implements ContainerInterface
 {
-    public $handler;
+    public $handlers;
 
-    public function getCommandHandler($command)
+    public function get($id)
     {
-        return $this->handler;
+        return $this->handlers[$id];
+    }
+
+    public function has($id)
+    {
+        return true;
     }
 }
 
