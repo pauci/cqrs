@@ -64,7 +64,7 @@ class SequentialCommandBus implements CommandBusInterface
      */
     public function __construct(
         ContainerInterface $locator,
-        TransactionManagerInterface $transactionManager = null,
+        TransactionManagerInterface $transactionManager,
         EventPublisherInterface $eventPublisher,
         LoggerInterface $logger = null
     ) {
