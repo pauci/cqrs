@@ -8,6 +8,7 @@ use CQRS\Exception\RuntimeException;
 use Exception;
 use Interop\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Process Commands and pass them to their handlers in sequential order.
@@ -59,19 +60,19 @@ class SequentialCommandBus implements CommandBusInterface
      * @param ContainerInterface $locator
      * @param TransactionManagerInterface $transactionManager
      * @param EventPublisherInterface $eventPublisher
-     * @param LoggerInterface $logger
+     * @param LoggerInterface|null $logger
      */
     public function __construct(
         ContainerInterface $locator,
-        TransactionManagerInterface $transactionManager,
+        TransactionManagerInterface $transactionManager = null,
         EventPublisherInterface $eventPublisher,
-        LoggerInterface $logger
+        LoggerInterface $logger = null
     ) {
 
         $this->locator = $locator;
         $this->transactionManager = $transactionManager;
         $this->eventPublisher = $eventPublisher;
-        $this->logger = $logger;
+        $this->logger = $logger ?: new NullLogger();
     }
 
     /**

@@ -8,6 +8,7 @@ use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\EventHandling\Locator\EventHandlerLocatorInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 class SynchronousEventBus extends AbstractEventBus
 {
@@ -23,12 +24,12 @@ class SynchronousEventBus extends AbstractEventBus
 
     /**
      * @param EventHandlerLocatorInterface $locator
-     * @param LoggerInterface $logger
+     * @param LoggerInterface|null $logger
      */
-    public function __construct(EventHandlerLocatorInterface $locator, LoggerInterface $logger)
+    public function __construct(EventHandlerLocatorInterface $locator, LoggerInterface $logger = null)
     {
         $this->locator = $locator;
-        $this->logger  = $logger;
+        $this->logger = $logger ?: new NullLogger();
     }
 
     /**
