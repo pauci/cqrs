@@ -29,7 +29,7 @@ abstract class AbstractEvent extends AbstractPayload
     {
         $parts = explode('\\', get_class($this));
         $event = end($parts);
-        if (substr($event, -5) == 'Event') {
+        if (substr($event, -5) === 'Event') {
             $event = substr($event, 0, -5);
         }
 

@@ -18,6 +18,7 @@ abstract class AbstractDomainEvent extends AbstractEvent
      * This method should by called only during the registration of an event
      *
      * @param mixed $aggregateId
+     * @throws RuntimeException
      */
     public function setAggregateId($aggregateId)
     {

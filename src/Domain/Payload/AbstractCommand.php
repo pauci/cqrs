@@ -30,7 +30,7 @@ abstract class AbstractCommand extends AbstractPayload
     {
         $parts   = explode('\\', get_class($this));
         $command = end($parts);
-        if (substr($command, -7) == 'Command') {
+        if (substr($command, -7) === 'Command') {
             $command = substr($command, 0, -7);
         }
 

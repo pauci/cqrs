@@ -6,13 +6,9 @@
 
 The core library has no dependencies on other libraries. Plugins have dependencies on their specific libraries.
 
-Install with [Composer](http://getcomposer.org):
+Install with [composer](http://getcomposer.org):
 
-    {
-        "require": {
-            "pauci/cqrs": "dev-master"
-        }
-    }
+    composer require pauci/cqrs dev-master
 
 
 ## Usage
@@ -28,17 +24,17 @@ class User extends CQRS\Domain\Model\AbstractAggregateRoot
         $oldName = $this->name;
         $this->name = $name;
 
-        $this->raiseDomainEvent(new UserNameChanged(['name' => $name, 'oldName' => $name]));
+        $this->registerEvent(new UserNameChanged(['name' => $name, 'oldName' => $name]));
     }
 }
 
-class ChangeUserName extends CQRS\CommandHandling\DefaultCommand
+class ChangeUserName extends CQRS\Domain\Payload\AbstractCommand
 {
     public $id;
     public $name;
 }
 
-class UserNameChanged extends CQRS\Domain\Message\AbstractDomainEventMessage
+class UserNameChanged extends CQRS\Domain\Payload\AbstractEvent
 {
     public $id;
     public $name;
@@ -69,12 +65,9 @@ class EchoEventListener
     }
 }
 
-// $commandBus is instance of \CQRS\CommandHandling\CommandBusInterface
-$commandBus = $this->getServiceLocator()->get('cqrs.commandBus.cqrs_default');
-
 $command = new ChangeUserName([
     'id' => 1,
-    'name' => 'Jozko Mrkvicka'
+    'name' => 'Jozko Mrkvicka',
 ]);
-$commandBus->handle($command);
+$commandBus->dispatch($command);
 ```
