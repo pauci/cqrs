@@ -2,24 +2,33 @@
 
 namespace CQRSTest\CommandHandling;
 
-use CQRS\CommandHandling\Locator\CommandHandlerLocatorInterface;
 use CQRS\CommandHandling\SequentialCommandBus;
 use CQRS\CommandHandling\TransactionManager\TransactionManagerInterface;
 use CQRS\EventHandling\Publisher\EventPublisherInterface;
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase;
-use Psr\Log\NullLogger;
 
 class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
 {
-    /** @var SequentialCommandBus */
-    protected $commandBus;
-    /** @var SequentialCommandHandler */
-    protected $handler;
-    /** @var SequentialTransactionManager */
-    protected $transactionManager;
-    /** @var SequentialEventPublisher */
-    protected $eventPublisher;
+    /**
+     * @var SequentialCommandBus
+     */
+    private $commandBus;
+
+    /**
+     * @var SequentialCommandHandler
+     */
+    private $handler;
+
+    /**
+     * @var SequentialTransactionManager
+     */
+    private $transactionManager;
+
+    /**
+     * @var SequentialEventPublisher
+     */
+    private $eventPublisher;
 
     public function setUp()
     {
@@ -38,7 +47,7 @@ class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
 
         $this->eventPublisher = new SequentialEventPublisher();
 
-        $this->commandBus = new SequentialCommandBus($locator, $this->transactionManager, $this->eventPublisher, new NullLogger());
+        $this->commandBus = new SequentialCommandBus($locator, $this->transactionManager, $this->eventPublisher);
         $this->handler->commandBus = $this->commandBus;
     }
 
