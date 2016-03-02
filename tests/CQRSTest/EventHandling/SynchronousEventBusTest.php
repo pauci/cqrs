@@ -6,7 +6,9 @@ use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\EventHandling\EventExecutionFailed;
 use CQRS\EventHandling\Locator\EventHandlerLocatorInterface;
 use CQRS\EventHandling\SynchronousEventBus;
+use CQRS\HandlerResolver\EventHandlerResolver;
 use Exception;
+use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase;
 
 class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
@@ -25,7 +27,7 @@ class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
     {
         $this->handler = new SynchronousEventHandler();
 
-        $locator = new SynchronousEventHandlerLocatorInterface();
+        $locator = new SynchronousEventHandlerLocator();
         $locator->handler = $this->handler;
 
         $this->eventBus = new SynchronousEventBus($locator);
@@ -64,15 +66,23 @@ class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
     }
 }
 
-class SynchronousEventHandlerLocatorInterface implements EventHandlerLocatorInterface
+class SynchronousEventHandlerLocator implements ContainerInterface
 {
     public $handler;
 
-    public function getEventHandlers($eventName)
+    public function get($eventType)
     {
+        $resolver = new EventHandlerResolver();
+        $handler = $resolver($this->handler, $eventType);
+
         return [
-            [$this->handler, 'on' . $eventName]
+            $handler
         ];
+    }
+
+    public function has($eventType)
+    {
+        return true;
     }
 }
 

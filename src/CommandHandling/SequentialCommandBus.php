@@ -105,7 +105,7 @@ class SequentialCommandBus implements CommandBusInterface
      * If an exception occurs in any command it will be put on a stack
      * of exceptions that is thrown only when all the commands are processed.
      *
-     * @param object $command
+     * @param mixed $command
      * @throws Exception
      */
     public function dispatch($command)
@@ -115,7 +115,7 @@ class SequentialCommandBus implements CommandBusInterface
             get_class($command)
         ), [
             'command_payload_type' => get_class($command),
-            'command_payload'      => (array) $command
+            'command_payload' => (array)$command,
         ]);
 
         $this->commandStack[] = $command;
@@ -140,9 +140,9 @@ class SequentialCommandBus implements CommandBusInterface
                 $e->getFile(),
                 $e->getLine()
             ), [
-                'exception'            => $e,
+                'exception' => $e,
                 'command_payload_type' => get_class($command),
-                'command_payload'      => (array) $command,
+                'command_payload' => (array)$command,
             ]);
 
             $this->transactionManager->rollback();
@@ -151,7 +151,7 @@ class SequentialCommandBus implements CommandBusInterface
     }
 
     /**
-     * @param object $command
+     * @param mixed $command
      * @throws Exception
      */
     protected function invokeHandler($command)

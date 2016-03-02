@@ -126,12 +126,12 @@ class SequentialCommandHandlerLocator implements ContainerInterface
 {
     public $handlers;
 
-    public function get($id)
+    public function get($commandType)
     {
-        return $this->handlers[$id];
+        return $this->handlers[$commandType];
     }
 
-    public function has($id)
+    public function has($commandType)
     {
         return true;
     }
