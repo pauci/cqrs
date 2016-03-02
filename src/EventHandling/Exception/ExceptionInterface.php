@@ -1,6 +1,6 @@
 <?php
 
-namespace CQRS\Exception;
+namespace CQRS\EventHandling\Exception;
 
 interface ExceptionInterface
 {

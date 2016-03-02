@@ -2,18 +2,18 @@
 
 namespace CQRS\EventHandling;
 
+use Closure;
 use CQRS\Domain\Message\DomainEventMessageInterface;
 use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericEventMessage;
-use CQRS\EventHandling\Locator\EventHandlerLocatorInterface;
-use Exception;
+use Interop\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 class SynchronousEventBus extends AbstractEventBus
 {
     /**
-     * @var EventHandlerLocatorInterface
+     * @var ContainerInterface
      */
     private $locator;
 
@@ -23,17 +23,17 @@ class SynchronousEventBus extends AbstractEventBus
     private $logger;
 
     /**
-     * @param EventHandlerLocatorInterface $locator
+     * @param ContainerInterface $locator
      * @param LoggerInterface|null $logger
      */
-    public function __construct(EventHandlerLocatorInterface $locator, LoggerInterface $logger = null)
+    public function __construct(ContainerInterface $locator, LoggerInterface $logger = null)
     {
         $this->locator = $locator;
         $this->logger = $logger ?: new NullLogger();
     }
 
     /**
-     * @return EventHandlerLocatorInterface
+     * @return ContainerInterface
      */
     public function getLocator()
     {
@@ -42,6 +42,7 @@ class SynchronousEventBus extends AbstractEventBus
 
     /**
      * @param EventMessageInterface $event
+     * @throws Exception\RuntimeException
      */
     public function publish(EventMessageInterface $event)
     {
@@ -56,37 +57,44 @@ class SynchronousEventBus extends AbstractEventBus
             'event_timestamp'    => $event->getTimestamp()
         ]);
 
-        $eventName = $this->getEventName($event);
-        $callbacks = $this->locator->getEventHandlers($eventName);
+        $eventType = $event->getPayloadType();
+        $eventHandlers = $this->locator->get($eventType);
+        if (!is_array($eventHandlers)) {
+            $eventHandlers = [$eventHandlers];
+        }
 
-        foreach ($callbacks as $callback) {
-            $this->invokeEventHandler($callback, $event);
+        foreach ($eventHandlers as $handler) {
+            if (!is_callable($handler)) {
+                throw new Exception\RuntimeException(sprintf(
+                    'Event handler %s is not invokable',
+                    is_object($handler) ? get_class($handler) : gettype($handler)
+                ));
+            }
+
+            $this->invokeEventHandler($handler, $event);
         }
     }
 
     /**
-     * @param Callable $callback
+     * @param Callable $handler
      * @param EventMessageInterface $event
-     * @throws Exception
+     * @throws \Exception
      */
-    private function invokeEventHandler(callable $callback, $event)
+    private function invokeEventHandler(callable $handler, EventMessageInterface $event)
     {
-        $handlerName = 'closure';
-        if (is_array($callback)) {
-            $handlerName = (is_string($callback[0]) ? $callback[0] : get_class($callback[0])) . '::' . $callback[1];
-        }
+        $handlerName = $this->getHandlerName($handler);
 
         $this->logger->debug(sprintf(
-            'Invoking EventListener %s for event %s',
-            $handlerName,
-            $event->getPayloadType()
+            'Invoking event handler %s',
+            $handlerName
         ), [
             'event_id' => $event->getId(),
+            'event_type' => $event->getPayloadType(),
         ]);
 
         try {
             if ($event instanceof DomainEventMessageInterface) {
-                $callback(
+                $handler(
                     $event->getPayload(),
                     $event->getMetadata(),
                     $event->getTimestamp(),
@@ -94,13 +102,13 @@ class SynchronousEventBus extends AbstractEventBus
                     $event->getAggregateId()
                 );
             } else {
-                $callback(
+                $handler(
                     $event->getPayload(),
                     $event->getMetadata(),
                     $event->getTimestamp()
                 );
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->error(sprintf(
                 'Uncaught Exception %s while handling Event %s: "%s" at %s line %s',
                 get_class($e),
@@ -127,22 +135,24 @@ class SynchronousEventBus extends AbstractEventBus
     }
 
     /**
-     * @param EventMessageInterface $event
+     * @param callable $handler
      * @return string
      */
-    private function getEventName(EventMessageInterface $event)
+    private function getHandlerName(callable $handler)
     {
-        $name = $event->getPayloadType();
-
-        $pos = strrpos($name, '\\');
-        if ($pos !== false) {
-            $name = substr($name, $pos + 1);
+        if (is_object($handler)) {
+            return get_class($handler);
         }
 
-        if (substr($name, -5) === 'Event') {
-            $name = substr($name, 0, -5);
+        if (is_array($handler)) {
+            list($object, $method) = $handler;
+            return sprintf('%s::%s', is_object($object) ? get_class($object) : $object, $method);
         }
 
-        return $name;
+        if (is_string($handler)) {
+            return $handler;
+        }
+
+        return Closure::class;
     }
 }
