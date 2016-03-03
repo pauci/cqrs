@@ -2,6 +2,10 @@ sudo: false
 
 language: php
 
+cache:
+  directories:
+    - $HOME/.composer/cache
+
 matrix:
   fast_finish: true
   include:
@@ -9,6 +13,8 @@ matrix:
       env:
         - EXECUTE_CS_CHECK=true
     - php: 7
+      env:
+        - EXECUTE_TEST_COVERALLS=true
     - php: hhvm
   allow_failures:
     - php: hhvm
@@ -18,14 +24,16 @@ services:
 
 before_install:
   - phpenv config-add ./tests/travis/php.ini
+  - if [[ $EXECUTE_TEST_COVERALLS != 'true' ]]; then phpenv config-rm xdebug.ini || return 0 ; fi
   - composer self-update
-
+  - if [[ $EXECUTE_TEST_COVERALLS == 'true' ]]; then composer require --dev --no-update satooshi/php-coveralls ; fi
 install:
   - travis_retry composer install --no-interaction --prefer-source
 
 script:
-  - composer test
-  - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then composer cs ; fi
+  - if [[ $EXECUTE_TEST_COVERALLS == 'true' ]]; then ./vendor/bin/phpunit --coverage-clover clover.xml ; fi
+  - if [[ $EXECUTE_TEST_COVERALLS != 'true' ]]; then ./vendor/bin/phpunit ; fi
+  - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/phpcs ; fi
 
-notifications:
-  email: true
+after_script:
+  - if [[ $EXECUTE_TEST_COVERALLS == 'true' ]]; then ./vendor/bin/coveralls ; fi
