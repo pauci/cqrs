@@ -1,6 +1,9 @@
 # CQRS library
 
+[![Latest Stable Version](https://poser.pugx.org/pauci/cqrs/v/stable)](https://packagist.org/packages/pauci/cqrs)
+[![Total Downloads](https://poser.pugx.org/pauci/cqrs/downloads)](https://packagist.org/packages/pauci/cqrs)
 [![Build Status](https://travis-ci.org/pauci/cqrs.svg?branch=master)](https://travis-ci.org/pauci/cqrs)
+[![Coverage Status](https://coveralls.io/repos/pauci/cqrs/badge.png?branch=master)](https://coveralls.io/r/pauci/cqrs)
 
 ## Installation & Requirements
 
