@@ -175,7 +175,6 @@ class SequentialCommandBus implements CommandBusInterface
             ]);
 
             $handler($command);
-
         } catch (Exception $e) {
             $this->executing = false;
             throw $e;
