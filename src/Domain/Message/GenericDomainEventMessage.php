@@ -47,6 +47,17 @@ class GenericDomainEventMessage extends GenericEventMessage implements DomainEve
     }
 
     /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $data = parent::jsonSerialize();
+        $data['aggregateType'] = $this->aggregateType;
+        $data['aggregateId'] = $this->aggregateId;
+        return $data;
+    }
+
+    /**
      * @return string
      */
     public function getAggregateType()
