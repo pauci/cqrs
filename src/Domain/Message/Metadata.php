@@ -4,6 +4,7 @@ namespace CQRS\Domain\Message;
 
 use ArrayAccess;
 use ArrayIterator;
+use ArrayObject;
 use Countable;
 use CQRS\Exception\RuntimeException;
 use IteratorAggregate;
@@ -72,11 +73,11 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
     }
 
     /**
-     * @return array
+     * @return ArrayObject
      */
     public function jsonSerialize()
     {
-        return $this->toArray();
+        return new ArrayObject($this->toArray());
     }
 
     /**
