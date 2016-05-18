@@ -5,7 +5,7 @@ namespace CQRS\Serializer;
 interface SerializerInterface
 {
     /**
-     * @param object|array $data
+     * @param mixed $data
      * @return string
      */
     public function serialize($data);
@@ -13,7 +13,7 @@ interface SerializerInterface
     /**
      * @param string $data
      * @param string $type
-     * @return object|array
+     * @return mixed
      */
     public function deserialize($data, $type);
 }

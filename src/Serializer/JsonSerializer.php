@@ -5,7 +5,7 @@ namespace CQRS\Serializer;
 class JsonSerializer implements SerializerInterface
 {
     /**
-     * @param object|array $data
+     * @param mixed $data
      * @return string
      */
     public function serialize($data)
@@ -16,14 +16,14 @@ class JsonSerializer implements SerializerInterface
     /**
      * @param string $data
      * @param string $type
-     * @return object|array
+     * @return mixed
      */
     public function deserialize($data, $type)
     {
         $data = json_decode($data, true);
 
         return method_exists($type, 'jsonDeserialize')
-            ? $type::jsonDeserialize($data)
+            ? $type::jsonDeserialize($data, $this)
             : new $type($data);
     }
 }
