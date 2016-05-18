@@ -20,10 +20,28 @@ class JsonSerializer implements SerializerInterface
      */
     public function deserialize($data, $type)
     {
-        $data = json_decode($data, true);
+        $value = json_decode($data, true);
 
-        return method_exists($type, 'jsonDeserialize')
-            ? $type::jsonDeserialize($data, $this)
-            : new $type($data);
+        if (method_exists($type, 'jsonDeserialize')) {
+            return $type::jsonDeserialize($value, $this);
+        }
+
+        if (is_string($value)) {
+            if (method_exists($type, 'fromString')) {
+                return $type::fromString($value);
+            }
+        } elseif (is_int($value)) {
+            if (method_exists($type, 'fromInteger')) {
+                return $type::fromInteger($value);
+            }
+
+            if (method_exists($type, 'fromInt')) {
+                return $type::fromInt($value);
+            }
+        } elseif (null === $value && method_exists($type, 'unknown')) {
+            return $type::unknown();
+        }
+
+        return new $type($value);
     }
 }
