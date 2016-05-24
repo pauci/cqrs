@@ -19,8 +19,12 @@ class GenericEventMessage extends GenericMessage implements EventMessageInterfac
      * @param UuidInterface|null $id
      * @param DateTimeInterface|null $timestamp
      */
-    public function __construct($payload, $metadata = null, UuidInterface $id = null, DateTimeInterface $timestamp = null)
-    {
+    public function __construct(
+        $payload,
+        $metadata = null,
+        UuidInterface $id = null,
+        DateTimeInterface $timestamp = null
+    ) {
         parent::__construct($payload, $metadata, $id);
         $this->timestamp = $timestamp ?: DateTime::microsecondsNow();
     }
