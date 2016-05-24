@@ -7,12 +7,6 @@ use CQRS\Domain\Model\AggregateRootInterface;
 interface IdentityMapInterface
 {
     /**
-     * @param mixed $id
-     * @return AggregateRootInterface|null
-     */
-    public function get($id);
-
-    /**
      * @return AggregateRootInterface[]
      */
     public function getAll();

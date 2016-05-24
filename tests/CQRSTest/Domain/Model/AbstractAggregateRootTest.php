@@ -3,7 +3,6 @@
 namespace CQRSTest\Domain\Model;
 
 use CQRS\Domain\Message\GenericDomainEventMessage;
-use CQRS\Domain\Model\AbstractAggregateRoot;
 use PHPUnit_Framework_TestCase;
 
 class AbstractAggregateRootTest extends PHPUnit_Framework_TestCase
@@ -12,7 +11,7 @@ class AbstractAggregateRootTest extends PHPUnit_Framework_TestCase
     {
         $event = new SomeEvent();
 
-        $aggregateRoot = new AggregateRootUnderTest();
+        $aggregateRoot = new AggregateRootUnderTest(4);
         $aggregateRoot->raise($event);
 
         $eventMessages = $aggregateRoot->getUncommittedEvents();
@@ -31,23 +30,9 @@ class AbstractAggregateRootTest extends PHPUnit_Framework_TestCase
     {
         $domainEvent = new SomeDomainEvent();
 
-        $aggregateRoot = new AggregateRootUnderTest();
+        $aggregateRoot = new AggregateRootUnderTest(4);
         $aggregateRoot->raise($domainEvent);
 
         $this->assertEquals(4, $domainEvent->aggregateId);
     }
 }
-
-class AggregateRootUnderTest extends AbstractAggregateRoot
-{
-    public function getId()
-    {
-        return 4;
-    }
-
-    public function raise($event)
-    {
-        $this->registerEvent($event);
-    }
-}
-

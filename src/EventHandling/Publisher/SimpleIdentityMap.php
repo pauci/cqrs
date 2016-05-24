@@ -12,21 +12,11 @@ class SimpleIdentityMap implements IdentityMapInterface
     private $aggregateRoots = [];
 
     /**
-     * @param mixed $id
-     * @return AggregateRootInterface|null
-     */
-    public function get($id)
-    {
-        $key = (string) $id;
-        return $this->aggregateRoots[$key];
-    }
-
-    /**
      * @return AggregateRootInterface[]
      */
     public function getAll()
     {
-        return $this->aggregateRoots;
+        return array_values($this->aggregateRoots);
     }
 
     /**
@@ -34,8 +24,9 @@ class SimpleIdentityMap implements IdentityMapInterface
      */
     public function add(AggregateRootInterface $aggregateRoot)
     {
-        $key = (string) $aggregateRoot->getId();
-        $this->aggregateRoots[$key] = $aggregateRoot;
+        if (!in_array($aggregateRoot, $this->aggregateRoots, true)) {
+            $this->aggregateRoots[] = $aggregateRoot;
+        }
     }
 
     /**
@@ -43,8 +34,10 @@ class SimpleIdentityMap implements IdentityMapInterface
      */
     public function remove(AggregateRootInterface $aggregateRoot)
     {
-        $key = (string) $aggregateRoot->getId();
-        unset($this->aggregateRoots[$key]);
+        $index = array_search($aggregateRoot, $this->aggregateRoots, true);
+        if (false !== $index) {
+            unset($this->aggregateRoots[$index]);
+        }
     }
 
     public function clear()
