@@ -24,7 +24,7 @@ class GenericMessageTest extends PHPUnit_Framework_TestCase
     public function testReconstructUsingExistingData()
     {
         $metadata = Metadata::from(['foo' => 'bar']);
-        $uuid     = Uuid::uuid4();
+        $uuid = Uuid::uuid4();
 
         $message = new GenericMessage(new SomePayload(), $metadata, $uuid);
 

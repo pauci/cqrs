@@ -3,17 +3,18 @@
 namespace CQRSTest\Plugin\Doctrine\CommandHandling;
 
 use CQRS\Plugin\Doctrine\CommandHandling\ImplicitOrmTransactionManager;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit_Framework_TestCase;
 
 class ImplicitOrmTransactionManagerTest extends PHPUnit_Framework_TestCase
 {
     public function testBeginTransaction()
     {
-        $entityManager = $this->getMock('Doctrine\ORM\EntityManagerInterface');
+        $entityManager = $this->getMock(EntityManagerInterface::class);
         $entityManager->expects($this->never())
-            ->method('begin');
+            ->method('beginTransaction');
 
-        /** @var \Doctrine\ORM\EntityManagerInterface $entityManager */
+        /** @var EntityManagerInterface $entityManager */
         $transactionManager = new ImplicitOrmTransactionManager($entityManager);
 
         $transactionManager->begin();
@@ -21,13 +22,13 @@ class ImplicitOrmTransactionManagerTest extends PHPUnit_Framework_TestCase
 
     public function testCommitTransaction()
     {
-        $entityManager = $this->getMock('Doctrine\ORM\EntityManagerInterface');
+        $entityManager = $this->getMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())
             ->method('flush');
         $entityManager->expects($this->never())
             ->method('commit');
 
-        /** @var \Doctrine\ORM\EntityManagerInterface $entityManager */
+        /** @var EntityManagerInterface $entityManager */
         $transactionManager = new ImplicitOrmTransactionManager($entityManager);
 
         $transactionManager->commit();
@@ -35,13 +36,13 @@ class ImplicitOrmTransactionManagerTest extends PHPUnit_Framework_TestCase
 
     public function testRollbackTransaction()
     {
-        $entityManager = $this->getMock('Doctrine\ORM\EntityManagerInterface');
+        $entityManager = $this->getMock(EntityManagerInterface::class);
         $entityManager->expects($this->never())
             ->method('rollback');
         $entityManager->expects($this->never())
             ->method('close');
 
-        /** @var \Doctrine\ORM\EntityManagerInterface $entityManager */
+        /** @var EntityManagerInterface $entityManager */
         $transactionManager = new ImplicitOrmTransactionManager($entityManager);
 
         $transactionManager->rollback();

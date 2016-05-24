@@ -4,8 +4,8 @@ namespace CQRSTest\Domain\Message;
 
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\Domain\Message\Metadata;
-use CQRS\Domain\Message\Timestamp;
 use DateTimeImmutable;
+use Pauci\DateTime\DateTime;
 use PHPUnit_Framework_TestCase;
 use Ramsey\Uuid\Uuid;
 
@@ -22,9 +22,9 @@ class GenericEventMessageTest extends PHPUnit_Framework_TestCase
 
     public function testReconstructUsingExistingData()
     {
-        $metadata  = Metadata::from(['foo' => 'bar']);
-        $id        = Uuid::uuid4();
-        $timestamp = new Timestamp();
+        $metadata = Metadata::from(['foo' => 'bar']);
+        $id = Uuid::uuid4();
+        $timestamp = DateTime::microsecondsNow();
 
         $eventMessage = new GenericEventMessage(new SomePayload(), $metadata, $id, $timestamp);
 

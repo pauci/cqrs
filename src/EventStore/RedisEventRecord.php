@@ -7,14 +7,12 @@ use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\Domain\Message\Metadata;
-use CQRS\Domain\Message\Timestamp;
 use CQRS\Serializer\SerializerInterface;
+use Pauci\DateTime\DateTime;
 use Ramsey\Uuid\Uuid;
 
 class RedisEventRecord
 {
-    const TIMESTAMP_FORMAT = 'Y-m-d\TH:i:s.uO';
-
     /**
      * @var string
      */
@@ -28,9 +26,8 @@ class RedisEventRecord
     public static function fromMessage(EventMessageInterface $event, SerializerInterface $serializer)
     {
         $data = [
-            'id' => (string) $event->getId(),
-            'timestamp' => $event->getTimestamp()
-                ->format(self::TIMESTAMP_FORMAT),
+            'id' => $event->getId(),
+            'timestamp' => $event->getTimestamp(),
             'payload_type' => $event->getPayloadType(),
             'payload' => $serializer->serialize($event->getPayload()),
             'metadata' => $serializer->serialize($event->getMetadata()),
@@ -39,8 +36,8 @@ class RedisEventRecord
         if ($event instanceof DomainEventMessageInterface) {
             $data['aggregate'] = [
                 'type' => $event->getAggregateType(),
-                'id'   => $event->getAggregateId(),
-                'seq'  => $event->getSequenceNumber(),
+                'id' => $event->getAggregateId(),
+                'seq' => $event->getSequenceNumber(),
             ];
         }
 
@@ -80,7 +77,7 @@ class RedisEventRecord
         $data = $this->toArray();
 
         $id = Uuid::fromString($data['id']);
-        $timestamp = new Timestamp($data['timestamp']);
+        $timestamp = DateTime::fromString($data['timestamp']);
         $payload = $serializer->deserialize($data['payload'], $data['payload_type']);
         $metadata = $serializer->deserialize($data['metadata'], Metadata::class);
 

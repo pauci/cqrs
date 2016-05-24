@@ -5,8 +5,8 @@ namespace CQRSTest\EventStore;
 use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\GenericEventMessage;
-use CQRS\Domain\Message\Timestamp;
 use CQRS\EventStore\RedisEventStore;
+use Pauci\DateTime\DateTime;
 use Ramsey\Uuid\Uuid;
 use Redis;
 
@@ -101,7 +101,7 @@ class RedisEventStoreTest extends \PHPUnit_Framework_TestCase
                     new SomeEvent(),
                     null,
                     Uuid::fromString('777bb61d-b9fa-4023-937e-1b6e4fc9f7b4'),
-                    new Timestamp('2015-02-11T15:23:42.195819+0100')
+                    DateTime::fromString('2015-02-11T15:23:42.195819+0100')
                 ),
                 '{"id":"777bb61d-b9fa-4023-937e-1b6e4fc9f7b4","timestamp":"2015-02-11T15:23:42.195819+0100","payload_type":"CQRSTest\\\EventStore\\\SomeEvent","payload":"{}","metadata":"{}"}'
             ],
@@ -113,7 +113,7 @@ class RedisEventStoreTest extends \PHPUnit_Framework_TestCase
                     new SomeEvent(),
                     null,
                     Uuid::fromString('eabd641e-4181-4b5f-b191-ecdd40d82b1b'),
-                    new Timestamp('2015-02-11T13:40:29.658819+0100')
+                    DateTime::fromString('2015-02-11T13:40:29.658819+0100')
                 ),
                 '{"id":"eabd641e-4181-4b5f-b191-ecdd40d82b1b","timestamp":"2015-02-11T13:40:29.658819+0100","payload_type":"CQRSTest\\\EventStore\\\SomeEvent","payload":"{}","metadata":"{}","aggregate":{"type":"SomeAggregate","id":123,"seq":4}}'
             ],

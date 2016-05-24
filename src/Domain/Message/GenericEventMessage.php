@@ -2,12 +2,14 @@
 
 namespace CQRS\Domain\Message;
 
+use Pauci\DateTime\DateTime;
+use Pauci\DateTime\DateTimeInterface;
 use Ramsey\Uuid\UuidInterface;
 
 class GenericEventMessage extends GenericMessage implements EventMessageInterface
 {
     /**
-     * @var Timestamp
+     * @var DateTimeInterface
      */
     private $timestamp;
 
@@ -15,12 +17,12 @@ class GenericEventMessage extends GenericMessage implements EventMessageInterfac
      * @param mixed $payload
      * @param Metadata|array|null $metadata
      * @param UuidInterface|null $id
-     * @param Timestamp|null $timestamp
+     * @param DateTimeInterface|null $timestamp
      */
-    public function __construct($payload, $metadata = null, UuidInterface $id = null, Timestamp $timestamp = null)
+    public function __construct($payload, $metadata = null, UuidInterface $id = null, DateTimeInterface $timestamp = null)
     {
         parent::__construct($payload, $metadata, $id);
-        $this->timestamp = $timestamp ?: new Timestamp();
+        $this->timestamp = $timestamp ?: DateTime::microsecondsNow();
     }
 
     /**
@@ -34,7 +36,7 @@ class GenericEventMessage extends GenericMessage implements EventMessageInterfac
     }
 
     /**
-     * @return Timestamp
+     * @return DateTimeInterface
      */
     public function getTimestamp()
     {
