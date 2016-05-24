@@ -103,7 +103,7 @@ class RedisEventStoreTest extends \PHPUnit_Framework_TestCase
                     Uuid::fromString('777bb61d-b9fa-4023-937e-1b6e4fc9f7b4'),
                     DateTime::fromString('2015-02-11T15:23:42.195819+0100')
                 ),
-                '{"id":"777bb61d-b9fa-4023-937e-1b6e4fc9f7b4","timestamp":"2015-02-11T15:23:42.195819+0100","payload_type":"CQRSTest\\\EventStore\\\SomeEvent","payload":"{}","metadata":"{}"}'
+                '{"id":"777bb61d-b9fa-4023-937e-1b6e4fc9f7b4","timestamp":"2015-02-11T15:23:42.195819+01:00","payload_type":"CQRSTest\\\EventStore\\\SomeEvent","payload":"{}","metadata":"{}"}'
             ],
             [
                 new GenericDomainEventMessage(
@@ -115,7 +115,7 @@ class RedisEventStoreTest extends \PHPUnit_Framework_TestCase
                     Uuid::fromString('eabd641e-4181-4b5f-b191-ecdd40d82b1b'),
                     DateTime::fromString('2015-02-11T13:40:29.658819+0100')
                 ),
-                '{"id":"eabd641e-4181-4b5f-b191-ecdd40d82b1b","timestamp":"2015-02-11T13:40:29.658819+0100","payload_type":"CQRSTest\\\EventStore\\\SomeEvent","payload":"{}","metadata":"{}","aggregate":{"type":"SomeAggregate","id":123,"seq":4}}'
+                '{"id":"eabd641e-4181-4b5f-b191-ecdd40d82b1b","timestamp":"2015-02-11T13:40:29.658819+01:00","payload_type":"CQRSTest\\\EventStore\\\SomeEvent","payload":"{}","metadata":"{}","aggregate":{"type":"SomeAggregate","id":123,"seq":4}}'
             ],
         ];
     }
