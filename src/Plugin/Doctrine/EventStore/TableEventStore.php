@@ -103,12 +103,25 @@ class TableEventStore implements EventStoreInterface
             . ' LIMIT ?';
 
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue(1, $id, Type::INTEGER);
-        $stmt->bindValue(2, 100, Type::INTEGER);
-        $stmt->execute();
 
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            yield $this->fromArray($row);
+        while (true) {
+            $stmt->bindValue(1, $id, Type::INTEGER);
+            $stmt->bindValue(2, 100, Type::INTEGER);
+            $stmt->execute();
+
+            $count = 0;
+            $lastId = false;
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $count++;
+                $lastId = $row['id'];
+                yield $this->fromArray($row);
+            }
+
+            if ($count < 100 || !$lastId) {
+                break;
+            }
+
+            $id = $lastId;
         }
     }
 
