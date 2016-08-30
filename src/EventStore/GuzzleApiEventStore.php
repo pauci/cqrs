@@ -4,27 +4,20 @@ namespace CQRS\EventStore;
 
 use CQRS\Domain\Message\EventMessageInterface;
 use Generator;
+use GuzzleHttp\Client;
 use Ramsey\Uuid\UuidInterface;
 use CQRS\Exception;
 
-class ApiEventStore implements EventStoreInterface
+class GuzzleApiEventStore implements EventStoreInterface
 {
     const DEFAULT_LIMIT = 100;
 
-    /** @var string */
-    private $url;
+    /** @var Client */
+    private $guzzleClient;
 
-    public function __construct($url)
+    public function __construct(Client $guzzleClient)
     {
-        if (!extension_loaded('curl')) {
-            throw new Exception\MissingExtensionException('cURL extension is not loaded');
-        }
-
-        if (!$url) {
-            throw new Exception\InvalidArgumentException('URL for event store API is empty');
-        }
-
-        $this->url = $url;
+        $this->guzzleClient = $guzzleClient;
     }
 
     /**
@@ -83,16 +76,8 @@ class ApiEventStore implements EventStoreInterface
             'previousEventId' => $previousEventId,
         ];
 
-        $requestUrl = $this->url . '?' . http_build_query($params);
+        $resp = $this->guzzleClient->get('', ['query' => $params]);
 
-        $curl = curl_init($requestUrl);
-
-        curl_setopt_array($curl, [CURLOPT_RETURNTRANSFER => 1]);
-
-        $resp = curl_exec($curl);
-
-        curl_close($curl);
-
-        return json_decode($resp, true);
+        return json_decode($resp->getBody(), true);
     }
 }
