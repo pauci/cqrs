@@ -5,6 +5,7 @@ namespace CQRS\EventStore;
 use CQRS\Domain\Message\EventMessageInterface;
 use Generator;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\TransferException;
 use Ramsey\Uuid\UuidInterface;
 use CQRS\Exception;
 
@@ -76,7 +77,11 @@ class GuzzleApiEventStore implements EventStoreInterface
             'previousEventId' => $previousEventId,
         ];
 
-        $resp = $this->guzzleClient->get('', ['query' => $params]);
+        try {
+            $resp = $this->guzzleClient->get('', ['query' => $params]);
+        } catch (TransferException $e) {
+            throw new Exception\ApiRequestException($e->getMessage(), $e->getCode(), $e);
+        }
 
         return json_decode($resp->getBody(), true);
     }
