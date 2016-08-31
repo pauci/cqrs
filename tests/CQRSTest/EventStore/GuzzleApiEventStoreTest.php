@@ -3,12 +3,9 @@
 namespace CQRSTest\EventStore;
 
 use CQRS\EventStore\GuzzleApiEventStore;
-use CQRS\Exception\ApiRequestException;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 
 class GuzzleApiEventStoreTest extends \PHPUnit_Framework_TestCase
@@ -22,7 +19,6 @@ class GuzzleApiEventStoreTest extends \PHPUnit_Framework_TestCase
             [
                 new Response(200, [], file_get_contents(__DIR__ . '/SomeApiResponse.json')),
                 new Response(200, [], file_get_contents(__DIR__ . '/SomeEmptyApiResponse.json')),
-                new RequestException("Error Communicating with Server", new Request('GET', 'test')),
             ]
         );
 
@@ -55,13 +51,5 @@ class GuzzleApiEventStoreTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->assertEquals(0, $i);
-    }
-
-    /**
-     * @expectedException ApiRequestException
-     */
-    public function testIterateWithException()
-    {
-        self::$apiEventStore->iterate();
     }
 }
