@@ -1,0 +1,10 @@
+{
+  "_links":{
+    "self":"http://test.com/cqrs",
+    "next":"http://test.com/cqrs?previousEventId="
+  },
+  "count":0,
+  "_embedded":{
+    "event":[]
+  }
+}
