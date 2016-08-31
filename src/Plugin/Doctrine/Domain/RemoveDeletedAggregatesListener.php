@@ -11,22 +11,6 @@ use Doctrine\ORM\Events;
 
 class RemoveDeletedAggregatesListener implements EventSubscriber
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /**
-     * @param EntityManagerInterface $entityManager
-     */
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
-
-        // Subscribe itself with doctrine event manager
-        /** @var EventManager $eventManager */
-        $eventManager = $this->entityManager->getEventManager();
-        $eventManager->addEventSubscriber($this);
-    }
-
     /**
      * @return array
      */
