@@ -58,7 +58,7 @@ class GuzzleApiEventStore implements EventStoreInterface
             $lastId = false;
             foreach ($events as $event) {
                 $lastId = $event['id'];
-                yield $this->fromArray(json_encode($event));
+                yield $this->fromArray($event);
             }
 
             if ($response['count'] < self::DEFAULT_LIMIT || !$lastId) {
