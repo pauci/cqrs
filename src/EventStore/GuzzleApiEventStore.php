@@ -5,8 +5,6 @@ namespace CQRS\EventStore;
 use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\GenericEventMessage;
-use CQRS\Domain\Message\Metadata;
-use CQRS\Serializer\SerializerInterface;
 use Generator;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\TransferException;
@@ -22,13 +20,9 @@ class GuzzleApiEventStore implements EventStoreInterface
     /** @var Client */
     private $guzzleClient;
 
-    /** @var SerializerInterface */
-    private $serializer;
-
-    public function __construct(Client $guzzleClient, SerializerInterface $serializer)
+    public function __construct(Client $guzzleClient)
     {
         $this->guzzleClient = $guzzleClient;
-        $this->serializer = $serializer;
     }
 
     /**
@@ -64,7 +58,7 @@ class GuzzleApiEventStore implements EventStoreInterface
             $lastId = false;
             foreach ($events as $event) {
                 $lastId = $event['id'];
-                yield $this->fromArray($event);
+                yield $this->fromArray(json_encode($event));
             }
 
             if ($response['count'] < self::DEFAULT_LIMIT || !$lastId) {
@@ -81,9 +75,6 @@ class GuzzleApiEventStore implements EventStoreInterface
      */
     public function fromArray(array $data)
     {
-        $payload = $this->serializer->deserialize($data['payload'], $data['payloadType']);
-        /** @var Metadata $metadata */
-        $metadata = $this->serializer->deserialize($data['metadata'], Metadata::class);
         $id = Uuid::fromString($data['id']);
         $timestamp = DateTime::fromString("{$data['timestamp']}");
 
@@ -92,14 +83,14 @@ class GuzzleApiEventStore implements EventStoreInterface
                 $data['aggregateType'],
                 $data['aggregateId'],
                 0,
-                $payload,
-                $metadata,
+                $data['payload'],
+                $data['metadata'],
                 $id,
                 $timestamp
             );
         }
 
-        return new GenericEventMessage($payload, $metadata, $id, $timestamp);
+        return new GenericEventMessage($data['payload'], $data['metadata'], $id, $timestamp);
     }
 
     /**
