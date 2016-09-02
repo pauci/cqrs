@@ -45,14 +45,15 @@ class GuzzleApiEventStore implements EventStoreInterface
 
     /**
      * @param null|UuidInterface $previousEventId
+     * @param int $limit
      * @return Generator
      */
-    public function iterate(UuidInterface $previousEventId = null)
+    public function iterate(UuidInterface $previousEventId = null, $limit = self::DEFAULT_LIMIT)
     {
         $id = $previousEventId ? $previousEventId->toString() : null;
 
         while (true) {
-            $response = $this->getFromApi($id, self::DEFAULT_LIMIT);
+            $response = $this->getFromApi($id, $limit);
             $events = $response['_embedded']['event'];
 
             $lastId = false;
@@ -61,7 +62,7 @@ class GuzzleApiEventStore implements EventStoreInterface
                 yield $this->fromArray($event);
             }
 
-            if ($response['count'] < self::DEFAULT_LIMIT || !$lastId) {
+            if ($response['count'] < $limit || !$lastId) {
                 break;
             }
 
