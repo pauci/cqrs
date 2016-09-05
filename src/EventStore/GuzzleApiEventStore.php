@@ -5,6 +5,8 @@ namespace CQRS\EventStore;
 use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\GenericEventMessage;
+use CQRS\Domain\Message\Metadata;
+use CQRS\Serializer\SerializerInterface;
 use Generator;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\TransferException;
@@ -20,9 +22,17 @@ class GuzzleApiEventStore implements EventStoreInterface
     /** @var Client */
     private $guzzleClient;
 
-    public function __construct(Client $guzzleClient)
+    /** @var string */
+    private $eventsNamespace;
+
+    /** @var SerializerInterface */
+    private $serializer;
+
+    public function __construct(Client $guzzleClient, SerializerInterface $serializer, $eventsNamespace = null)
     {
         $this->guzzleClient = $guzzleClient;
+        $this->eventsNamespace = $eventsNamespace;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -76,6 +86,10 @@ class GuzzleApiEventStore implements EventStoreInterface
      */
     public function fromArray(array $data)
     {
+        $payloadType = $this->generatePayloadType($data['payloadType']);
+        $payload = $this->serializer->deserialize(json_encode($data['payload']), $payloadType);
+        /** @var Metadata $metadata */
+        $metadata = $this->serializer->deserialize(json_encode($data['metadata']), Metadata::class);
         $id = Uuid::fromString($data['id']);
         $timestamp = DateTime::fromString("{$data['timestamp']}");
 
@@ -84,14 +98,30 @@ class GuzzleApiEventStore implements EventStoreInterface
                 $data['aggregateType'],
                 $data['aggregateId'],
                 0,
-                $data['payload'],
-                $data['metadata'],
+                $payload,
+                $metadata,
                 $id,
                 $timestamp
             );
         }
 
         return new GenericEventMessage($data['payload'], $data['metadata'], $id, $timestamp);
+    }
+
+    /**
+     * @param string $payloadType
+     * @return string
+     */
+    private function generatePayloadType($payloadType)
+    {
+        if (!$this->eventsNamespace) {
+            return $payloadType;
+        }
+
+        $typeArray = explode('\\', $payloadType);
+        $eventName = end($typeArray);
+
+        return $this->eventsNamespace . '\\' . $eventName;
     }
 
     /**
