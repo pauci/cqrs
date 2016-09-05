@@ -100,9 +100,10 @@ class RedisEventStore implements EventStoreInterface
 
     /**
      * @param null|UuidInterface $previousEventId
+     * @param int $limit
      * @return Traversable
      */
-    public function iterate(UuidInterface $previousEventId = null)
+    public function iterate(UuidInterface $previousEventId = null, $limit = 100)
     {
         throw new Exception\BadMethodCallException('Method is not implemented');
     }

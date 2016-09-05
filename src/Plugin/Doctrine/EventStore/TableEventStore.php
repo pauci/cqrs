@@ -91,9 +91,10 @@ class TableEventStore implements EventStoreInterface
 
     /**
      * @param UuidInterface|null $previousEventId
+     * @param int $limit
      * @return Generator
      */
-    public function iterate(UuidInterface $previousEventId = null)
+    public function iterate(UuidInterface $previousEventId = null, $limit = 100)
     {
         $id = $previousEventId ? $this->getRowIdByEventId($previousEventId) : 0;
 
@@ -106,7 +107,7 @@ class TableEventStore implements EventStoreInterface
 
         while (true) {
             $stmt->bindValue(1, $id, Type::INTEGER);
-            $stmt->bindValue(2, 100, Type::INTEGER);
+            $stmt->bindValue(2, $limit, Type::INTEGER);
             $stmt->execute();
 
             $count = 0;
@@ -117,7 +118,7 @@ class TableEventStore implements EventStoreInterface
                 yield $this->fromArray($row);
             }
 
-            if ($count < 100 || !$lastId) {
+            if ($count < $limit || !$lastId) {
                 break;
             }
 
