@@ -62,6 +62,10 @@ class GuzzleApiEventStore implements EventStoreInterface
             $response = $this->getFromApi($id, $limit);
             $events = $response['_embedded']['event'];
 
+            if (!$events) {
+                break;
+            }
+
             $lastId = false;
             foreach ($events as $event) {
                 $lastId = $event['id'];
