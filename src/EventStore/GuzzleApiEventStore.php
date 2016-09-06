@@ -22,16 +22,12 @@ class GuzzleApiEventStore implements EventStoreInterface
     /** @var Client */
     private $guzzleClient;
 
-    /** @var string */
-    private $eventsNamespace;
-
     /** @var SerializerInterface */
     private $serializer;
 
-    public function __construct(Client $guzzleClient, SerializerInterface $serializer, $eventsNamespace = null)
+    public function __construct(Client $guzzleClient, SerializerInterface $serializer)
     {
         $this->guzzleClient = $guzzleClient;
-        $this->eventsNamespace = $eventsNamespace;
         $this->serializer = $serializer;
     }
 
@@ -86,8 +82,7 @@ class GuzzleApiEventStore implements EventStoreInterface
      */
     public function fromArray(array $data)
     {
-        $payloadType = $this->generatePayloadType($data['payloadType']);
-        $payload = $this->serializer->deserialize(json_encode($data['payload']), $payloadType);
+        $payload = $this->serializer->deserialize(json_encode($data['payload']), $data['payloadType']);
         /** @var Metadata $metadata */
         $metadata = $this->serializer->deserialize(json_encode($data['metadata']), Metadata::class);
         $id = Uuid::fromString($data['id']);
@@ -106,22 +101,6 @@ class GuzzleApiEventStore implements EventStoreInterface
         }
 
         return new GenericEventMessage($data['payload'], $data['metadata'], $id, $timestamp);
-    }
-
-    /**
-     * @param string $payloadType
-     * @return string
-     */
-    private function generatePayloadType($payloadType)
-    {
-        if (!$this->eventsNamespace) {
-            return $payloadType;
-        }
-
-        $typeArray = explode('\\', $payloadType);
-        $eventName = end($typeArray);
-
-        return $this->eventsNamespace . '\\' . $eventName;
     }
 
     /**
