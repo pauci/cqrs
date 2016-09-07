@@ -50,10 +50,9 @@ class FilteringEventStore implements EventStoreInterface
 
     /**
      * @param null|UuidInterface $previousEventId
-     * @param int $limit
      * @return Traversable
      */
-    public function iterate(UuidInterface $previousEventId = null, $limit = 100)
+    public function iterate(UuidInterface $previousEventId = null)
     {
         return $this->eventStore->iterate($previousEventId);
     }

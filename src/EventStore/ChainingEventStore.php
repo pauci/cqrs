@@ -44,10 +44,9 @@ class ChainingEventStore implements EventStoreInterface
 
     /**
      * @param null|UuidInterface $previousEventId
-     * @param int $limit
      * @return Traversable
      */
-    public function iterate(UuidInterface $previousEventId = null, $limit = 100)
+    public function iterate(UuidInterface $previousEventId = null)
     {
         throw new Exception\BadMethodCallException(sprintf('%s does not support iterating', self::class));
     }

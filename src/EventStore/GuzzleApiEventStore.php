@@ -25,10 +25,17 @@ class GuzzleApiEventStore implements EventStoreInterface
     /** @var SerializerInterface */
     private $serializer;
 
-    public function __construct(Client $guzzleClient, SerializerInterface $serializer)
-    {
+    /** @var int */
+    private $requestLimit;
+
+    public function __construct(
+        Client $guzzleClient,
+        SerializerInterface $serializer,
+        $requestLimit = self::DEFAULT_LIMIT
+    ) {
         $this->guzzleClient = $guzzleClient;
         $this->serializer = $serializer;
+        $this->requestLimit = $requestLimit;
     }
 
     /**
@@ -51,15 +58,14 @@ class GuzzleApiEventStore implements EventStoreInterface
 
     /**
      * @param null|UuidInterface $previousEventId
-     * @param int $limit
      * @return Generator
      */
-    public function iterate(UuidInterface $previousEventId = null, $limit = self::DEFAULT_LIMIT)
+    public function iterate(UuidInterface $previousEventId = null)
     {
         $id = $previousEventId ? $previousEventId->toString() : null;
 
         while (true) {
-            $response = $this->getFromApi($id, $limit);
+            $response = $this->getFromApi($id, $this->requestLimit);
             $events = $response ? $response['_embedded']['event'] : null;
 
             if (!$events) {
@@ -72,7 +78,7 @@ class GuzzleApiEventStore implements EventStoreInterface
                 yield $this->fromArray($event);
             }
 
-            if ($response['count'] < $limit || !$lastId) {
+            if ($response['count'] < $this->requestLimit || !$lastId) {
                 break;
             }
 

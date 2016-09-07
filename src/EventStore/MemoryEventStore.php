@@ -33,10 +33,9 @@ class MemoryEventStore implements EventStoreInterface
 
     /**
      * @param UuidInterface|null $previousEventId
-     * @param int $limit
      * @return Generator
      */
-    public function iterate(UuidInterface $previousEventId = null, $limit = 100)
+    public function iterate(UuidInterface $previousEventId = null)
     {
         $yield = !$previousEventId;
         foreach ($this->events as $event) {
