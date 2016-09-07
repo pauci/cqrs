@@ -2,6 +2,8 @@
 
 namespace CQRSTest\EventStore;
 
+use CQRS\Domain\Message\EventMessageInterface;
+use CQRS\Domain\Message\Metadata;
 use CQRS\EventStore\GuzzleApiEventStore;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
@@ -19,13 +21,14 @@ class GuzzleApiEventStoreTest extends \PHPUnit_Framework_TestCase
             [
                 new Response(200, [], file_get_contents(__DIR__ . '/SomeApiResponse.json')),
                 new Response(200, [], file_get_contents(__DIR__ . '/SomeEmptyApiResponse.json')),
+                new Response(200, [], file_get_contents(__DIR__ . '/SomeEmptyApiResponseWithUnsupportedEvents.json')),
             ]
         );
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
 
-        self::$apiEventStore = new GuzzleApiEventStore($client);
+        self::$apiEventStore = new GuzzleApiEventStore($client, new SomeSerializer());
     }
 
     public function testIterateWithData()
@@ -33,8 +36,10 @@ class GuzzleApiEventStoreTest extends \PHPUnit_Framework_TestCase
         $iterator = self::$apiEventStore->iterate();
 
         $i = 0;
+        /** @var EventMessageInterface $event */
         foreach ($iterator as $event) {
-            $this->assertEquals('test', $event['payload']['test']);
+            $this->assertInstanceOf(SomeEvent::class, $event->getPayload());
+            $this->assertInstanceOf(Metadata::class, $event->getMetadata());
             $i++;
         }
 
@@ -45,11 +50,6 @@ class GuzzleApiEventStoreTest extends \PHPUnit_Framework_TestCase
     {
         $iterator = self::$apiEventStore->iterate();
 
-        $i = 0;
-        foreach ($iterator as $event) {
-            $i++;
-        }
-
-        $this->assertEquals(0, $i);
+        $this->assertFalse($iterator->valid());
     }
 }
