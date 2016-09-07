@@ -60,7 +60,7 @@ class GuzzleApiEventStore implements EventStoreInterface
 
         while (true) {
             $response = $this->getFromApi($id, $limit);
-            $events = $response['_embedded']['event'];
+            $events = $response ? $response['_embedded']['event'] : null;
 
             if (!$events) {
                 break;
