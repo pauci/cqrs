@@ -24,7 +24,7 @@ class JsonSerializerTest extends \PHPUnit_Framework_TestCase
         $event = new TestEventWithCustomConstructor(new SomeAggregate());
         self::assertEquals(
             $event,
-            $jsonSerializer->deserialize('{"some_aggregate":4}', 'CQRSTest\Serializer\TestEvent2')
+            $jsonSerializer->deserialize('{"some_aggregate":4}', 'CQRSTest\Serializer\TestEventWithCustomConstructor')
         );
 
     }
