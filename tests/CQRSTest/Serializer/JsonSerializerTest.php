@@ -11,14 +11,21 @@ class JsonSerializerTest extends \PHPUnit_Framework_TestCase
         $event = new SomeEvent();
 
         $jsonSerializer = new JsonSerializer();
-        $this->assertEquals('{}', $jsonSerializer->serialize($event));
+        self::assertEquals('{}', $jsonSerializer->serialize($event));
     }
 
     public function testDeserialize()
     {
-        $event = new TestEvent();
-
         $jsonSerializer = new JsonSerializer();
-        $this->assertEquals($event, $jsonSerializer->deserialize('{}', 'CQRSTest\Serializer\TestEvent'));
+
+        $event = new TestEvent();
+        self::assertEquals($event, $jsonSerializer->deserialize('{}', 'CQRSTest\Serializer\TestEvent'));
+
+        $event = new TestEventWithCustomConstructor(new SomeAggregate());
+        self::assertEquals(
+            $event,
+            $jsonSerializer->deserialize('{"some_aggregate":4}', 'CQRSTest\Serializer\TestEvent2')
+        );
+
     }
 } 
