@@ -34,6 +34,6 @@ class JsonSerializerTest extends \PHPUnit_Framework_TestCase
         /** @var Serializer $serializer */
 
         $jsonSerializer = new JsonSerializer($serializer);
-        $this->assertSame($event, $jsonSerializer->deserialize('{}', 'TestEvent'));
+        $this->assertSame($event, $jsonSerializer->deserialize('{}', 'SomeEvent'));
     }
 } 
