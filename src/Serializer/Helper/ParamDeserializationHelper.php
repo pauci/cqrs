@@ -3,7 +3,6 @@
 namespace CQRS\Serializer\Helper;
 
 use ReflectionParameter;
-use Zend\Filter\Word\CamelCaseToUnderscore;
 
 final class ParamDeserializationHelper
 {
@@ -58,8 +57,8 @@ final class ParamDeserializationHelper
 
     private function camelCaseToUnderscore(string $key): string
     {
-        $filter = new CamelCaseToUnderscore();
-        return strtolower($filter($key));
+        $string = preg_replace('/(?<=\\w)(?=[A-Z])/',"_$1", $key);
+        return strtolower($string);
     }
 
     /**
