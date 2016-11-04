@@ -50,7 +50,7 @@ final class ParamDeserializationHelper
      * @param string $key
      * @return mixed
      */
-    private function getValue(array $data, string $key)
+    private function getValue(array $data, $key)
     {
         if ($data[$key]) {
             return $data[$key];
@@ -63,7 +63,7 @@ final class ParamDeserializationHelper
         return null;
     }
 
-    private function camelCaseToUnderscore(string $key): string
+    private function camelCaseToUnderscore($key)
     {
         $string = preg_replace('/(?<=\\w)(?=[A-Z])/', "_$1", $key);
         return strtolower($string);
@@ -74,7 +74,7 @@ final class ParamDeserializationHelper
      * @param string $type
      * @return mixed
      */
-    private function deserializeValue($value, string $type)
+    private function deserializeValue($value, $type)
     {
         if (method_exists($type, 'jsonDeserialize')) {
             return $type::jsonDeserialize($value, $this);
