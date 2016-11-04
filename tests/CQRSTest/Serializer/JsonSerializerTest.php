@@ -3,7 +3,6 @@
 namespace CQRSTest\Serializer;
 
 use CQRS\Serializer\JsonSerializer;
-use JMS\Serializer\Serializer;
 
 class JsonSerializerTest extends \PHPUnit_Framework_TestCase
 {
@@ -11,29 +10,15 @@ class JsonSerializerTest extends \PHPUnit_Framework_TestCase
     {
         $event = new SomeEvent();
 
-        $serializer = $this->getMock(Serializer::class, [], [], '', false);
-        $serializer->expects($this->once())
-            ->method('serialize')
-            ->with($event, 'json')
-            ->willReturn('{}');
-        /** @var Serializer $serializer */
-
-        $jsonSerializer = new JsonSerializer($serializer);
+        $jsonSerializer = new JsonSerializer();
         $this->assertEquals('{}', $jsonSerializer->serialize($event));
     }
 
     public function testDeserialize()
     {
-        $event = new SomeEvent();
+        $event = new TestEvent();
 
-        $serializer = $this->getMock(Serializer::class, [], [], '', false);
-        $serializer->expects($this->once())
-            ->method('deserialize')
-            ->with('{}', 'TestEvent', 'json')
-            ->willReturn($event);
-        /** @var Serializer $serializer */
-
-        $jsonSerializer = new JsonSerializer($serializer);
-        $this->assertSame($event, $jsonSerializer->deserialize('{}', 'SomeEvent'));
+        $jsonSerializer = new JsonSerializer();
+        $this->assertEquals($event, $jsonSerializer->deserialize('{}', 'CQRSTest\Serializer\TestEvent'));
     }
 } 
