@@ -52,7 +52,15 @@ final class ParamDeserializationHelper
      */
     private function getValue(array $data, string $key)
     {
-        return $data[$key] ?? $data[$this->camelCaseToUnderscore($key)] ?? null;
+        if ($data[$key]) {
+            return $data[$key];
+        }
+
+        if ($data[$this->camelCaseToUnderscore($key)]) {
+            return $data[$this->camelCaseToUnderscore($key)];
+        }
+
+        return null;
     }
 
     private function camelCaseToUnderscore(string $key): string
