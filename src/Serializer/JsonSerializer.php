@@ -2,6 +2,9 @@
 
 namespace CQRS\Serializer;
 
+use CQRS\Serializer\Helper\ParamDeserializationHelper;
+use ReflectionMethod;
+
 class JsonSerializer implements SerializerInterface
 {
     /**
@@ -40,6 +43,18 @@ class JsonSerializer implements SerializerInterface
             }
         } elseif (null === $value && method_exists($type, 'unknown')) {
             return $type::unknown();
+        }
+
+        if (is_array($value)) {
+            $helper = new ParamDeserializationHelper();
+
+            $params = [];
+            $constructor = new ReflectionMethod($type, '__construct');
+            foreach ($constructor->getParameters() as $parameter) {
+                $params[] = $helper->deserializeParam($value, $parameter);
+            }
+
+            return new $type(...$params);
         }
 
         return new $type($value);
