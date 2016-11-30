@@ -21,9 +21,12 @@ class TableEventStoreSchema
     }
 
     /**
+     * @param bool $eventDateIndex
+     * @param bool $aggregateIndex
+     * @param bool $uniqueAggregateIndex
      * @return Table
      */
-    public function getTableSchema()
+    public function getTableSchema($eventDateIndex = false, $aggregateIndex = false, $uniqueAggregateIndex = false)
     {
         $schema = new Schema();
         $table = $schema->createTable($this->table);
@@ -38,8 +41,16 @@ class TableEventStoreSchema
         $table->addColumn('payload', 'text');
         $table->addColumn('metadata', 'text');
         $table->setPrimaryKey(['id']);
-        $table->addUniqueIndex(['aggregate_type', 'aggregate_id', 'sequence_number']);
-        $table->addIndex(['event_date', 'event_date_u']);
+        if ($eventDateIndex) {
+            $table->addIndex(['event_date', 'event_date_u']);
+        }
+        if ($aggregateIndex) {
+            if ($uniqueAggregateIndex) {
+                $table->addUniqueIndex(['aggregate_type', 'aggregate_id', 'sequence_number']);
+            } else {
+                $table->addIndex(['aggregate_type', 'aggregate_id', 'sequence_number']);
+            }
+        }
         return $table;
     }
 }
