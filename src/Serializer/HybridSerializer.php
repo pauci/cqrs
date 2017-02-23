@@ -55,6 +55,6 @@ final class HybridSerializer implements SerializerInterface
 
     private function translateType(string $type)
     {
-        return $this->typeMap[$type] ?? $type;
+        return array_key_exists($type, $this->typeMap) ? $this->typeMap[$type] : $type;
     }
 }
