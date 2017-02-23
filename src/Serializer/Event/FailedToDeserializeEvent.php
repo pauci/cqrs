@@ -1,6 +1,6 @@
 <?php
 
-namespace CQRS\Serializer;
+namespace CQRS\Serializer\Event;
 
 use JsonSerializable;
 
@@ -28,22 +28,34 @@ final class FailedToDeserializeEvent implements JsonSerializable
         $this->payloadData = $payloadData;
     }
 
-    public function getError(): string
+    /**
+     * @return string
+     */
+    public function getError()
     {
         return $this->error;
     }
 
-    public function getPayloadType(): string
+    /**
+     * @return string
+     */
+    public function getPayloadType()
     {
         return $this->payloadType;
     }
 
-    public function getPayloadData(): string
+    /**
+     * @return string
+     */
+    public function getPayloadData()
     {
         return $this->payloadData;
     }
 
-    public function jsonSerialize(): array
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
     {
         return [
             'error' => $this->error,

@@ -2,6 +2,8 @@
 
 namespace CQRS\Serializer;
 
+use CQRS\Serializer\Event\FailedToDeserializeEvent;
+
 final class HybridSerializer implements SerializerInterface
 {
     /**
