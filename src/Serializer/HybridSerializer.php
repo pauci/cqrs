@@ -53,7 +53,7 @@ final class HybridSerializer implements SerializerInterface
         }
     }
 
-    private function translateType(string $type): string
+    private function translateType(string $type)
     {
         return $this->typeMap[$type] ?? $type;
     }

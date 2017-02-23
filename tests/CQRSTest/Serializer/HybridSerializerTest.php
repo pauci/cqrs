@@ -20,7 +20,9 @@ class HybridSerializerTest extends \PHPUnit_Framework_TestCase
     public function testDeserialize()
     {
         $jsonSerializer = new JsonSerializer();
-        $hybridSerializer = new HybridSerializer($jsonSerializer, []);
+        $hybridSerializer = new HybridSerializer($jsonSerializer, [
+            'Test\Event\OriginalClass' => TestEvent::class
+        ]);
 
         $event = new TestEvent();
         self::assertEquals($event, $hybridSerializer->deserialize('{}', 'CQRSTest\Serializer\TestEvent'));
@@ -30,6 +32,9 @@ class HybridSerializerTest extends \PHPUnit_Framework_TestCase
             $event,
             $hybridSerializer->deserialize('{"some_aggregate":4}', 'CQRSTest\Serializer\TestEventWithCustomConstructor')
         );
+
+        $event = new TestEvent();
+        self::assertEquals($event, $hybridSerializer->deserialize('{}', 'Test\Event\OriginalClass'));
 
     }
 } 
