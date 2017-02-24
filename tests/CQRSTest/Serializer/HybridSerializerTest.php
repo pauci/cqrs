@@ -45,5 +45,12 @@ class HybridSerializerTest extends \PHPUnit_Framework_TestCase
         );
         self::assertEquals($event, $hybridSerializer->deserialize('{}', 'Test\Event\AnotherOriginalClass'));
 
+        $event = new FailedToDeserializeEvent(
+            sprintf('Class %s not found', 'Test\Event\AnotherOriginalClass3'),
+            'Test\Event\AnotherOriginalClass3',
+            '{}'
+        );
+        self::assertEquals($event, $hybridSerializer->deserialize('{}', 'Test\Event\AnotherOriginalClass3'));
+
     }
 } 
