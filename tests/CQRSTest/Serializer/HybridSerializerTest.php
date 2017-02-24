@@ -24,6 +24,7 @@ class HybridSerializerTest extends \PHPUnit_Framework_TestCase
         $hybridSerializer = new HybridSerializer($jsonSerializer, [
             'Test\Event\OriginalClass' => 'CQRSTest\Serializer\TestEvent',
             'Test\Event\AnotherOriginalClass' => 'AnotherOriginalClass2',
+            'Test\Event\AnotherOriginalClass4' => SomeEvent2::class
         ]);
 
         $event = new TestEvent();
@@ -46,11 +47,11 @@ class HybridSerializerTest extends \PHPUnit_Framework_TestCase
         self::assertEquals($event, $hybridSerializer->deserialize('{}', 'Test\Event\AnotherOriginalClass'));
 
         $event = new FailedToDeserializeEvent(
-            sprintf('Class %s not found', 'Test\Event\AnotherOriginalClass3'),
-            'Test\Event\AnotherOriginalClass3',
-            '{}'
+            'ReflectionException',
+            'CQRSTest\Serializer\SomeEvent2',
+            '{"data":["one","two"]}'
         );
-        self::assertEquals($event, $hybridSerializer->deserialize('{}', 'Test\Event\AnotherOriginalClass3'));
+        self::assertEquals($event, $hybridSerializer->deserialize('{"data":["one","two"]}', 'Test\Event\AnotherOriginalClass4'));
 
     }
 } 

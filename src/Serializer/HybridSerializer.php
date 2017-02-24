@@ -48,12 +48,12 @@ final class HybridSerializer implements SerializerInterface
         try {
             return $this->jsonSerializer->deserialize($data, $type);
         } catch (\Throwable $e) {
-            $error = (string) $e;
+            $error = (string) get_class($e);
             return new FailedToDeserializeEvent($error, $type, $data);
         }
     }
 
-    private function translateType(string $type)
+    private function translateType($type)
     {
         return array_key_exists($type, $this->typeMap) ? $this->typeMap[$type] : $type;
     }
