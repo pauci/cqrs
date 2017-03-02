@@ -3,6 +3,7 @@
 namespace CQRS\Domain\Message;
 
 use Pauci\DateTime\DateTimeInterface;
+use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class GenericDomainEventMessage extends GenericEventMessage implements DomainEventMessageInterface
@@ -54,7 +55,9 @@ class GenericDomainEventMessage extends GenericEventMessage implements DomainEve
     {
         $data = parent::jsonSerialize();
         $data['aggregateType'] = $this->aggregateType;
-        $data['aggregateId'] = $this->aggregateId;
+        $data['aggregateId'] = ctype_print($this->aggregateId)
+            ? $this->aggregateId
+            : Uuid::fromBytes($this->aggregateId);
         return $data;
     }
 

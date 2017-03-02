@@ -2,6 +2,7 @@
 
 namespace CQRS\Serializer\Helper;
 
+use Ramsey\Uuid\Uuid;
 use ReflectionParameter;
 
 final class ParamDeserializationHelper
@@ -81,7 +82,9 @@ final class ParamDeserializationHelper
         }
 
         if (is_string($value)) {
-            if (method_exists($type, 'fromString')) {
+            if (method_exists($type, 'fromUuid')) {
+                return $type::fromUuid(Uuid::fromString($value));
+            } elseif (method_exists($type, 'fromString')) {
                 return $type::fromString($value);
             }
         } elseif (is_int($value)) {
