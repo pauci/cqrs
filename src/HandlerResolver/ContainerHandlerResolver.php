@@ -2,7 +2,7 @@
 
 namespace CQRS\HandlerResolver;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 class ContainerHandlerResolver
 {

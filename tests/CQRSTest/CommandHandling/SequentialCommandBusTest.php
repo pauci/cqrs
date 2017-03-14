@@ -5,8 +5,8 @@ namespace CQRSTest\CommandHandling;
 use CQRS\CommandHandling\SequentialCommandBus;
 use CQRS\CommandHandling\TransactionManager\TransactionManagerInterface;
 use CQRS\EventHandling\Publisher\EventPublisherInterface;
-use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase;
+use Psr\Container\ContainerInterface;
 
 class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
 {
