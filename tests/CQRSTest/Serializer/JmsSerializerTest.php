@@ -11,7 +11,7 @@ class JmsSerializerTest extends \PHPUnit_Framework_TestCase
     {
         $event = new SomeEvent();
 
-        $serializer = $this->getMock(Serializer::class, [], [], '', false);
+        $serializer = $this->createMock(Serializer::class, [], [], '', false);
         $serializer->expects($this->once())
             ->method('serialize')
             ->with($event, 'json')
@@ -26,7 +26,7 @@ class JmsSerializerTest extends \PHPUnit_Framework_TestCase
     {
         $event = new SomeEvent();
 
-        $serializer = $this->getMock(Serializer::class, [], [], '', false);
+        $serializer = $this->createMock(Serializer::class, [], [], '', false);
         $serializer->expects($this->once())
             ->method('deserialize')
             ->with('{}', 'TestEvent', 'json')
