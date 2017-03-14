@@ -3,17 +3,18 @@
 namespace CQRSTest\Plugin\Doctrine\CommandHandling;
 
 use CQRS\Plugin\Doctrine\CommandHandling\ExplicitOrmTransactionManager;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit_Framework_TestCase;
 
 class ExplicitOrmTransactionManagerTest extends PHPUnit_Framework_TestCase
 {
     public function testBeginTransaction()
     {
-        $entityManager = $this->getMock('Doctrine\ORM\EntityManagerInterface');
+        $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())
             ->method('beginTransaction');
 
-        /** @var \Doctrine\ORM\EntityManagerInterface $entityManager */
+        /** @var EntityManagerInterface $entityManager */
         $transactionManager = new ExplicitOrmTransactionManager($entityManager);
 
         $transactionManager->begin();
@@ -21,13 +22,13 @@ class ExplicitOrmTransactionManagerTest extends PHPUnit_Framework_TestCase
 
     public function testCommitTransaction()
     {
-        $entityManager = $this->getMock('Doctrine\ORM\EntityManagerInterface');
+        $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())
             ->method('flush');
         $entityManager->expects($this->once())
             ->method('commit');
 
-        /** @var \Doctrine\ORM\EntityManagerInterface $entityManager */
+        /** @var EntityManagerInterface $entityManager */
         $transactionManager = new ExplicitOrmTransactionManager($entityManager);
 
         $transactionManager->commit();
@@ -35,13 +36,13 @@ class ExplicitOrmTransactionManagerTest extends PHPUnit_Framework_TestCase
 
     public function testRollbackTransaction()
     {
-        $entityManager = $this->getMock('Doctrine\ORM\EntityManagerInterface');
+        $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())
             ->method('rollback');
         $entityManager->expects($this->once())
             ->method('close');
 
-        /** @var \Doctrine\ORM\EntityManagerInterface $entityManager */
+        /** @var EntityManagerInterface $entityManager */
         $transactionManager = new ExplicitOrmTransactionManager($entityManager);
 
         $transactionManager->rollback();

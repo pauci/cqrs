@@ -27,7 +27,7 @@ class TableEventStoreTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         if (!extension_loaded('pdo_sqlite')) {
-            $this->markTestSkipped('The Redis extension is not available.');
+            $this->markTestSkipped('The pdo_sqlite extension is not available.');
         }
 
         $schema = new TableEventStoreSchema();
