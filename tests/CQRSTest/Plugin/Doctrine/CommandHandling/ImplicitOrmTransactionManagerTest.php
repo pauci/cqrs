@@ -10,7 +10,7 @@ class ImplicitOrmTransactionManagerTest extends PHPUnit_Framework_TestCase
 {
     public function testBeginTransaction()
     {
-        $entityManager = $this->getMock(EntityManagerInterface::class);
+        $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->never())
             ->method('beginTransaction');
 
@@ -22,7 +22,7 @@ class ImplicitOrmTransactionManagerTest extends PHPUnit_Framework_TestCase
 
     public function testCommitTransaction()
     {
-        $entityManager = $this->getMock(EntityManagerInterface::class);
+        $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())
             ->method('flush');
         $entityManager->expects($this->never())
@@ -36,7 +36,7 @@ class ImplicitOrmTransactionManagerTest extends PHPUnit_Framework_TestCase
 
     public function testRollbackTransaction()
     {
-        $entityManager = $this->getMock(EntityManagerInterface::class);
+        $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->never())
             ->method('rollback');
         $entityManager->expects($this->never())
