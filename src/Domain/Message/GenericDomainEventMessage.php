@@ -55,9 +55,7 @@ class GenericDomainEventMessage extends GenericEventMessage implements DomainEve
     {
         $data = parent::jsonSerialize();
         $data['aggregateType'] = $this->aggregateType;
-        $data['aggregateId'] = ctype_print($this->aggregateId)
-            ? $this->aggregateId
-            : Uuid::fromBytes($this->aggregateId);
+        $data['aggregateId'] = $this->aggregateId;
         return $data;
     }
 
