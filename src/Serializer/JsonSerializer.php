@@ -2,8 +2,9 @@
 
 namespace CQRS\Serializer;
 
+use CQRS\Serializer\Helper\ParamDeserializationHelper;
+use Ramsey\Uuid\Uuid;
 use ReflectionMethod;
-use ReflectionParameter;
 
 class JsonSerializer implements SerializerInterface
 {
@@ -30,6 +31,10 @@ class JsonSerializer implements SerializerInterface
         }
 
         if (is_string($value)) {
+            if (method_exists($type, 'fromUuid')) {
+                return $type::fromUuid(Uuid::fromString($value));
+            }
+
             if (method_exists($type, 'fromString')) {
                 return $type::fromString($value);
             }
@@ -50,78 +55,17 @@ class JsonSerializer implements SerializerInterface
         }
 
         if (is_array($value)) {
+            $helper = new ParamDeserializationHelper();
+
             $constructor = new ReflectionMethod($type, '__construct');
             $params = [];
             foreach ($constructor->getParameters() as $parameter) {
-                $params[] = $this->deserializeParamValue($value, $parameter);
+                $params[] = $helper->deserializeParam($value, $parameter);
             }
 
             return new $type(...$params);
         }
 
         return new $type($value);
-    }
-
-    /**
-     * @param array $data
-     * @param ReflectionParameter $parameter
-     * @return mixed
-     */
-    private function deserializeParamValue(array $data, ReflectionParameter $parameter)
-    {
-        $value = $this->getValueByParam($data, $parameter);
-
-        $class = $parameter->getClass();
-        if (!$class || ($value === null && $parameter->allowsNull())) {
-            return $value;
-        }
-
-        return $this->deserialize($value, $class->getName());
-    }
-
-    /**
-     * @param array $data
-     * @param ReflectionParameter $parameter
-     * @return mixed
-     */
-    private function getValueByParam(array $data, ReflectionParameter $parameter)
-    {
-        $key = $parameter->getName();
-        $value = $this->getValueByKey($data, $key);
-
-        // BC for events serialized with generically named aggregate ID field
-        if ($value === null
-            && $key !== 'aggregateId'
-            && $parameter->getPosition() === 0
-            && !$parameter->allowsNull()
-        ) {
-            $value = $this->getValueByKey($data, 'aggregateId');
-        }
-
-        return $value;
-    }
-
-    /**
-     * @param array $data
-     * @param string $key
-     * @return mixed
-     */
-    private function getValueByKey(array $data, $key)
-    {
-        if (isset($data[$key])) {
-            return $data[$key];
-        }
-
-        if (isset($data[$this->camelCaseToUnderscore($key)])) {
-            return $data[$this->camelCaseToUnderscore($key)];
-        }
-
-        return null;
-    }
-
-    private function camelCaseToUnderscore($key)
-    {
-        $string = preg_replace('/(?<=\\w)(?=[A-Z])/', '_$1', $key);
-        return strtolower($string);
     }
 }
