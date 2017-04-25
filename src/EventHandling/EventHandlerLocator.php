@@ -2,7 +2,7 @@
 
 namespace CQRS\EventHandling;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 class EventHandlerLocator implements ContainerInterface
 {
