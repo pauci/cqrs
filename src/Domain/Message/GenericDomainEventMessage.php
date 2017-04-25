@@ -3,6 +3,7 @@
 namespace CQRS\Domain\Message;
 
 use Pauci\DateTime\DateTimeInterface;
+use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class GenericDomainEventMessage extends GenericEventMessage implements DomainEventMessageInterface
