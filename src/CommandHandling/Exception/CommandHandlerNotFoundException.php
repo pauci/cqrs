@@ -2,8 +2,9 @@
 
 namespace CQRS\CommandHandling\Exception;
 
-use Interop\Container\Exception\NotFoundException;
+use Psr\Container\NotFoundExceptionInterface;
+use RuntimeException;
 
-class CommandHandlerNotFoundException extends \RuntimeException implements ExceptionInterface, NotFoundException
+class CommandHandlerNotFoundException extends RuntimeException implements ExceptionInterface, NotFoundExceptionInterface
 {
 }

@@ -2,7 +2,7 @@
 
 namespace CQRS\CommandHandling;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 class CommandHandlerLocator implements ContainerInterface
 {

@@ -4,12 +4,11 @@ namespace CQRSTest\EventHandling;
 
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\EventHandling\EventExecutionFailed;
-use CQRS\EventHandling\Locator\EventHandlerLocatorInterface;
 use CQRS\EventHandling\SynchronousEventBus;
 use CQRS\HandlerResolver\EventHandlerResolver;
 use Exception;
-use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase;
+use Psr\Container\ContainerInterface;
 
 class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
 {

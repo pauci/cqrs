@@ -6,7 +6,7 @@ use Closure;
 use CQRS\Domain\Message\DomainEventMessageInterface;
 use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericEventMessage;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
