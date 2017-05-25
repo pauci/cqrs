@@ -15,15 +15,13 @@ class DoctrineEventPublisher extends SimpleEventPublisher implements EventSubscr
     private $events = [];
 
     /**
-     * Returns an array of events this subscriber wants to listen to.
-     *
      * @return array
      */
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [
             Events::preFlush,
-            Events::postFlush
+            Events::postFlush,
         ];
     }
 

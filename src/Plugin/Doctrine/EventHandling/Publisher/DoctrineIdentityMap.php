@@ -5,7 +5,6 @@ namespace CQRS\Plugin\Doctrine\EventHandling\Publisher;
 use CQRS\Domain\Model\AggregateRootInterface;
 use CQRS\EventHandling\Publisher\SimpleIdentityMap;
 use Doctrine\Common\EventSubscriber;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\OnClearEventArgs;
 use Doctrine\ORM\Events;
@@ -13,18 +12,9 @@ use Doctrine\ORM\Events;
 class DoctrineIdentityMap extends SimpleIdentityMap implements EventSubscriber
 {
     /**
-     * @param EntityManager $entityManager
-     */
-    public function __construct(EntityManager $entityManager)
-    {
-        $entityManager->getEventManager()
-            ->addEventSubscriber($this);
-    }
-
-    /**
      * @return array
      */
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [
             Events::postLoad,
