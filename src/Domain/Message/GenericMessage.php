@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace CQRS\Domain\Message;
 
@@ -43,7 +44,7 @@ class GenericMessage implements MessageInterface
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,
@@ -56,7 +57,7 @@ class GenericMessage implements MessageInterface
     /**
      * @return UuidInterface
      */
-    public function getId()
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
@@ -64,7 +65,7 @@ class GenericMessage implements MessageInterface
     /**
      * @return string
      */
-    public function getPayloadType()
+    public function getPayloadType(): string
     {
         return $this->payloadType;
     }
@@ -80,16 +81,16 @@ class GenericMessage implements MessageInterface
     /**
      * @return Metadata
      */
-    public function getMetadata()
+    public function getMetadata(): Metadata
     {
         return $this->metadata;
     }
 
     /**
      * @param Metadata $metadata
-     * @return static
+     * @return MessageInterface
      */
-    public function addMetadata(Metadata $metadata)
+    public function addMetadata(Metadata $metadata): MessageInterface
     {
         $metadata = $this->metadata->mergedWith($metadata);
 

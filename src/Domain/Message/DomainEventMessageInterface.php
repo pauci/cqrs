@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace CQRS\Domain\Message;
 
@@ -7,7 +8,7 @@ interface DomainEventMessageInterface extends EventMessageInterface
     /**
      * @return string
      */
-    public function getAggregateType();
+    public function getAggregateType(): string;
 
     /**
      * @return mixed
@@ -17,5 +18,5 @@ interface DomainEventMessageInterface extends EventMessageInterface
     /**
      * @return int
      */
-    public function getSequenceNumber();
+    public function getSequenceNumber(): int;
 }

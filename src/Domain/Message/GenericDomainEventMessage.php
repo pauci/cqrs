@@ -1,9 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace CQRS\Domain\Message;
 
 use Pauci\DateTime\DateTimeInterface;
-use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class GenericDomainEventMessage extends GenericEventMessage implements DomainEventMessageInterface
@@ -33,9 +33,9 @@ class GenericDomainEventMessage extends GenericEventMessage implements DomainEve
      * @param DateTimeInterface|null $timestamp
      */
     public function __construct(
-        $aggregateType,
+        string $aggregateType,
         $aggregateId,
-        $sequenceNumber,
+        int $sequenceNumber,
         $payload,
         $metadata = null,
         UuidInterface $id = null,
@@ -51,7 +51,7 @@ class GenericDomainEventMessage extends GenericEventMessage implements DomainEve
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $data = parent::jsonSerialize();
         $data['aggregateType'] = $this->aggregateType;
@@ -62,7 +62,7 @@ class GenericDomainEventMessage extends GenericEventMessage implements DomainEve
     /**
      * @return string
      */
-    public function getAggregateType()
+    public function getAggregateType(): string
     {
         return $this->aggregateType;
     }
@@ -78,7 +78,7 @@ class GenericDomainEventMessage extends GenericEventMessage implements DomainEve
     /**
      * @return int
      */
-    public function getSequenceNumber()
+    public function getSequenceNumber(): int
     {
         return $this->sequenceNumber;
     }

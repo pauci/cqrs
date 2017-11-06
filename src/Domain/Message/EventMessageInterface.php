@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace CQRS\Domain\Message;
 
@@ -9,5 +10,5 @@ interface EventMessageInterface extends MessageInterface
     /**
      * @return DateTimeInterface
      */
-    public function getTimestamp();
+    public function getTimestamp(): DateTimeInterface;
 }
