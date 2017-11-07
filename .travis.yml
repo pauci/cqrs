@@ -9,13 +9,11 @@ cache:
 matrix:
   fast_finish: true
   include:
-    - php: 7
+    - php: 7.1
       env:
         - EXECUTE_TEST_COVERALLS=true
         - EXECUTE_CS_CHECK=true
-    - php: hhvm
-  allow_failures:
-    - php: hhvm
+    - php: 7.2
 
 services:
   - redis-server
