@@ -13,15 +13,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 abstract class AbstractAggregateRoot implements AggregateRootInterface
 {
+    use DeletableTrait;
+
     /**
      * @var EventContainer
      */
     private $eventContainer;
-
-    /**
-     * @var bool
-     */
-    private $deleted = false;
 
     /**
      * @ORM\Column(type="integer", options={"unsigned"=true})
@@ -101,22 +98,6 @@ abstract class AbstractAggregateRoot implements AggregateRootInterface
             $this->lastEventSequenceNumber = $this->eventContainer->getLastSequenceNumber();
             $this->eventContainer->commit();
         }
-    }
-
-    /**
-     * Marks this aggregate as deleted, instructing a Repository to remove that aggregate at an appropriate time
-     */
-    protected function markAsDeleted()
-    {
-        $this->deleted = true;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isDeleted()
-    {
-        return $this->deleted;
     }
 
     /**

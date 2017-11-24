@@ -52,5 +52,5 @@ interface AggregateRootInterface
      *
      * @return bool
      */
-    public function isDeleted();
+    public function isDeleted(): bool;
 }
