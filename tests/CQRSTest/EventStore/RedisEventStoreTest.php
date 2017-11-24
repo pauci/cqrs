@@ -88,7 +88,7 @@ class RedisEventStoreTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($record[0], $event);
         }
 
-        $this->assertFalse($this->redis->exists('cqrs_event'));
+        $this->assertFalse((bool) $this->redis->exists('cqrs_event'));
     }
 
     public function getData()

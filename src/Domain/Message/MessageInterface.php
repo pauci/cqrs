@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace CQRS\Domain\Message;
 
@@ -10,12 +11,12 @@ interface MessageInterface extends JsonSerializable
     /**
      * @return UuidInterface
      */
-    public function getId();
+    public function getId(): UuidInterface;
 
     /**
      * @return string
      */
-    public function getPayloadType();
+    public function getPayloadType(): string;
 
     /**
      * @return mixed
@@ -25,11 +26,11 @@ interface MessageInterface extends JsonSerializable
     /**
      * @return Metadata
      */
-    public function getMetadata();
+    public function getMetadata(): Metadata;
 
     /**
      * @param Metadata $metadata
-     * @return static
+     * @return MessageInterface
      */
-    public function addMetadata(Metadata $metadata);
+    public function addMetadata(Metadata $metadata): self;
 }

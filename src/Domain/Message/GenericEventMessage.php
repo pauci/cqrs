@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace CQRS\Domain\Message;
 
@@ -26,13 +27,13 @@ class GenericEventMessage extends GenericMessage implements EventMessageInterfac
         DateTimeInterface $timestamp = null
     ) {
         parent::__construct($payload, $metadata, $id);
-        $this->timestamp = $timestamp ?: DateTime::microsecondsNow();
+        $this->timestamp = $timestamp ?? DateTime::microsecondsNow();
     }
 
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $data = parent::jsonSerialize();
         $data['timestamp'] = $this->timestamp;
@@ -42,7 +43,7 @@ class GenericEventMessage extends GenericMessage implements EventMessageInterfac
     /**
      * @return DateTimeInterface
      */
-    public function getTimestamp()
+    public function getTimestamp(): DateTimeInterface
     {
         return $this->timestamp;
     }

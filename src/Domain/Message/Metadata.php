@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace CQRS\Domain\Message;
 
@@ -10,6 +11,7 @@ use CQRS\Exception\RuntimeException;
 use IteratorAggregate;
 use JsonSerializable;
 use Serializable;
+use Traversable;
 
 class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializable, JsonSerializable
 {
@@ -26,7 +28,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
     /**
      * @return Metadata
      */
-    public static function emptyInstance()
+    public static function emptyInstance(): self
     {
         if (static::$emptyInstance === null) {
             static::$emptyInstance = new static();
@@ -34,7 +36,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
         return static::$emptyInstance;
     }
 
-    public static function resetEmptyInstance()
+    public static function resetEmptyInstance(): void
     {
         static::$emptyInstance = null;
     }
@@ -43,7 +45,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      * @param array|self $metadata
      * @return Metadata
      */
-    public static function from($metadata = null)
+    public static function from($metadata = null): self
     {
         if ($metadata instanceof static) {
             return $metadata;
@@ -58,7 +60,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      * @param array $data
      * @return Metadata
      */
-    public static function jsonDeserialize(array $data)
+    public static function jsonDeserialize(array $data): self
     {
         return new static($data);
     }
@@ -75,7 +77,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
     /**
      * @return ArrayObject
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): ArrayObject
     {
         return new ArrayObject($this->toArray());
     }
@@ -83,15 +85,15 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
     /**
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->values;
     }
 
     /**
-     * @return ArrayIterator
+     * @return Traversable
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new ArrayIterator($this->values);
     }
@@ -100,7 +102,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      * @param string $offset
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->values[$offset]);
     }
@@ -111,7 +113,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      */
     public function offsetGet($offset)
     {
-        return isset($this->values[$offset]) ? $this->values[$offset] : null;
+        return $this->values[$offset] ?? null;
     }
 
     /**
@@ -119,7 +121,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      * @param mixed $value
      * @throws RuntimeException
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         throw new RuntimeException('Event metadata is immutable.');
     }
@@ -128,7 +130,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      * @param string $offset
      * @throws RuntimeException
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         throw new RuntimeException('Event metadata is immutable.');
     }
@@ -136,7 +138,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
     /**
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->values);
     }
@@ -144,7 +146,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
     /**
      * @return string
      */
-    public function serialize()
+    public function serialize(): string
     {
         return serialize($this->values);
     }
@@ -152,7 +154,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
     /**
      * @param string $serialized
      */
-    public function unserialize($serialized)
+    public function unserialize($serialized): void
     {
         $this->values = unserialize($serialized);
     }
@@ -164,7 +166,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      * @param Metadata $additionalMetadata
      * @return self
      */
-    public function mergedWith(Metadata $additionalMetadata)
+    public function mergedWith(Metadata $additionalMetadata): self
     {
         $values = array_merge($this->values, $additionalMetadata->values);
 
@@ -184,7 +186,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      * @param array $keys
      * @return self
      */
-    public function withoutKeys(array $keys)
+    public function withoutKeys(array $keys): self
     {
         $values = array_diff_key($this->values, array_flip($keys));
 
