@@ -3,6 +3,7 @@
 namespace CQRS\Plugin\Doctrine\Domain;
 
 use CQRS\Domain\Model\AggregateRootInterface;
+use CQRS\Domain\Model\DeletableInterface;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,7 +34,7 @@ class RemoveDeletedAggregatesListener implements EventSubscriber
 
         foreach ($uow->getIdentityMap() as $class => $entities) {
             foreach ($entities as $entity) {
-                if ($entity instanceof AggregateRootInterface) {
+                if ($entity instanceof DeletableInterface) {
                     if ($entity->isDeleted()) {
                         $entityManager->remove($entity);
                     }

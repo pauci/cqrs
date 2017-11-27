@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\MappedSuperclass
  */
-abstract class AbstractAggregateRoot implements AggregateRootInterface
+abstract class AbstractAggregateRoot implements AggregateRootInterface, DeletableInterface
 {
     use DeletableTrait;
 
