@@ -3,8 +3,10 @@
 namespace CQRSTest\Domain\Message;
 
 use CQRS\Domain\Message\Metadata;
+use PHPUnit\Framework\TestCase;
+use CQRS\Exception\RuntimeException;
 
-class MetadataTest extends \PHPUnit_Framework_TestCase
+class MetadataTest extends TestCase
 {
     public function testEmptyInstanceIsSingleton()
     {
@@ -82,17 +84,19 @@ class MetadataTest extends \PHPUnit_Framework_TestCase
 
     public function testArraySetForImmutability()
     {
-        $metadata = Metadata::from(['foo' => 'bar']);
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Event metadata is immutable.');
 
-        $this->setExpectedException('CQRS\Exception\RuntimeException', 'Event metadata is immutable.');
+        $metadata = Metadata::from(['foo' => 'bar']);
         $metadata['foo'] = 'bar';
     }
 
     public function testArrayUnsetForImmutability()
     {
-        $metadata = Metadata::from(['foo' => 'bar']);
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Event metadata is immutable.');
 
-        $this->setExpectedException('CQRS\Exception\RuntimeException', 'Event metadata is immutable.');
+        $metadata = Metadata::from(['foo' => 'bar']);
         unset($metadata['foo']);
     }
 

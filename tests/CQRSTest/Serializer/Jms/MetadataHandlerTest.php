@@ -7,8 +7,9 @@ use CQRS\Serializer\Jms\MetadataHandler;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\Handler\HandlerRegistry;
+use PHPUnit\Framework\TestCase;
 
-class MetadataHandlerTest extends \PHPUnit_Framework_TestCase
+class MetadataHandlerTest extends TestCase
 {
     /**
      * @var Serializer

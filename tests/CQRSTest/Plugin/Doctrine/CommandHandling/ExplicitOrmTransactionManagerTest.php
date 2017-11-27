@@ -4,9 +4,9 @@ namespace CQRSTest\Plugin\Doctrine\CommandHandling;
 
 use CQRS\Plugin\Doctrine\CommandHandling\ExplicitOrmTransactionManager;
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class ExplicitOrmTransactionManagerTest extends PHPUnit_Framework_TestCase
+class ExplicitOrmTransactionManagerTest extends TestCase
 {
     public function testBeginTransaction()
     {

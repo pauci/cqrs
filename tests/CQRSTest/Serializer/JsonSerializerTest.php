@@ -8,9 +8,10 @@ use CQRSTest\Serializer\Jms\IntegerObject;
 use CQRSTest\Serializer\Jms\IntObject;
 use CQRSTest\Serializer\Jms\ObjectWithUuid;
 use CQRSTest\Serializer\Jms\StringObject;
+use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 
-class JsonSerializerTest extends \PHPUnit_Framework_TestCase
+class JsonSerializerTest extends TestCase
 {
     public function testSerialize()
     {

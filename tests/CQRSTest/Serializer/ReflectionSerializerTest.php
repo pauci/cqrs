@@ -6,11 +6,11 @@ use CQRS\Serializer\ReflectionSerializer;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use stdClass;
 
-class ReflectionSerializerTest extends PHPUnit_Framework_TestCase
+class ReflectionSerializerTest extends TestCase
 {
     public function testSerialize()
     {

@@ -7,10 +7,10 @@ use CQRS\EventHandling\EventExecutionFailed;
 use CQRS\EventHandling\SynchronousEventBus;
 use CQRS\HandlerResolver\EventHandlerResolver;
 use Exception;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
-class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
+class SynchronousEventBusTest extends TestCase
 {
     /**
      * @var SynchronousEventBus
@@ -39,11 +39,10 @@ class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $this->handler->executed);
     }
 
-    /**
-     * @expectedException \CQRSTest\EventHandling\SomeException
-     */
     public function testItRaisesEventExecutionFailedOnFailure()
     {
+        $this->expectException(SomeException::class);
+
         $failureCausingEvent = new FailureCausingEvent();
 
         $this->eventBus->publish(new GenericEventMessage($failureCausingEvent));
@@ -62,6 +61,8 @@ class SynchronousEventBusTest extends PHPUnit_Framework_TestCase
         $this->handler->throwErrorOnEventExecutionFailed = true;
 
         $this->eventBus->publish(new GenericEventMessage($failureEvent));
+
+        $this->assertTrue(true);
     }
 }
 

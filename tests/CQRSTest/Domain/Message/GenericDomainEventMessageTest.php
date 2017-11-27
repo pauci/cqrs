@@ -5,10 +5,10 @@ namespace CQRSTest\Domain\Message;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\Metadata;
 use Pauci\DateTime\DateTime;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 
-class GenericDomainEventMessageTest extends PHPUnit_Framework_TestCase
+class GenericDomainEventMessageTest extends TestCase
 {
     public function testCreateFromDomainEvent()
     {
