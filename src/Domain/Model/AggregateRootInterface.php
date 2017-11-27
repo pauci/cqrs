@@ -26,12 +26,12 @@ interface AggregateRootInterface
      *
      * @return int
      */
-    public function getUncommittedEventsCount();
+    public function getUncommittedEventsCount(): int;
 
     /**
      * Clears the events currently marked as "uncommitted".
      */
-    public function commitEvents();
+    public function commitEvents(): void;
 
     /**
      * Returns the current version number of the aggregate, or null if the aggregate is newly created.

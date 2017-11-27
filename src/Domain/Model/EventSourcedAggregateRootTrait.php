@@ -18,7 +18,7 @@ trait EventSourcedAggregateRootTrait
      * @param Metadata|array $metadata
      * @throws DomainException
      */
-    protected function apply($payload, $metadata = null)
+    protected function apply($payload, $metadata = null): void
     {
         if ($this->getId() === null) {
             if ($this->getUncommittedEventsCount() > 0) {
@@ -48,7 +48,7 @@ trait EventSourcedAggregateRootTrait
      * @param EventMessageInterface $eventMessage
      * @throws BadMethodCallException
      */
-    private function handle(EventMessageInterface $eventMessage)
+    private function handle(EventMessageInterface $eventMessage): void
     {
         $eventName  = $this->getEventName($eventMessage);
         $methodName = 'apply' . $eventName;
@@ -71,7 +71,7 @@ trait EventSourcedAggregateRootTrait
      * @param EventMessageInterface $event
      * @return string
      */
-    private function getEventName(EventMessageInterface $event)
+    private function getEventName(EventMessageInterface $event): string
     {
         $name = $event->getPayloadType();
 

@@ -73,7 +73,7 @@ trait AggregateRootTrait
      *
      * @return int
      */
-    public function getUncommittedEventsCount()
+    public function getUncommittedEventsCount(): int
     {
         return count($this->eventContainer);
     }
@@ -81,7 +81,7 @@ trait AggregateRootTrait
     /**
      * {@inheritdoc}
      */
-    public function commitEvents()
+    public function commitEvents(): void
     {
         if ($this->eventContainer !== null) {
             $this->lastEventSequenceNumber = $this->eventContainer->getLastSequenceNumber();
@@ -93,7 +93,7 @@ trait AggregateRootTrait
      * @return EventContainer
      * @throws RuntimeException
      */
-    private function getEventContainer()
+    private function getEventContainer(): EventContainer
     {
         if ($this->eventContainer === null) {
             $aggregateId = $this->getId();
