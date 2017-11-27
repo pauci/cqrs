@@ -21,7 +21,7 @@ trait EventSourcedAggregateRootTrait
     protected function apply($payload, $metadata = null)
     {
         if ($this->getId() === null) {
-            if ($this->getUncommittedEventsCount() > 0 || $this->getVersion() !== null) {
+            if ($this->getUncommittedEventsCount() > 0) {
                 throw new DomainException(
                     'The Aggregate ID has not been initialized. '
                     . 'It must be initialized at the latest when the first event is applied.'

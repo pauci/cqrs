@@ -11,20 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 abstract class AbstractAggregateRoot implements AggregateRootInterface, DeletableInterface
 {
     use AggregateRootTrait;
+    use VersionedTrait;
     use DeletableTrait;
-
-    /**
-     * @ORM\Version
-     * @ORM\Column(type="integer", options={"unsigned"=true})
-     * @var int
-     */
-    private $version;
-
-    /**
-     * @return int
-     */
-    public function getVersion()
-    {
-        return $this->version;
-    }
 }

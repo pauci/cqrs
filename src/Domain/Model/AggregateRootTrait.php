@@ -7,6 +7,7 @@ use CQRS\Domain\Message\DomainEventMessageInterface;
 use CQRS\Domain\Message\Metadata;
 use CQRS\Domain\Payload\AbstractDomainEvent;
 use CQRS\Exception\RuntimeException;
+use Doctrine\ORM\Mapping as ORM;
 
 trait AggregateRootTrait
 {
