@@ -10,9 +10,9 @@ use CQRSTest\EventStore\SomeEvent;
 use CQRSTest\EventStore\SomeSerializer;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class TableEventStoreTest extends PHPUnit_Framework_TestCase
+class TableEventStoreTest extends TestCase
 {
     /**
      * @var Connection

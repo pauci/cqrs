@@ -9,8 +9,9 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\TestCase;
 
-class GuzzleApiEventStoreTest extends \PHPUnit_Framework_TestCase
+class GuzzleApiEventStoreTest extends TestCase
 {
     /** @var GuzzleApiEventStore */
     private static $apiEventStore;

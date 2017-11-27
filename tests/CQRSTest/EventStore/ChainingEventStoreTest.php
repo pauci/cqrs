@@ -5,8 +5,9 @@ namespace CQRSTest\EventStore;
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\EventStore\ChainingEventStore;
 use CQRS\EventStore\MemoryEventStore;
+use PHPUnit\Framework\TestCase;
 
-class ChainingEventStoreTest extends \PHPUnit_Framework_TestCase
+class ChainingEventStoreTest extends TestCase
 {
     public function testStoreEvent()
     {

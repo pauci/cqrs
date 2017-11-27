@@ -6,10 +6,10 @@ use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\Domain\Message\Metadata;
 use DateTimeImmutable;
 use Pauci\DateTime\DateTime;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 
-class GenericEventMessageTest extends PHPUnit_Framework_TestCase
+class GenericEventMessageTest extends TestCase
 {
     public function testCreateFromEvent()
     {

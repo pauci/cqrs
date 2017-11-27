@@ -3,10 +3,10 @@ namespace CQRSTest\Domain\Message;
 
 use CQRS\Domain\Message\GenericMessage;
 use CQRS\Domain\Message\Metadata;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 
-class GenericMessageTest extends PHPUnit_Framework_TestCase
+class GenericMessageTest extends TestCase
 {
     public function testCreateFromPayload()
     {

@@ -5,9 +5,9 @@ namespace CQRSTest\CommandHandling;
 use CQRS\CommandHandling\Exception\CommandHandlerNotFoundException;
 use CQRS\CommandHandling\CommandHandlerLocator;
 use CQRS\CommandHandling\Exception\InvalidArgumentException;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class CommandHandlerLocatorTest extends PHPUnit_Framework_TestCase
+class CommandHandlerLocatorTest extends TestCase
 {
     public function testRegisterAndGetCommandHandler()
     {
@@ -31,10 +31,8 @@ class CommandHandlerLocatorTest extends PHPUnit_Framework_TestCase
 
     public function testItThrowsExceptionWhenNoHandlerIsRegisteredForCommand()
     {
-        $this->setExpectedException(
-            CommandHandlerNotFoundException::class,
-            'Command handler for CommandWithoutHandler not found'
-        );
+        $this->expectException(CommandHandlerNotFoundException::class);
+        $this->expectExceptionMessage('Command handler for CommandWithoutHandler not found');
 
         $locator = new CommandHandlerLocator();
         $locator->get('CommandWithoutHandler');

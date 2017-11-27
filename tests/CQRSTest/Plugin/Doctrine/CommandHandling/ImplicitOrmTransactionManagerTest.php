@@ -4,9 +4,9 @@ namespace CQRSTest\Plugin\Doctrine\CommandHandling;
 
 use CQRS\Plugin\Doctrine\CommandHandling\ImplicitOrmTransactionManager;
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class ImplicitOrmTransactionManagerTest extends PHPUnit_Framework_TestCase
+class ImplicitOrmTransactionManagerTest extends TestCase
 {
     public function testBeginTransaction()
     {

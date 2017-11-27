@@ -7,10 +7,11 @@ use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\EventStore\RedisEventStore;
 use Pauci\DateTime\DateTime;
+use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use Redis;
 
-class RedisEventStoreTest extends \PHPUnit_Framework_TestCase
+class RedisEventStoreTest extends TestCase
 {
     /**
      * @var Redis
