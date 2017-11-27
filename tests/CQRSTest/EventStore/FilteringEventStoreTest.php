@@ -6,8 +6,9 @@ use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\Domain\Message\Metadata;
 use CQRS\EventStore\FilteringEventStore;
 use CQRS\EventStore\MemoryEventStore;
+use PHPUnit\Framework\TestCase;
 
-class FilteringEventStoreTest extends \PHPUnit_Framework_TestCase
+class FilteringEventStoreTest extends TestCase
 {
     public function testFiltering()
     {

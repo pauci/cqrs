@@ -5,8 +5,9 @@ namespace CQRSTest\Serializer;
 use CQRS\Serializer\Event\FailedToDeserializeEvent;
 use CQRS\Serializer\HybridSerializer;
 use CQRS\Serializer\JsonSerializer;
+use PHPUnit\Framework\TestCase;
 
-class HybridSerializerTest extends \PHPUnit_Framework_TestCase
+class HybridSerializerTest extends TestCase
 {
     public function testSerialize()
     {

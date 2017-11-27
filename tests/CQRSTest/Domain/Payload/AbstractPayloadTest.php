@@ -2,9 +2,9 @@
 namespace CQRSTest\Domain\Payload;
 
 use CQRS\Exception\RuntimeException;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class AbstractPayloadTest extends PHPUnit_Framework_TestCase
+class AbstractPayloadTest extends TestCase
 {
     public function testCreateArrayMapsToProperties()
     {
@@ -19,33 +19,26 @@ class AbstractPayloadTest extends PHPUnit_Framework_TestCase
 
     public function testCreateThrowsExceptionWhenUnknownPropertySet()
     {
-        $this->setExpectedException(
-            RuntimeException::class,
-            'Property "baz" is not a valid property on "CQRSTest\Domain\Payload\TestableAbstractPayload"'
-        );
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Property "baz" is not a valid property on "CQRSTest\Domain\Payload\TestableAbstractPayload"');
 
         new TestableAbstractPayload(['baz' => 'value']);
     }
 
     public function testCreateThrowsExceptionWhenPrivatePropertySet()
     {
-        $this->setExpectedException(
-            RuntimeException::class,
-            'Property "privateFoo" is not a valid property on "CQRSTest\Domain\Payload\TestableAbstractPayload"'
-        );
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Property "privateFoo" is not a valid property on "CQRSTest\Domain\Payload\TestableAbstractPayload"');
 
         new TestableAbstractPayload(['privateFoo' => 'value']);
     }
 
     public function testAccessingUndefinedPropertyThrowsException()
     {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Property "baz" is not a valid property on "CQRSTest\Domain\Payload\TestableAbstractPayload"');
+
         $message = new TestableAbstractPayload(['foo' => 'bar']);
-
-        $this->setExpectedException(
-            RuntimeException::class,
-            'Property "baz" is not a valid property on "CQRSTest\Domain\Payload\TestableAbstractPayload"'
-        );
-
         $message->baz;
     }
 }

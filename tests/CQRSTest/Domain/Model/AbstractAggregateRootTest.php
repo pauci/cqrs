@@ -3,9 +3,9 @@
 namespace CQRSTest\Domain\Model;
 
 use CQRS\Domain\Message\GenericDomainEventMessage;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class AbstractAggregateRootTest extends PHPUnit_Framework_TestCase
+class AbstractAggregateRootTest extends TestCase
 {
     public function testRegisterEvent()
     {

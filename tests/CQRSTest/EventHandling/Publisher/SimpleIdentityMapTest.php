@@ -4,9 +4,10 @@ namespace CQRSTest\EventHandling\Publisher;
 
 use CQRS\EventHandling\Publisher\SimpleIdentityMap;
 use CQRSTest\Domain\Model\AggregateRootUnderTest;
+use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 
-class SimpleIdentityMapTest extends \PHPUnit_Framework_TestCase
+class SimpleIdentityMapTest extends TestCase
 {
     public function test()
     {

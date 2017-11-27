@@ -4,8 +4,9 @@ namespace CQRSTest\Serializer;
 
 use CQRS\Serializer\JmsSerializer;
 use JMS\Serializer\Serializer;
+use PHPUnit\Framework\TestCase;
 
-class JmsSerializerTest extends \PHPUnit_Framework_TestCase
+class JmsSerializerTest extends TestCase
 {
     public function testSerialize()
     {

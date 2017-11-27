@@ -5,10 +5,11 @@ namespace CQRSTest\CommandHandling;
 use CQRS\CommandHandling\SequentialCommandBus;
 use CQRS\CommandHandling\TransactionManager\TransactionManagerInterface;
 use CQRS\EventHandling\Publisher\EventPublisherInterface;
-use PHPUnit_Framework_TestCase;
+use CQRS\Exception\RuntimeException;
+use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
-class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
+class SequentialCommandBusTest extends TestCase
 {
     /**
      * @var SequentialCommandBus
@@ -67,7 +68,7 @@ class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
 
     public function testItRollbacksTransactionOnFailure()
     {
-        $this->setExpectedException('CQRSTest\CommandHandling\CommandFailureTestException');
+        $this->expectException(CommandFailureTestException::class);
 
         try {
             $this->commandBus->dispatch(new DoFailureCommand());
@@ -85,7 +86,7 @@ class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
 
     public function testItDoesntIgnoreErrorOnSequentialFailure()
     {
-        $this->setExpectedException('CQRSTest\CommandHandling\CommandFailureTestException');
+        $this->expectException(CommandFailureTestException::class);
 
         $this->commandBus->dispatch(new DoSequentialFailureCommand());
 
@@ -98,10 +99,8 @@ class SequentialCommandBusTest extends PHPUnit_Framework_TestCase
 
     public function testItThrowsExceptionWhenServiceHasNoHandlingMethod()
     {
-        $this->setExpectedException(
-            'CQRS\Exception\RuntimeException',
-            'Command handler string is not invokable'
-        );
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Command handler string is not invokable');
 
         $this->commandBus->dispatch(new NotInvokableCommand());
     }

@@ -7,10 +7,11 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\Handler\HandlerRegistry;
+use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
-class RamseyUuidHandlerTest extends \PHPUnit_Framework_TestCase
+class RamseyUuidHandlerTest extends TestCase
 {
     /**
      * @var Serializer

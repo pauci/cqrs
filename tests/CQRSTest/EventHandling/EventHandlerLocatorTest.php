@@ -3,9 +3,9 @@
 namespace CQRSTest\EventHandling;
 
 use CQRS\EventHandling\EventHandlerLocator;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class EventHandlerLocatorTest extends PHPUnit_Framework_TestCase
+class EventHandlerLocatorTest extends TestCase
 {
     public function testItReturnsRegisteredCallbacksSortedByPriority()
     {
