@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace CQRS\EventHandling;
 
@@ -11,7 +12,7 @@ interface EventBusInterface
     /**
      * @param EventMessageInterface $event
      */
-    public function publish(EventMessageInterface $event);
+    public function publish(EventMessageInterface $event): void;
 
     /**
      * @param EventStreamInterface $eventStream

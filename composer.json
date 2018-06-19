@@ -6,7 +6,6 @@
     "require": {
         "php": "^7.1",
         "ramsey/uuid": "^3.0",
-        "psr/log": "^1.0",
         "psr/container": "^1.0",
         "pauci/datetime": "^0.2.0"
     },

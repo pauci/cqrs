@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace CQRS\CommandHandling;
 
@@ -9,5 +10,5 @@ interface CommandBusInterface
      *
      * @param object $command
      */
-    public function dispatch($command);
+    public function dispatch($command): void;
 }

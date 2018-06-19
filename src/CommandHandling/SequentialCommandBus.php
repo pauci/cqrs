@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace CQRS\CommandHandling;
 
@@ -7,8 +8,6 @@ use CQRS\EventHandling\Publisher\EventPublisherInterface;
 use CQRS\Exception\RuntimeException;
 use Exception;
 use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 /**
  * Process Commands and pass them to their handlers in sequential order.
@@ -52,33 +51,24 @@ class SequentialCommandBus implements CommandBusInterface
     private $executing = false;
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * @param ContainerInterface $locator
      * @param TransactionManagerInterface $transactionManager
      * @param EventPublisherInterface $eventPublisher
-     * @param LoggerInterface|null $logger
      */
     public function __construct(
         ContainerInterface $locator,
         TransactionManagerInterface $transactionManager,
-        EventPublisherInterface $eventPublisher,
-        LoggerInterface $logger = null
+        EventPublisherInterface $eventPublisher
     ) {
-
         $this->locator = $locator;
         $this->transactionManager = $transactionManager;
         $this->eventPublisher = $eventPublisher;
-        $this->logger = $logger ?: new NullLogger();
     }
 
     /**
      * @return ContainerInterface
      */
-    public function getLocator()
+    public function getLocator(): ContainerInterface
     {
         return $this->locator;
     }
@@ -86,7 +76,7 @@ class SequentialCommandBus implements CommandBusInterface
     /**
      * @return TransactionManagerInterface
      */
-    public function getTransactionManager()
+    public function getTransactionManager(): TransactionManagerInterface
     {
         return $this->transactionManager;
     }
@@ -94,7 +84,7 @@ class SequentialCommandBus implements CommandBusInterface
     /**
      * @return EventPublisherInterface
      */
-    public function getEventPublisher()
+    public function getEventPublisher(): EventPublisherInterface
     {
         return $this->eventPublisher;
     }
@@ -108,16 +98,8 @@ class SequentialCommandBus implements CommandBusInterface
      * @param mixed $command
      * @throws Exception
      */
-    public function dispatch($command)
+    public function dispatch($command): void
     {
-        $this->logger->debug(sprintf(
-            'Handling Command %s',
-            get_class($command)
-        ), [
-            'command_payload_type' => get_class($command),
-            'command_payload' => (array)$command,
-        ]);
-
         $this->commandStack[] = $command;
 
         if ($this->executing) {
@@ -132,19 +114,6 @@ class SequentialCommandBus implements CommandBusInterface
             $this->eventPublisher->publishEvents();
             $this->transactionManager->commit();
         } catch (Exception $e) {
-            $this->logger->error(sprintf(
-                'Uncaught Exception %s while handling Command %s: "%s" at %s line %s',
-                get_class($e),
-                get_class($command),
-                $e->getMessage(),
-                $e->getFile(),
-                $e->getLine()
-            ), [
-                'exception' => $e,
-                'command_payload_type' => get_class($command),
-                'command_payload' => (array)$command,
-            ]);
-
             $this->transactionManager->rollback();
             throw $e;
         }
@@ -154,7 +123,7 @@ class SequentialCommandBus implements CommandBusInterface
      * @param mixed $command
      * @throws Exception
      */
-    protected function invokeHandler($command)
+    protected function invokeHandler($command): void
     {
         try {
             $this->executing = true;
@@ -168,11 +137,6 @@ class SequentialCommandBus implements CommandBusInterface
                     is_object($handler) ? get_class($handler) : gettype($handler)
                 ));
             }
-
-            $this->logger->debug('Invoking command handler', [
-                'command_payload_type' => get_class($command),
-                'command_payload' => (array) $command,
-            ]);
 
             $handler($command);
         } catch (Exception $e) {
