@@ -7,7 +7,7 @@
         "php": "^7.1",
         "ramsey/uuid": "^3.0",
         "psr/container": "^1.0",
-        "pauci/datetime": "^0.2.0"
+        "pauci/datetime": "^0.3.3"
     },
     "require-dev": {
         "doctrine/orm": "^2.4",
