@@ -3,7 +3,14 @@ declare(strict_types=1);
 
 namespace CQRS\Domain\Model;
 
-abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregateRoot
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\MappedSuperclass
+ */
+abstract class AbstractEventSourcedAggregateRoot implements AggregateRootInterface, DeletableInterface
 {
     use EventSourcedAggregateRootTrait;
+    use VersionedTrait;
+    use DeletableTrait;
 }
