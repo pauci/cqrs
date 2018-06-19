@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace CQRS\Domain\Model;
 
@@ -25,12 +26,12 @@ interface AggregateRootInterface
      *
      * @return int
      */
-    public function getUncommittedEventsCount();
+    public function getUncommittedEventsCount(): int;
 
     /**
      * Clears the events currently marked as "uncommitted".
      */
-    public function commitEvents();
+    public function commitEvents(): void;
 
     /**
      * Returns the current version number of the aggregate, or null if the aggregate is newly created.
@@ -43,14 +44,4 @@ interface AggregateRootInterface
      * @return int
      */
     public function getVersion();
-
-    /**
-     * Indicates whether this aggregate has been marked as deleted. When true, it is an instruction to the repository
-     * to remove this instance at an appropriate time.
-     *
-     * Repositories should not return any instances of Aggregates that return true on isDeleted().
-     *
-     * @return bool
-     */
-    public function isDeleted();
 }
