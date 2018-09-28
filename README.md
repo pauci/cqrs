@@ -1,9 +1,12 @@
 # CQRS library
 
-[![Latest Stable Version](https://poser.pugx.org/pauci/cqrs/v/stable)](https://packagist.org/packages/pauci/cqrs)
-[![Total Downloads](https://poser.pugx.org/pauci/cqrs/downloads)](https://packagist.org/packages/pauci/cqrs)
-[![Build Status](https://travis-ci.org/pauci/cqrs.svg?branch=master)](https://travis-ci.org/pauci/cqrs)
-[![Coverage Status](https://coveralls.io/repos/pauci/cqrs/badge.png?branch=master)](https://coveralls.io/r/pauci/cqrs)
+[![Source Code][badge-source]][source]
+[![Latest Version][badge-release]][release]
+[![Software License][badge-license]][license]
+[![Build Status][badge-build]][build]
+[![Coverage Status][badge-coverage]][coverage]
+[![Total Downloads][badge-downloads]][downloads]
+
 
 ## Installation & Requirements
 
@@ -74,3 +77,18 @@ $command = new ChangeUserName([
 ]);
 $commandBus->dispatch($command);
 ```
+
+
+[badge-source]: https://img.shields.io/badge/source-pauci/cqrs-blue.svg?style=flat-square
+[badge-release]: https://img.shields.io/packagist/v/pauci/cqrs.svg?style=flat-square
+[badge-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
+[badge-build]: https://img.shields.io/travis/pauci/cqrs/master.svg?style=flat-square
+[badge-coverage]: https://img.shields.io/coveralls/pauci/cqrs/master.svg?style=flat-square
+[badge-downloads]: https://img.shields.io/packagist/dt/pauci/cqrs.svg?style=flat-square
+
+[source]: https://github.com/pauci/cqrs
+[release]: https://packagist.org/packages/pauci/cqrs
+[license]: https://github.com/pauci/cqrs/blob/master/LICENSE
+[build]: https://travis-ci.org/pauci/cqrs
+[coverage]: https://coveralls.io/r/pauci/cqrs?branch=master
+[downloads]: https://packagist.org/packages/pauci/cqrs
