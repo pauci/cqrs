@@ -17,7 +17,7 @@ use CQRS\Exception;
 
 class GuzzleApiEventStore implements EventStoreInterface
 {
-    const DEFAULT_LIMIT = 500;
+    public const DEFAULT_LIMIT = 500;
 
     /** @var Client */
     private $guzzleClient;

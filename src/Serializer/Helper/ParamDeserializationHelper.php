@@ -35,7 +35,8 @@ final class ParamDeserializationHelper
         $value = $this->getValue($data, $key);
 
         // BC for events serialized with generically named aggregate ID field
-        if ($value === null
+        if (
+            $value === null
             && $key !== 'aggregateId'
             && $parameter->getPosition() === 0
             && !$parameter->allowsNull()

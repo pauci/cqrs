@@ -62,7 +62,8 @@ class EventHandlerLocator implements ContainerInterface
             ));
         }
 
-        if (array_key_exists($eventType, $this->handlers)
+        if (
+            array_key_exists($eventType, $this->handlers)
             && array_key_exists($priority, $this->handlers[$eventType])
             && in_array($handler, $this->handlers[$eventType], true)
         ) {
