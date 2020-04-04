@@ -23,7 +23,7 @@ class RedisEventStoreTest extends TestCase
      */
     private $redisEventStore;
 
-    public function setUp()
+    public function setUp(): void
     {
         if (!extension_loaded('redis')) {
             $this->markTestSkipped('The redis extension is not available.');

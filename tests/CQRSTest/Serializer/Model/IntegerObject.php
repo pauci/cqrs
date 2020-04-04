@@ -1,6 +1,6 @@
 <?php
 
-namespace CQRSTest\Serializer\Jms;
+namespace CQRSTest\Serializer\Model;
 
 
 class IntegerObject

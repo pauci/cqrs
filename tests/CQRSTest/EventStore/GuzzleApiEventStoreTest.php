@@ -16,7 +16,7 @@ class GuzzleApiEventStoreTest extends TestCase
     /** @var GuzzleApiEventStore */
     private static $apiEventStore;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         $mock = new MockHandler(
             [

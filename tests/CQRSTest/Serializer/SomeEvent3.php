@@ -2,15 +2,15 @@
 
 namespace CQRSTest\Serializer;
 
-use CQRSTest\Serializer\Jms\FloatObject;
-use CQRSTest\Serializer\Jms\IntegerObject;
-use CQRSTest\Serializer\Jms\ObjectWithUuid;
-use CQRSTest\Serializer\Jms\StringObject;
+use CQRSTest\Serializer\Model\FloatObject;
+use CQRSTest\Serializer\Model\IntegerObject;
+use CQRSTest\Serializer\Model\UuidObject;
+use CQRSTest\Serializer\Model\StringObject;
 
 class SomeEvent3
 {
     /**
-     * @var ObjectWithUuid
+     * @var UuidObject
      */
     private $uuid;
     /**
@@ -27,7 +27,7 @@ class SomeEvent3
     private $string2;
 
     public function __construct(
-        ObjectWithUuid $uuid,
+        UuidObject $uuid,
         IntegerObject $int,
         StringObject $string1,
         StringObject $string2 = null

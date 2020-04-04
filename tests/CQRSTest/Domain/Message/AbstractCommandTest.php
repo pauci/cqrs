@@ -7,21 +7,19 @@ use PHPUnit\Framework\TestCase;
 
 class AbstractCommandTest extends TestCase
 {
-    /**
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage Property "bar" is not a valid property on command "TestAbstract"
-     */
-    public function testCreateThrowsExceptionWhenUnknownPropertySet()
+    public function testCreateThrowsExceptionWhenUnknownPropertySet(): void
     {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Property "bar" is not a valid property on command "TestAbstract"');
+
         new TestAbstractCommand(['bar' => 'baz']);
     }
 
-    /**
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage Property "bar" is not a valid property on command "TestAbstract"
-     */
-    public function testAccessingUndefinedPropertyThrowsException()
+    public function testAccessingUndefinedPropertyThrowsException(): void
     {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Property "bar" is not a valid property on command "TestAbstract"');
+
         $command = new TestAbstractCommand();
         $command->bar;
     }

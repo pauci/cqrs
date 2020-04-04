@@ -1,16 +1,12 @@
 <?php
 
-namespace CQRSTest\Serializer\Jms;
+namespace CQRSTest\Serializer\Model;
 
-use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
-class ObjectWithUuid
+class UuidObject
 {
-    /**
-     * @JMS\Type("Ramsey\Uuid\Uuid")
-     */
     private $uuid;
 
     public function __construct(UuidInterface $uuid)
@@ -28,7 +24,8 @@ class ObjectWithUuid
         return $this->uuid;
     }
 
-    public static function fromUuid(UuidInterface $uuid) {
+    public static function fromUuid(UuidInterface $uuid)
+    {
         return new self($uuid);
     }
 }

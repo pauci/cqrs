@@ -3,11 +3,11 @@
 namespace CQRSTest\Serializer;
 
 use CQRS\Serializer\JsonSerializer;
-use CQRSTest\Serializer\Jms\FloatObject;
-use CQRSTest\Serializer\Jms\IntegerObject;
-use CQRSTest\Serializer\Jms\IntObject;
-use CQRSTest\Serializer\Jms\ObjectWithUuid;
-use CQRSTest\Serializer\Jms\StringObject;
+use CQRSTest\Serializer\Model\FloatObject;
+use CQRSTest\Serializer\Model\IntegerObject;
+use CQRSTest\Serializer\Model\IntObject;
+use CQRSTest\Serializer\Model\UuidObject;
+use CQRSTest\Serializer\Model\StringObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 
@@ -35,7 +35,7 @@ class JsonSerializerTest extends TestCase
         );
 
         $event = new SomeEvent3(
-            ObjectWithUuid::fromUuid(Uuid::fromString('a49fd9b2-d989-4cef-98a3-e96d65c1dba4')),
+            UuidObject::fromUuid(Uuid::fromString('a49fd9b2-d989-4cef-98a3-e96d65c1dba4')),
             IntegerObject::fromInteger(5),
             StringObject::fromString('some string')
         );

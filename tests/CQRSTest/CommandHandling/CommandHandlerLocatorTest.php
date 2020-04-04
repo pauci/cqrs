@@ -19,12 +19,11 @@ class CommandHandlerLocatorTest extends TestCase
         $this->assertSame($handler, $locator->get('Command'));
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Command type must be a string; got integer
-     */
     public function testItThrowsExceptionIfEventTypeIsNotString()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Command type must be a string; got integer');
+
         $locator = new CommandHandlerLocator();
         $locator->set(123, 'handler');
     }

@@ -31,7 +31,7 @@ class SequentialCommandBusTest extends TestCase
      */
     private $eventPublisher;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->handler = new SequentialCommandHandler();
 
@@ -52,7 +52,7 @@ class SequentialCommandBusTest extends TestCase
         $this->handler->commandBus = $this->commandBus;
     }
 
-    public function testHandlingOfSequentialCommand()
+    public function testHandlingOfSequentialCommand(): void
     {
         $this->commandBus->dispatch(new DoSequentialCommand());
 
@@ -66,7 +66,7 @@ class SequentialCommandBusTest extends TestCase
         $this->assertEquals(1, $this->eventPublisher->published);
     }
 
-    public function testItRollbacksTransactionOnFailure()
+    public function testItRollbacksTransactionOnFailure(): void
     {
         $this->expectException(CommandFailureTestException::class);
 
@@ -84,7 +84,7 @@ class SequentialCommandBusTest extends TestCase
         }
     }
 
-    public function testItDoesntIgnoreErrorOnSequentialFailure()
+    public function testItDoesntIgnoreErrorOnSequentialFailure(): void
     {
         $this->expectException(CommandFailureTestException::class);
 
@@ -97,7 +97,7 @@ class SequentialCommandBusTest extends TestCase
         $this->assertEquals(1, $this->eventPublisher->published);
     }
 
-    public function testItThrowsExceptionWhenServiceHasNoHandlingMethod()
+    public function testItThrowsExceptionWhenServiceHasNoHandlingMethod(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Command handler string is not invokable');
