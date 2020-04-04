@@ -46,7 +46,6 @@ trait EventSourcedAggregateRootTrait
     }
 
     /**
-     * @param EventMessageInterface $eventMessage
      * @throws BadMethodCallException
      */
     private function handle(EventMessageInterface $eventMessage): void
@@ -68,10 +67,6 @@ trait EventSourcedAggregateRootTrait
         );
     }
 
-    /**
-     * @param EventMessageInterface $event
-     * @return string
-     */
     private function getEventName(EventMessageInterface $event): string
     {
         $name = $event->getPayloadType();

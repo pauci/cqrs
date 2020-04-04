@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRSTest\EventStore;
 
 use CQRS\Domain\Message\GenericEventMessage;
@@ -10,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 class FilteringEventStoreTest extends TestCase
 {
-    public function testFiltering()
+    public function testFiltering(): void
     {
         $eventStore = new MemoryEventStore();
 

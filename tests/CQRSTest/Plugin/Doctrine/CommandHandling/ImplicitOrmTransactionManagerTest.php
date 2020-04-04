@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRSTest\Plugin\Doctrine\CommandHandling;
 
 use CQRS\Plugin\Doctrine\CommandHandling\ImplicitOrmTransactionManager;
@@ -8,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class ImplicitOrmTransactionManagerTest extends TestCase
 {
-    public function testBeginTransaction()
+    public function testBeginTransaction(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->never())
@@ -20,7 +22,7 @@ class ImplicitOrmTransactionManagerTest extends TestCase
         $transactionManager->begin();
     }
 
-    public function testCommitTransaction()
+    public function testCommitTransaction(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())
@@ -34,7 +36,7 @@ class ImplicitOrmTransactionManagerTest extends TestCase
         $transactionManager->commit();
     }
 
-    public function testRollbackTransaction()
+    public function testRollbackTransaction(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->never())

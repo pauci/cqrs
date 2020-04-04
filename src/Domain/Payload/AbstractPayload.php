@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\Domain\Payload;
 
 use CQRS\Exception\RuntimeException;
@@ -13,7 +15,7 @@ use CQRS\Exception\RuntimeException;
 abstract class AbstractPayload
 {
     /**
-     * @param array $data
+     * @param mixed[] $data
      */
     public function __construct(array $data = [])
     {
@@ -26,20 +28,18 @@ abstract class AbstractPayload
     /**
      * Direct read access for protected properties
      *
-     * @param string $name
      * @return mixed
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         $this->assertPropertyExists($name);
         return $this->$name;
     }
 
     /**
-     * @param string $name
      * @throws RuntimeException
      */
-    protected function throwPropertyIsNotValidException($name)
+    protected function throwPropertyIsNotValidException(string $name): void
     {
         throw new RuntimeException(sprintf(
             'Property "%s" is not a valid property on "%s"',
@@ -49,10 +49,9 @@ abstract class AbstractPayload
     }
 
     /**
-     * @param string $name
      * @throws RuntimeException
      */
-    private function assertPropertyExists($name)
+    private function assertPropertyExists(string $name): void
     {
         $vars = get_object_vars($this);
 

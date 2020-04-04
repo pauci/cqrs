@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRSTest\EventStore;
 
 use CQRS\Domain\Message\GenericEventMessage;
@@ -9,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class ChainingEventStoreTest extends TestCase
 {
-    public function testStoreEvent()
+    public function testStoreEvent(): void
     {
         $es1 = new MemoryEventStore();
         $es2 = new MemoryEventStore();

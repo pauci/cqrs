@@ -1,19 +1,20 @@
 <?php
 
-namespace CQRSTest\Serializer\Model;
+declare(strict_types=1);
 
+namespace CQRSTest\Serializer\Model;
 
 class FloatObject
 {
-    private $id;
+    private float $value;
+
+    public static function fromFloat(float $value): self
+    {
+        return new self($value);
+    }
 
     private function __construct(float $value)
     {
-        $this->id = $value;
-    }
-
-    public static function fromFloat(float $value)
-    {
-        return new self($value);
+        $this->value = $value;
     }
 }

@@ -10,16 +10,11 @@ use Ramsey\Uuid\UuidInterface;
 
 class GenericEventMessage extends GenericMessage implements EventMessageInterface
 {
-    /**
-     * @var DateTimeInterface
-     */
-    private $timestamp;
+    private DateTimeInterface $timestamp;
 
     /**
      * @param mixed $payload
      * @param Metadata|array|null $metadata
-     * @param UuidInterface|null $id
-     * @param DateTimeInterface|null $timestamp
      */
     public function __construct(
         $payload,
@@ -31,9 +26,6 @@ class GenericEventMessage extends GenericMessage implements EventMessageInterfac
         $this->timestamp = $timestamp ?? DateTime::microsecondsNow();
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         $data = parent::jsonSerialize();
@@ -41,9 +33,6 @@ class GenericEventMessage extends GenericMessage implements EventMessageInterfac
         return $data;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getTimestamp(): DateTimeInterface
     {
         return $this->timestamp;

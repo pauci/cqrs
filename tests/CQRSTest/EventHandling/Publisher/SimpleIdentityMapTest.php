@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRSTest\EventHandling\Publisher;
 
 use CQRS\EventHandling\Publisher\SimpleIdentityMap;
@@ -9,7 +11,7 @@ use Ramsey\Uuid\Uuid;
 
 class SimpleIdentityMapTest extends TestCase
 {
-    public function test()
+    public function test(): void
     {
         $identityMap = new SimpleIdentityMap();
 

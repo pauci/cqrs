@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRSTest\Domain\Message;
 
 use CQRS\Domain\Message\GenericEventMessage;
@@ -11,7 +13,7 @@ use Ramsey\Uuid\Uuid;
 
 class GenericEventMessageTest extends TestCase
 {
-    public function testCreateFromEvent()
+    public function testCreateFromEvent(): void
     {
         $event = new SomePayload();
         $eventMessage = new GenericEventMessage($event);
@@ -20,7 +22,7 @@ class GenericEventMessageTest extends TestCase
         $this->assertInstanceOf(DateTimeImmutable::class, $eventMessage->getTimestamp());
     }
 
-    public function testReconstructUsingExistingData()
+    public function testReconstructUsingExistingData(): void
     {
         $metadata = Metadata::from(['foo' => 'bar']);
         $id = Uuid::uuid4();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\Plugin\Doctrine\EventHandling\Publisher;
 
 use CQRS\Domain\Model\AggregateRootInterface;
@@ -11,9 +13,6 @@ use Doctrine\ORM\Events;
 
 class DoctrineIdentityMap extends SimpleIdentityMap implements EventSubscriber
 {
-    /**
-     * @return array
-     */
     public function getSubscribedEvents(): array
     {
         return [
@@ -24,10 +23,7 @@ class DoctrineIdentityMap extends SimpleIdentityMap implements EventSubscriber
         ];
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
-    public function postLoad(LifecycleEventArgs $args)
+    public function postLoad(LifecycleEventArgs $args): void
     {
         $entity = $args->getEntity();
 
@@ -36,10 +32,7 @@ class DoctrineIdentityMap extends SimpleIdentityMap implements EventSubscriber
         }
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
-    public function prePersist(LifecycleEventArgs $args)
+    public function prePersist(LifecycleEventArgs $args): void
     {
         $entity = $args->getEntity();
 
@@ -48,10 +41,7 @@ class DoctrineIdentityMap extends SimpleIdentityMap implements EventSubscriber
         }
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
-    public function preRemove(LifecycleEventArgs $args)
+    public function preRemove(LifecycleEventArgs $args): void
     {
         $entity = $args->getEntity();
 
@@ -60,10 +50,7 @@ class DoctrineIdentityMap extends SimpleIdentityMap implements EventSubscriber
         }
     }
 
-    /**
-     * @param OnClearEventArgs $args
-     */
-    public function onClear(OnClearEventArgs $args)
+    public function onClear(OnClearEventArgs $args): void
     {
         if ($args->clearsAllEntities()) {
             $this->clear();

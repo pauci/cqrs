@@ -1,37 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\EventStore;
 
+use Composer\EventDispatcher\Event;
 use CQRS\Domain\Message\EventMessageInterface;
 use Ramsey\Uuid\UuidInterface;
 use Traversable;
 
 class FilteringEventStore implements EventStoreInterface
 {
-    /**
-     * @var EventStoreInterface
-     */
-    private $eventStore;
+    private EventStoreInterface $eventStore;
 
-    /**
-     * @var EventFilterInterface
-     */
-    private $filter;
+    private EventFilterInterface $filter;
 
-    /**
-     * @param EventStoreInterface $eventStore
-     * @param EventFilterInterface $filter
-     */
     public function __construct(EventStoreInterface $eventStore, EventFilterInterface $filter)
     {
         $this->eventStore = $eventStore;
         $this->filter     = $filter;
     }
 
-    /**
-     * @param EventMessageInterface $event
-     */
-    public function store(EventMessageInterface $event)
+    public function store(EventMessageInterface $event): void
     {
         if ($this->filter->isValid($event)) {
             $this->eventStore->store($event);
@@ -39,20 +29,17 @@ class FilteringEventStore implements EventStoreInterface
     }
 
     /**
-     * @param int|null $offset
-     * @param int $limit
-     * @return array
+     * @return EventMessageInterface[]
      */
-    public function read($offset = null, $limit = 10)
+    public function read(int $offset = 0, int $limit = 10): array
     {
         return $this->eventStore->read($offset, $limit);
     }
 
     /**
-     * @param null|UuidInterface $previousEventId
-     * @return Traversable
+     * @return Traversable<EventMessageInterface>
      */
-    public function iterate(UuidInterface $previousEventId = null)
+    public function iterate(UuidInterface $previousEventId = null): Traversable
     {
         return $this->eventStore->iterate($previousEventId);
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\EventHandling\Publisher;
 
 use CQRS\Domain\Model\AggregateRootInterface;
@@ -9,30 +11,24 @@ class SimpleIdentityMap implements IdentityMapInterface
     /**
      * @var AggregateRootInterface[]
      */
-    private $aggregateRoots = [];
+    private array $aggregateRoots = [];
 
     /**
      * @return AggregateRootInterface[]
      */
-    public function getAll()
+    public function getAll(): array
     {
         return array_values($this->aggregateRoots);
     }
 
-    /**
-     * @param AggregateRootInterface $aggregateRoot
-     */
-    public function add(AggregateRootInterface $aggregateRoot)
+    public function add(AggregateRootInterface $aggregateRoot): void
     {
         if (!in_array($aggregateRoot, $this->aggregateRoots, true)) {
             $this->aggregateRoots[] = $aggregateRoot;
         }
     }
 
-    /**
-     * @param AggregateRootInterface $aggregateRoot
-     */
-    public function remove(AggregateRootInterface $aggregateRoot)
+    public function remove(AggregateRootInterface $aggregateRoot): void
     {
         $index = array_search($aggregateRoot, $this->aggregateRoots, true);
         if (false !== $index) {
@@ -40,7 +36,7 @@ class SimpleIdentityMap implements IdentityMapInterface
         }
     }
 
-    public function clear()
+    public function clear(): void
     {
         $this->aggregateRoots = [];
     }

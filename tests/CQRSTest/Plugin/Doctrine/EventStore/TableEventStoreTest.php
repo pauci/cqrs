@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRSTest\Plugin\Doctrine\EventStore;
 
 use CQRS\Domain\Message\GenericDomainEventMessage;
@@ -14,15 +16,9 @@ use PHPUnit\Framework\TestCase;
 
 class TableEventStoreTest extends TestCase
 {
-    /**
-     * @var Connection
-     */
-    private $conn;
+    private Connection $conn;
 
-    /**
-     * @var TableEventStore
-     */
-    private $tableEventStore;
+    private TableEventStore $tableEventStore;
 
     public function setUp(): void
     {
@@ -42,7 +38,7 @@ class TableEventStoreTest extends TestCase
         $this->tableEventStore = new TableEventStore(new SomeSerializer(), $this->conn, $tableSchema->getName());
     }
 
-    public function testStoreEvent()
+    public function testStoreEvent(): void
     {
         $aggregateId = 123;
 
@@ -64,7 +60,7 @@ class TableEventStoreTest extends TestCase
         $this->assertEquals('{}', $data[0]['metadata']);
     }
 
-    public function testReadEvents()
+    public function testReadEvents(): void
     {
         for ($i = 1; $i <= 13; $i++) {
             $this->conn->insert('cqrs_event', [

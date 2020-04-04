@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRSTest\Serializer;
 
 use CQRS\Serializer\Event\FailedToDeserializeEvent;
@@ -9,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class HybridSerializerTest extends TestCase
 {
-    public function testSerialize()
+    public function testSerialize(): void
     {
         $event = new SomeEvent();
 
@@ -19,22 +21,22 @@ class HybridSerializerTest extends TestCase
         self::assertEquals('{}', $hybridSerializer->serialize($event));
     }
 
-    public function testDeserialize()
+    public function testDeserialize(): void
     {
         $jsonSerializer = new JsonSerializer();
         $hybridSerializer = new HybridSerializer($jsonSerializer, [
-            'Test\Event\OriginalClass' => 'CQRSTest\Serializer\TestEvent',
+            'Test\Event\OriginalClass' => TestEvent::class,
             'Test\Event\AnotherOriginalClass' => 'AnotherOriginalClass2',
             'Test\Event\AnotherOriginalClass4' => SomeEvent2::class
         ]);
 
         $event = new TestEvent();
-        self::assertEquals($event, $hybridSerializer->deserialize('{}', 'CQRSTest\Serializer\TestEvent'));
+        self::assertEquals($event, $hybridSerializer->deserialize('{}', TestEvent::class));
 
         $event = new TestEventWithCustomConstructor(new SomeAggregate());
         self::assertEquals(
             $event,
-            $hybridSerializer->deserialize('{"some_aggregate":4}', 'CQRSTest\Serializer\TestEventWithCustomConstructor')
+            $hybridSerializer->deserialize('{"some_aggregate":4}', TestEventWithCustomConstructor::class)
         );
 
         $event = new TestEvent();
@@ -49,10 +51,12 @@ class HybridSerializerTest extends TestCase
 
         $event = new FailedToDeserializeEvent(
             'ReflectionException',
-            'CQRSTest\Serializer\SomeEvent2',
+            SomeEvent2::class,
             '{"data":["one","two"]}'
         );
-        self::assertEquals($event, $hybridSerializer->deserialize('{"data":["one","two"]}', 'Test\Event\AnotherOriginalClass4'));
-
+        self::assertEquals(
+            $event,
+            $hybridSerializer->deserialize('{"data":["one","two"]}', 'Test\Event\AnotherOriginalClass4')
+        );
     }
-} 
+}

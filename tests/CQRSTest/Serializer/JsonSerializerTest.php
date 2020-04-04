@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRSTest\Serializer;
 
 use CQRS\Serializer\JsonSerializer;
@@ -13,7 +15,7 @@ use Ramsey\Uuid\Uuid;
 
 class JsonSerializerTest extends TestCase
 {
-    public function testSerialize()
+    public function testSerialize(): void
     {
         $event = new SomeEvent();
 
@@ -21,17 +23,17 @@ class JsonSerializerTest extends TestCase
         self::assertEquals('{}', $jsonSerializer->serialize($event));
     }
 
-    public function testDeserialize()
+    public function testDeserialize(): void
     {
         $jsonSerializer = new JsonSerializer();
 
         $event = new TestEvent();
-        self::assertEquals($event, $jsonSerializer->deserialize('{}', 'CQRSTest\Serializer\TestEvent'));
+        self::assertEquals($event, $jsonSerializer->deserialize('{}', TestEvent::class));
 
         $event = new TestEventWithCustomConstructor(new SomeAggregate());
         self::assertEquals(
             $event,
-            $jsonSerializer->deserialize('{"some_aggregate":4}', 'CQRSTest\Serializer\TestEventWithCustomConstructor')
+            $jsonSerializer->deserialize('{"some_aggregate":4}', TestEventWithCustomConstructor::class)
         );
 
         $event = new SomeEvent3(
@@ -50,7 +52,7 @@ class JsonSerializerTest extends TestCase
         self::assertEquals(
             IntegerObject::fromInteger(5),
             $jsonSerializer->deserialize(
-                5,
+                '5',
                 IntegerObject::class
             )
         );
@@ -58,7 +60,7 @@ class JsonSerializerTest extends TestCase
         self::assertEquals(
             IntObject::fromInt(5),
             $jsonSerializer->deserialize(
-                5,
+                '5',
                 IntObject::class
             )
         );
@@ -66,7 +68,7 @@ class JsonSerializerTest extends TestCase
         self::assertEquals(
             FloatObject::fromFloat(5.6),
             $jsonSerializer->deserialize(
-                5.6,
+                '5.6',
                 FloatObject::class
             )
         );
@@ -74,10 +76,9 @@ class JsonSerializerTest extends TestCase
         self::assertEquals(
             StringObject::unknown(),
             $jsonSerializer->deserialize(
-                null,
+                'null',
                 StringObject::class
             )
         );
-
     }
-} 
+}

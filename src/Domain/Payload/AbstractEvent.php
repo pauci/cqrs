@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\Domain\Payload;
 
 use CQRS\Exception\RuntimeException;
@@ -22,10 +24,9 @@ use CQRS\Exception\RuntimeException;
 abstract class AbstractEvent extends AbstractPayload
 {
     /**
-     * @param string $name
      * @throws RuntimeException
      */
-    protected function throwPropertyIsNotValidException($name)
+    protected function throwPropertyIsNotValidException(string $name): void
     {
         $parts = explode('\\', get_class($this));
         $event = end($parts);

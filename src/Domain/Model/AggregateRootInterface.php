@@ -20,12 +20,10 @@ interface AggregateRootInterface
      *
      * @return DomainEventMessageInterface[]
      */
-    public function getUncommittedEvents();
+    public function getUncommittedEvents(): array;
 
     /**
      * Returns the number of uncommitted events currently available in the aggregate.
-     *
-     * @return int
      */
     public function getUncommittedEventsCount(): int;
 
@@ -41,8 +39,6 @@ interface AggregateRootInterface
      * Each time the aggregate is modified and stored in a repository, the version number must be increased by
      * at least 1. This version number can be used by optimistic locking strategies and detection of conflicting
      * concurrent modification.
-     *
-     * @return int
      */
-    public function getVersion();
+    public function getVersion(): int;
 }

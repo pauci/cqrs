@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRSTest\Serializer;
 
 class SomeEvent2
@@ -9,4 +11,3 @@ class SomeEvent2
     protected $time;
     protected $object;
 }
-

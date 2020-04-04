@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\CommandHandling\TransactionManager;
 
 interface TransactionManagerInterface
 {
-    public function begin();
+    public function begin(): void;
 
-    public function commit();
+    public function commit(): void;
 
-    public function rollback();
+    public function rollback(): void;
 }

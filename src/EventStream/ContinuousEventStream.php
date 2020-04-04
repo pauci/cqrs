@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\EventStream;
 
 use Generator;
@@ -8,38 +10,22 @@ use Ramsey\Uuid\UuidInterface;
 
 class ContinuousEventStream implements IteratorAggregate, EventStreamInterface
 {
-    /**
-     * @var EventStreamInterface
-     */
-    private $eventStream;
+    private EventStreamInterface $eventStream;
 
-    /**
-     * @var int
-     */
-    private $pauseMicroseconds;
+    private int $pauseMicroseconds;
 
-    /**
-     * @param EventStreamInterface $eventStream
-     * @param int $pauseMicroseconds
-     */
-    public function __construct(EventStreamInterface $eventStream, $pauseMicroseconds = 500000)
+    public function __construct(EventStreamInterface $eventStream, int $pauseMicroseconds = 500000)
     {
         $this->eventStream = $eventStream;
         $this->pauseMicroseconds = $pauseMicroseconds;
     }
 
-    /**
-     * @return UuidInterface|null
-     */
-    public function getLastEventId()
+    public function getLastEventId(): ?UuidInterface
     {
         return $this->eventStream->getLastEventId();
     }
 
-    /**
-     * @return Generator
-     */
-    public function getIterator()
+    public function getIterator(): Generator
     {
         while (true) {
             foreach ($this->eventStream as $event) {

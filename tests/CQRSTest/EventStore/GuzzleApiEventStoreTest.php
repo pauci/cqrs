@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRSTest\EventStore;
 
 use CQRS\Domain\Message\EventMessageInterface;
@@ -13,8 +15,7 @@ use PHPUnit\Framework\TestCase;
 
 class GuzzleApiEventStoreTest extends TestCase
 {
-    /** @var GuzzleApiEventStore */
-    private static $apiEventStore;
+    private static GuzzleApiEventStore $apiEventStore;
 
     public static function setUpBeforeClass(): void
     {
@@ -31,7 +32,7 @@ class GuzzleApiEventStoreTest extends TestCase
         self::$apiEventStore = new GuzzleApiEventStore($client, new SomeSerializer());
     }
 
-    public function testIterateWithData()
+    public function testIterateWithData(): void
     {
         $iterator = self::$apiEventStore->iterate();
 
@@ -46,7 +47,7 @@ class GuzzleApiEventStoreTest extends TestCase
         $this->assertEquals(5, $i);
     }
 
-    public function testIterateWithNoData()
+    public function testIterateWithNoData(): void
     {
         $iterator = self::$apiEventStore->iterate();
 

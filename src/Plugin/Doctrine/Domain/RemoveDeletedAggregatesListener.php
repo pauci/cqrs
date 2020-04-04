@@ -1,21 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\Plugin\Doctrine\Domain;
 
-use CQRS\Domain\Model\AggregateRootInterface;
 use CQRS\Domain\Model\DeletableInterface;
-use Doctrine\Common\EventManager;
 use Doctrine\Common\EventSubscriber;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Events;
 
 class RemoveDeletedAggregatesListener implements EventSubscriber
 {
-    /**
-     * @return array
-     */
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [
             Events::preFlush,
@@ -24,20 +20,16 @@ class RemoveDeletedAggregatesListener implements EventSubscriber
 
     /**
      * Remove entities marked as deleted
-     *
-     * @param PreFlushEventArgs $event
      */
-    public function preFlush(PreFlushEventArgs $event)
+    public function preFlush(PreFlushEventArgs $event): void
     {
         $entityManager = $event->getEntityManager();
         $uow = $entityManager->getUnitOfWork();
 
         foreach ($uow->getIdentityMap() as $class => $entities) {
             foreach ($entities as $entity) {
-                if ($entity instanceof DeletableInterface) {
-                    if ($entity->isDeleted()) {
-                        $entityManager->remove($entity);
-                    }
+                if ($entity instanceof DeletableInterface && $entity->isDeleted()) {
+                    $entityManager->remove($entity);
                 }
             }
         }

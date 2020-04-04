@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRSTest\Domain\Payload;
 
 use CQRS\Domain\Payload\AbstractPayload;
@@ -9,9 +11,9 @@ use CQRS\Domain\Payload\AbstractPayload;
  */
 class TestableAbstractPayload extends AbstractPayload
 {
-    public $foo;
+    public string $foo;
 
-    protected $protectedFoo;
+    protected string $protectedFoo;
 
-    private $privateFoo;
+    private string $privateFoo;
 }

@@ -1,25 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\HandlerResolver;
 
 use Psr\Container\ContainerInterface;
 
 class ContainerHandlerResolver
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
+    protected ContainerInterface $container;
 
     /**
      * @var callable
      */
     protected $nextResolver;
 
-    /**
-     * @param ContainerInterface $container
-     * @param callable|null $nextResolver
-     */
     public function __construct(ContainerInterface $container, callable $nextResolver = null)
     {
         $this->container = $container;
@@ -28,10 +23,8 @@ class ContainerHandlerResolver
 
     /**
      * @param mixed $handler
-     * @param string $messageType
-     * @return callable
      */
-    public function __invoke($handler, $messageType)
+    public function __invoke($handler, string $messageType): callable
     {
         if (is_string($handler)) {
             $handler = $this->container->get($handler);

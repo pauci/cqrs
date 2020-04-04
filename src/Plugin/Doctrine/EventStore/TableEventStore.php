@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\Plugin\Doctrine\EventStore;
 
 use CQRS\Domain\Message\DomainEventMessageInterface;
@@ -11,7 +13,8 @@ use CQRS\EventStore\EventStoreInterface;
 use CQRS\Exception\OutOfBoundsException;
 use CQRS\Serializer\SerializerInterface;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Types\Types;
 use Generator;
 use Pauci\DateTime\DateTime;
 use PDO;
@@ -20,27 +23,13 @@ use Ramsey\Uuid\UuidInterface;
 
 class TableEventStore implements EventStoreInterface
 {
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
+    private SerializerInterface $serializer;
 
-    /**
-     * @var Connection
-     */
-    private $connection;
+    private Connection $connection;
 
-    /**
-     * @var string
-     */
-    private $table = 'cqrs_event';
+    private ?string $table = 'cqrs_event';
 
-    /**
-     * @param SerializerInterface $serializer
-     * @param Connection $connection
-     * @param string $table
-     */
-    public function __construct(SerializerInterface $serializer, Connection $connection, $table = null)
+    public function __construct(SerializerInterface $serializer, Connection $connection, string $table = null)
     {
         $this->serializer = $serializer;
         $this->connection = $connection;
@@ -50,23 +39,19 @@ class TableEventStore implements EventStoreInterface
         }
     }
 
-    /**
-     * @param EventMessageInterface $event
-     */
-    public function store(EventMessageInterface $event)
+    public function store(EventMessageInterface $event): void
     {
         $data = $this->toArray($event);
         $this->connection->insert($this->table, $data);
     }
 
     /**.
-     * @param int|null $offset
-     * @param int $limit
      * @return EventMessageInterface[]
+     * @throws DBALException
      */
-    public function read($offset = null, $limit = 10)
+    public function read(int $offset = 0, int $limit = 10): array
     {
-        if ($offset === null) {
+        if ($offset === -1) {
             $offset = (((int) (($this->getLastRowId() - 1) / $limit)) * $limit) + 1;
         }
 
@@ -78,8 +63,8 @@ class TableEventStore implements EventStoreInterface
         $events = [];
 
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue(1, $offset, Type::INTEGER);
-        $stmt->bindValue(2, $limit, Type::INTEGER);
+        $stmt->bindValue(1, $offset, Types::INTEGER);
+        $stmt->bindValue(2, $limit, Types::INTEGER);
         $stmt->execute();
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -90,10 +75,10 @@ class TableEventStore implements EventStoreInterface
     }
 
     /**
-     * @param UuidInterface|null $previousEventId
-     * @return Generator
+     * @return Generator<EventMessageInterface>
+     * @throws DBALException
      */
-    public function iterate(UuidInterface $previousEventId = null)
+    public function iterate(UuidInterface $previousEventId = null): Generator
     {
         $id = $previousEventId ? $this->getRowIdByEventId($previousEventId) : 0;
 
@@ -105,8 +90,8 @@ class TableEventStore implements EventStoreInterface
         $stmt = $this->connection->prepare($sql);
 
         while (true) {
-            $stmt->bindValue(1, $id, Type::INTEGER);
-            $stmt->bindValue(2, 100, Type::INTEGER);
+            $stmt->bindValue(1, $id, Types::INTEGER);
+            $stmt->bindValue(2, 100, Types::INTEGER);
             $stmt->execute();
 
             $count = 0;
@@ -125,11 +110,7 @@ class TableEventStore implements EventStoreInterface
         }
     }
 
-    /**
-     * @param EventMessageInterface $event
-     * @return array
-     */
-    private function toArray(EventMessageInterface $event)
+    private function toArray(EventMessageInterface $event): array
     {
         $dateTimeFormat = $this->connection->getDatabasePlatform()->getDateTimeFormatString();
         $timestamp = $event->getTimestamp();
@@ -160,10 +141,9 @@ class TableEventStore implements EventStoreInterface
     }
 
     /**
-     * @param array $data
      * @return GenericDomainEventMessage|GenericEventMessage
      */
-    public function fromArray(array $data)
+    public function fromArray(array $data): GenericEventMessage
     {
         $payload = $this->serializer->deserialize($data['payload'], $data['payload_type']);
         /** @var Metadata $metadata */
@@ -186,10 +166,7 @@ class TableEventStore implements EventStoreInterface
         return new GenericEventMessage($payload, $metadata, $id, $timestamp);
     }
 
-    /**
-     * @return int
-     */
-    private function getLastRowId()
+    private function getLastRowId(): int
     {
         $sql = 'SELECT MAX(id) FROM ' . $this->table;
 
@@ -199,11 +176,7 @@ class TableEventStore implements EventStoreInterface
         return (int) $stmt->fetchColumn();
     }
 
-    /**
-     * @param UuidInterface $eventId
-     * @return int
-     */
-    private function getRowIdByEventId(UuidInterface $eventId)
+    private function getRowIdByEventId(UuidInterface $eventId): int
     {
         static $lastEventId, $lastRowId;
 
@@ -214,7 +187,7 @@ class TableEventStore implements EventStoreInterface
         $sql = "SELECT id FROM {$this->table} WHERE event_id = ? LIMIT 1";
 
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue(1, (string) $eventId, Type::STRING);
+        $stmt->bindValue(1, (string) $eventId, Types::STRING);
         $stmt->execute();
 
         $rowId = $stmt->fetchColumn();

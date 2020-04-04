@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRSTest\Domain\Model;
 
 use CQRS\Domain\Message\GenericDomainEventMessage;
@@ -7,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class AbstractAggregateRootTest extends TestCase
 {
-    public function testRegisterEvent()
+    public function testRegisterEvent(): void
     {
         $event = new SomeEvent();
 
@@ -26,7 +28,7 @@ class AbstractAggregateRootTest extends TestCase
         $this->assertEmpty($aggregateRoot->getUncommittedEvents());
     }
 
-    public function testRegisterEventInjectsAggregateId()
+    public function testRegisterEventInjectsAggregateId(): void
     {
         $domainEvent = new SomeDomainEvent();
 

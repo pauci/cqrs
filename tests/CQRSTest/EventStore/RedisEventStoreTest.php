@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRSTest\EventStore;
 
 use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\GenericEventMessage;
-use CQRS\EventStore\RedisEventStore;
+use CQRS\EventStore\RedisEventStore as RedisEventStoreAlias;
 use Pauci\DateTime\DateTime;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
@@ -13,15 +15,9 @@ use Redis;
 
 class RedisEventStoreTest extends TestCase
 {
-    /**
-     * @var Redis
-     */
-    private $redis;
+    private Redis $redis;
 
-    /**
-     * @var RedisEventStore
-     */
-    private $redisEventStore;
+    private RedisEventStoreAlias $redisEventStore;
 
     public function setUp(): void
     {
@@ -32,15 +28,13 @@ class RedisEventStoreTest extends TestCase
         $this->redis = new Redis();
         $this->redis->connect('127.0.0.1');
         $this->redis->del('cqrs_event');
-        $this->redisEventStore = new RedisEventStore(new SomeSerializer(), $this->redis, null, 4);
+        $this->redisEventStore = new RedisEventStoreAlias(new SomeSerializer(), $this->redis, null, 4);
     }
 
     /**
      * @dataProvider getData
-     * @param EventMessageInterface $event
-     * @param string $record
      */
-    public function testStoreEvent(EventMessageInterface $event, $record)
+    public function testStoreEvent(EventMessageInterface $event, string $record): void
     {
         $this->redisEventStore->store($event);
 
@@ -50,9 +44,9 @@ class RedisEventStoreTest extends TestCase
         $this->assertEquals($record, $data[0]);
     }
 
-    public function testCappedCollection()
+    public function testCappedCollection(): void
     {
-        for ($i = 1; $i<= 10; $i++) {
+        for ($i = 1; $i <= 10; $i++) {
             $event = new GenericEventMessage(new SomeEvent());
             $this->redisEventStore->store($event);
         }
@@ -63,10 +57,8 @@ class RedisEventStoreTest extends TestCase
 
     /**
      * @dataProvider getData
-     * @param EventMessageInterface $event
-     * @param string $record
      */
-    public function testReadEvents(EventMessageInterface $event, $record)
+    public function testReadEvents(EventMessageInterface $event, string $record): void
     {
         $this->redis->lPush('cqrs_event', $record);
 
@@ -76,7 +68,7 @@ class RedisEventStoreTest extends TestCase
         $this->assertEquals($event, $events[0]);
     }
 
-    public function testPopEvent()
+    public function testPopEvent(): void
     {
         $data = $this->getData();
 
@@ -92,7 +84,7 @@ class RedisEventStoreTest extends TestCase
         $this->assertFalse((bool) $this->redis->exists('cqrs_event'));
     }
 
-    public function getData()
+    public function getData(): array
     {
         $aggregateId = 123;
 

@@ -12,16 +12,12 @@ use Doctrine\ORM\Mapping as ORM;
 
 trait AggregateRootTrait
 {
-    /**
-     * @var EventContainer
-     */
-    private $eventContainer;
+    private ?EventContainer $eventContainer = null;
 
     /**
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     * @var int
      */
-    private $lastEventSequenceNumber;
+    private ?int $lastEventSequenceNumber = null;
 
     /**
      * @return mixed
@@ -32,11 +28,9 @@ trait AggregateRootTrait
      * Registers an event to be published when the aggregate is saved, containing the given payload and optional
      * metadata.
      *
-     * @param object $payload
      * @param Metadata|array $metadata
-     * @return DomainEventMessageInterface
      */
-    protected function registerEvent($payload, $metadata = null)
+    protected function registerEvent(object $payload, $metadata = null): DomainEventMessageInterface
     {
         if ($payload instanceof AbstractDomainEvent && null === $payload->aggregateId) {
             $payload->setAggregateId($this->getId());
@@ -46,11 +40,7 @@ trait AggregateRootTrait
             ->addEvent($payload, $metadata);
     }
 
-    /**
-     * @param DomainEventMessageInterface $eventMessage
-     * @return DomainEventMessageInterface
-     */
-    protected function registerEventMessage(DomainEventMessageInterface $eventMessage)
+    protected function registerEventMessage(DomainEventMessageInterface $eventMessage): DomainEventMessageInterface
     {
         return $this->getEventContainer()
             ->addEventMessage($eventMessage);
@@ -61,7 +51,7 @@ trait AggregateRootTrait
      *
      * @return DomainEventMessageInterface[]
      */
-    public function getUncommittedEvents()
+    public function getUncommittedEvents(): array
     {
         if ($this->eventContainer === null) {
             return [];
@@ -71,8 +61,6 @@ trait AggregateRootTrait
 
     /**
      * {@inheritdoc}
-     *
-     * @return int
      */
     public function getUncommittedEventsCount(): int
     {
@@ -91,7 +79,6 @@ trait AggregateRootTrait
     }
 
     /**
-     * @return EventContainer
      * @throws RuntimeException
      */
     private function getEventContainer(): EventContainer

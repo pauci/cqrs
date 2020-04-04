@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\Plugin\Doctrine\Domain;
 
 use CQRS\Domain\Model\AbstractAggregateRoot;
@@ -9,17 +11,13 @@ use Doctrine\ORM\Events;
 
 class AggregateRootMetadataListener implements EventSubscriber
 {
-    /**
-     * @return array
-     */
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [Events::loadClassMetadata];
     }
 
-    public function loadClassMetadata(LoadClassMetadataEventArgs $args)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $args): void
     {
-        /** @var \Doctrine\ORM\Mapping\ClassMetadata $classMetadata */
         $classMetadata = $args->getClassMetadata();
 
         if (!$classMetadata->name instanceof AbstractAggregateRoot) {

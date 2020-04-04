@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\EventStore;
 
 use CQRS\Domain\Message\EventMessageInterface;
@@ -8,21 +10,15 @@ use Traversable;
 
 interface EventStoreInterface
 {
-    /**
-     * @param EventMessageInterface $event
-     */
-    public function store(EventMessageInterface $event);
+    public function store(EventMessageInterface $event): void;
 
     /**
-     * @param int|null $offset
-     * @param int $limit
      * @return EventMessageInterface[]
      */
-    public function read($offset = null, $limit = 10);
+    public function read(int $offset = 0, int $limit = 10): array;
 
     /**
-     * @param null|UuidInterface $previousEventId
-     * @return Traversable
+     * @return Traversable<EventMessageInterface>
      */
-    public function iterate(UuidInterface $previousEventId = null);
+    public function iterate(UuidInterface $previousEventId = null): Traversable;
 }

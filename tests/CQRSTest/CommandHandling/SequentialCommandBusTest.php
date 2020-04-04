@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRSTest\CommandHandling;
 
 use CQRS\CommandHandling\SequentialCommandBus;
@@ -11,25 +13,13 @@ use Psr\Container\ContainerInterface;
 
 class SequentialCommandBusTest extends TestCase
 {
-    /**
-     * @var SequentialCommandBus
-     */
-    private $commandBus;
+    private SequentialCommandBus $commandBus;
 
-    /**
-     * @var SequentialCommandHandler
-     */
-    private $handler;
+    private SequentialCommandHandler $handler;
 
-    /**
-     * @var SequentialTransactionManager
-     */
-    private $transactionManager;
+    private SequentialTransactionManager $transactionManager;
 
-    /**
-     * @var SequentialEventPublisher
-     */
-    private $eventPublisher;
+    private SequentialEventPublisher $eventPublisher;
 
     public function setUp(): void
     {
@@ -138,11 +128,11 @@ class SequentialCommandHandlerLocator implements ContainerInterface
 
 class SequentialCommandHandler
 {
-    /** @var SequentialCommandBus */
-    public $commandBus;
+    public SequentialCommandBus $commandBus;
 
-    public $simple = 0;
-    public $sequential = 0;
+    public int $simple = 0;
+
+    public int $sequential = 0;
 
     public function doSimple(DoSimpleCommand $command)
     {
@@ -171,21 +161,23 @@ class CommandFailureTestException extends \Exception
 
 class SequentialTransactionManager implements TransactionManagerInterface
 {
-    public $begin = 0;
-    public $commit = 0;
-    public $rollback = 0;
+    public int $begin = 0;
 
-    public function begin()
+    public int $commit = 0;
+
+    public int $rollback = 0;
+
+    public function begin(): void
     {
         $this->begin++;
     }
 
-    public function commit()
+    public function commit(): void
     {
         $this->commit++;
     }
 
-    public function rollback()
+    public function rollback(): void
     {
         $this->rollback++;
     }
@@ -193,9 +185,9 @@ class SequentialTransactionManager implements TransactionManagerInterface
 
 class SequentialEventPublisher implements EventPublisherInterface
 {
-    public $published = 0;
+    public int $published = 0;
 
-    public function publishEvents()
+    public function publishEvents(): void
     {
         $this->published++;
     }

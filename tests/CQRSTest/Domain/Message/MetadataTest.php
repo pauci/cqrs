@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRSTest\Domain\Message;
 
 use CQRS\Domain\Message\Metadata;
@@ -8,17 +10,7 @@ use CQRS\Exception\RuntimeException;
 
 class MetadataTest extends TestCase
 {
-    public function testEmptyInstanceIsSingleton()
-    {
-        Metadata::resetEmptyInstance();
-
-        $m1 = Metadata::emptyInstance();
-        $m2 = Metadata::emptyInstance();
-
-        $this->assertSame($m1, $m2);
-    }
-
-    public function testItSortsValuesByKey()
+    public function testItSortsValuesByKey(): void
     {
         $metadata = Metadata::from([
             'foo' => 'bar',
@@ -33,7 +25,7 @@ class MetadataTest extends TestCase
         ], $metadata->toArray());
     }
 
-    public function testJsonSerialize()
+    public function testJsonSerialize(): void
     {
         $metadata = Metadata::from([
             'foo' => 'bar',
@@ -45,7 +37,7 @@ class MetadataTest extends TestCase
         $this->assertEquals('{"first":"value","foo":"bar","last":null}', $json);
     }
 
-    public function testJsonDeserialize()
+    public function testJsonDeserialize(): void
     {
         $metadata = Metadata::jsonDeserialize([
             'foo' => 'bar',
@@ -60,7 +52,7 @@ class MetadataTest extends TestCase
         ], $metadata->toArray());
     }
 
-    public function testCount()
+    public function testCount(): void
     {
         $metadata = Metadata::from([
             'foo' => 'bar',
@@ -71,7 +63,7 @@ class MetadataTest extends TestCase
         $this->assertCount(3, $metadata);
     }
 
-    public function testArrayAccess()
+    public function testArrayAccess(): void
     {
         $metadata = Metadata::from(['foo' => 'bar']);
 
@@ -82,7 +74,7 @@ class MetadataTest extends TestCase
         $this->assertNull($metadata['baz']);
     }
 
-    public function testArraySetForImmutability()
+    public function testArraySetForImmutability(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Event metadata is immutable.');
@@ -91,7 +83,7 @@ class MetadataTest extends TestCase
         $metadata['foo'] = 'bar';
     }
 
-    public function testArrayUnsetForImmutability()
+    public function testArrayUnsetForImmutability(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Event metadata is immutable.');
@@ -100,7 +92,7 @@ class MetadataTest extends TestCase
         unset($metadata['foo']);
     }
 
-    public function testMergedWith()
+    public function testMergedWith(): void
     {
         $metadata = Metadata::from(['foo' => 'bar']);
 
@@ -112,7 +104,7 @@ class MetadataTest extends TestCase
         $this->assertEquals($metadata->toArray(), ['foo' => 'bar']);
     }
 
-    public function testWithoutKeys()
+    public function testWithoutKeys(): void
     {
         $metadata = Metadata::from([
             'foo' => 'bar',
@@ -130,7 +122,7 @@ class MetadataTest extends TestCase
         ]);
     }
 
-    public function testSerialize()
+    public function testSerialize(): void
     {
         $metadata = Metadata::from([
             'foo' => 'bar',
@@ -139,13 +131,18 @@ class MetadataTest extends TestCase
 
         $serialized = serialize($metadata);
 
-        $this->assertEquals('C:28:"CQRS\Domain\Message\Metadata":46:{a:2:{s:3:"bar";s:3:"baz";s:3:"foo";s:3:"bar";}}', $serialized);
+        $this->assertEquals(
+            'C:28:"CQRS\Domain\Message\Metadata":46:{a:2:{s:3:"bar";s:3:"baz";s:3:"foo";s:3:"bar";}}',
+            $serialized
+        );
     }
 
-    public function testUnserialize()
+    public function testUnserialize(): void
     {
         /** @var Metadata $metadata */
-        $metadata = unserialize('C:28:"CQRS\Domain\Message\Metadata":46:{a:2:{s:3:"bar";s:3:"baz";s:3:"foo";s:3:"bar";}}');
+        $metadata = unserialize(
+            'C:28:"CQRS\Domain\Message\Metadata":46:{a:2:{s:3:"bar";s:3:"baz";s:3:"foo";s:3:"bar";}}'
+        );
 
         $this->assertEquals([
             'foo' => 'bar',
@@ -153,7 +150,7 @@ class MetadataTest extends TestCase
         ], $metadata->toArray());
     }
 
-    public function testIterate()
+    public function testIterate(): void
     {
         $metadata = Metadata::from([
             'foo' => 'bar',

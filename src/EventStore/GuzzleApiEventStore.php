@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\EventStore;
 
 use CQRS\Domain\Message\EventMessageInterface;
@@ -19,48 +21,36 @@ class GuzzleApiEventStore implements EventStoreInterface
 {
     public const DEFAULT_LIMIT = 500;
 
-    /** @var Client */
-    private $guzzleClient;
+    private Client $guzzleClient;
 
-    /** @var SerializerInterface */
-    private $serializer;
+    private SerializerInterface $serializer;
 
-    /** @var int */
-    private $requestLimit;
+    private int $requestLimit;
 
     public function __construct(
         Client $guzzleClient,
         SerializerInterface $serializer,
-        $requestLimit = self::DEFAULT_LIMIT
+        int $requestLimit = self::DEFAULT_LIMIT
     ) {
         $this->guzzleClient = $guzzleClient;
         $this->serializer = $serializer;
         $this->requestLimit = $requestLimit;
     }
 
-    /**
-     * @param EventMessageInterface $event
-     */
-    public function store(EventMessageInterface $event)
+    public function store(EventMessageInterface $event): void
+    {
+        throw new Exception\BadMethodCallException('Method is not implemented');
+    }
+
+    public function read(int $offset = 0, int $limit = 10): array
     {
         throw new Exception\BadMethodCallException('Method is not implemented');
     }
 
     /**
-     * @param int|null $offset
-     * @param int $limit
-     * @return EventMessageInterface[]
+     * @return Generator<EventMessageInterface>
      */
-    public function read($offset = null, $limit = 10)
-    {
-        throw new Exception\BadMethodCallException('Method is not implemented');
-    }
-
-    /**
-     * @param null|UuidInterface $previousEventId
-     * @return Generator
-     */
-    public function iterate(UuidInterface $previousEventId = null)
+    public function iterate(UuidInterface $previousEventId = null): Generator
     {
         $id = $previousEventId ? $previousEventId->toString() : null;
 
@@ -90,13 +80,21 @@ class GuzzleApiEventStore implements EventStoreInterface
      * @param array $data
      * @return GenericDomainEventMessage|GenericEventMessage
      */
-    public function fromArray(array $data)
+    public function fromArray(array $data): GenericEventMessage
     {
-        $payload = $this->serializer->deserialize(json_encode($data['payload']), $data['payloadType']);
+        $payload = $this->serializer->deserialize(
+            json_encode($data['payload'], JSON_THROW_ON_ERROR, 512),
+            $data['payloadType']
+        );
+
         /** @var Metadata $metadata */
-        $metadata = $this->serializer->deserialize(json_encode($data['metadata']), Metadata::class);
+        $metadata = $this->serializer->deserialize(
+            json_encode($data['metadata'], JSON_THROW_ON_ERROR, 512),
+            Metadata::class
+        );
+
         $id = Uuid::fromString($data['id']);
-        $timestamp = DateTime::fromString("{$data['timestamp']}");
+        $timestamp = DateTime::fromString((string) $data['timestamp']);
 
         if (array_key_exists('aggregateType', $data)) {
             return new GenericDomainEventMessage(
@@ -113,12 +111,7 @@ class GuzzleApiEventStore implements EventStoreInterface
         return new GenericEventMessage($data['payload'], $data['metadata'], $id, $timestamp);
     }
 
-    /**
-     * @param string|null $previousEventId
-     * @param int $limit
-     * @return array
-     */
-    private function getFromApi($previousEventId, $limit)
+    private function getFromApi(?string $previousEventId, int $limit): array
     {
         $params = [
             'count' => $limit,
@@ -131,6 +124,6 @@ class GuzzleApiEventStore implements EventStoreInterface
             throw new Exception\ApiRequestException($e->getMessage(), $e->getCode(), $e);
         }
 
-        return json_decode($resp->getBody(), true);
+        return json_decode((string) $resp->getBody(), true, 512, JSON_THROW_ON_ERROR);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRSTest\Domain\Message;
 
 use CQRS\Domain\Message\GenericDomainEventMessage;
@@ -10,7 +12,7 @@ use Ramsey\Uuid\Uuid;
 
 class GenericDomainEventMessageTest extends TestCase
 {
-    public function testCreateFromDomainEvent()
+    public function testCreateFromDomainEvent(): void
     {
         $event = new SomePayload();
 
@@ -22,7 +24,7 @@ class GenericDomainEventMessageTest extends TestCase
         $this->assertSame($event, $message->getPayload());
     }
 
-    public function testReconstructUsingExistingData()
+    public function testReconstructUsingExistingData(): void
     {
         $id = Uuid::uuid4();
         $timestamp = DateTime::microsecondsNow();

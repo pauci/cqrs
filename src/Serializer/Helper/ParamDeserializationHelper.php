@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\Serializer\Helper;
 
 use Ramsey\Uuid\Uuid;
@@ -8,8 +10,6 @@ use ReflectionParameter;
 final class ParamDeserializationHelper
 {
     /**
-     * @param array $data
-     * @param ReflectionParameter $parameter
      * @return mixed
      */
     public function deserializeParam(array $data, ReflectionParameter $parameter)
@@ -25,8 +25,6 @@ final class ParamDeserializationHelper
     }
 
     /**
-     * @param array $data
-     * @param ReflectionParameter $parameter
      * @return mixed
      */
     private function getParamValue(array $data, ReflectionParameter $parameter)
@@ -48,11 +46,9 @@ final class ParamDeserializationHelper
     }
 
     /**
-     * @param array $data
-     * @param string $key
      * @return mixed
      */
-    private function getValue(array $data, $key)
+    private function getValue(array $data, string $key)
     {
         if (isset($data[$key])) {
             return $data[$key];
@@ -65,18 +61,17 @@ final class ParamDeserializationHelper
         return null;
     }
 
-    private function camelCaseToUnderscore($key)
+    private function camelCaseToUnderscore(string $key): string
     {
-        $string = preg_replace('/(?<=\\w)(?=[A-Z])/', "_$1", $key);
+        $string = preg_replace('/(?<=\\w)(?=[A-Z])/', '_$1', $key);
         return strtolower($string);
     }
 
     /**
      * @param mixed $value
-     * @param string $type
      * @return mixed
      */
-    private function deserializeValue($value, $type)
+    private function deserializeValue($value, string $type)
     {
         if (method_exists($type, 'jsonDeserialize')) {
             return $type::jsonDeserialize($value, $this);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\EventStore;
 
 use CQRS\Domain\Message\EventMessageInterface;
@@ -11,31 +13,25 @@ class MemoryEventStore implements EventStoreInterface
     /**
      * @var EventMessageInterface[]
      */
-    private $events;
+    private array $events;
 
-    /**
-     * @param EventMessageInterface $event
-     */
-    public function store(EventMessageInterface $event)
+    public function store(EventMessageInterface $event): void
     {
         $this->events[] = $event;
     }
 
     /**
-     * @param int|null $offset
-     * @param int $limit
-     * @return array
+     * @return EventMessageInterface[]
      */
-    public function read($offset = null, $limit = 10)
+    public function read(int $offset = 0, int $limit = 10): array
     {
-        return array_slice($this->events, (int) $offset, $limit);
+        return array_slice($this->events, $offset, $limit);
     }
 
     /**
-     * @param UuidInterface|null $previousEventId
-     * @return Generator
+     * @return Generator<EventMessageInterface>
      */
-    public function iterate(UuidInterface $previousEventId = null)
+    public function iterate(UuidInterface $previousEventId = null): Generator
     {
         $yield = !$previousEventId;
         foreach ($this->events as $event) {

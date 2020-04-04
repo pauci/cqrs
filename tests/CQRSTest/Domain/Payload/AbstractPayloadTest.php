@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace CQRSTest\Domain\Payload;
 
 use CQRS\Exception\RuntimeException;
@@ -6,10 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 class AbstractPayloadTest extends TestCase
 {
-    public function testCreateArrayMapsToProperties()
+    public function testCreateArrayMapsToProperties(): void
     {
         $payload = new TestableAbstractPayload([
-            'foo'          => 'bar',
+            'foo' => 'bar',
             'protectedFoo' => 'baz'
         ]);
 
@@ -17,26 +20,32 @@ class AbstractPayloadTest extends TestCase
         $this->assertEquals('baz', $payload->protectedFoo);
     }
 
-    public function testCreateThrowsExceptionWhenUnknownPropertySet()
+    public function testCreateThrowsExceptionWhenUnknownPropertySet(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Property "baz" is not a valid property on "CQRSTest\Domain\Payload\TestableAbstractPayload"');
+        $this->expectExceptionMessage(
+            'Property "baz" is not a valid property on "CQRSTest\Domain\Payload\TestableAbstractPayload"'
+        );
 
         new TestableAbstractPayload(['baz' => 'value']);
     }
 
-    public function testCreateThrowsExceptionWhenPrivatePropertySet()
+    public function testCreateThrowsExceptionWhenPrivatePropertySet(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Property "privateFoo" is not a valid property on "CQRSTest\Domain\Payload\TestableAbstractPayload"');
+        $this->expectExceptionMessage(
+            'Property "privateFoo" is not a valid property on "CQRSTest\Domain\Payload\TestableAbstractPayload"'
+        );
 
         new TestableAbstractPayload(['privateFoo' => 'value']);
     }
 
-    public function testAccessingUndefinedPropertyThrowsException()
+    public function testAccessingUndefinedPropertyThrowsException(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Property "baz" is not a valid property on "CQRSTest\Domain\Payload\TestableAbstractPayload"');
+        $this->expectExceptionMessage(
+            'Property "baz" is not a valid property on "CQRSTest\Domain\Payload\TestableAbstractPayload"'
+        );
 
         $message = new TestableAbstractPayload(['foo' => 'bar']);
         $message->baz;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\Domain\Model;
 
 use Countable;
@@ -18,36 +20,26 @@ class EventContainer implements Countable
     /**
      * @var GenericDomainEventMessage[]
      */
-    private $events = [];
+    private array $events = [];
 
-    /**
-     * @var string
-     */
-    private $aggregateType;
+    private string $aggregateType;
 
     /**
      * @var mixed
      */
     private $aggregateId;
 
-    /**
-     * @var int
-     */
-    private $lastSequenceNumber;
+    private ?int $lastSequenceNumber = null;
 
-    /**
-     * @var int
-     */
-    private $lastCommittedSequenceNumber;
+    private ?int $lastCommittedSequenceNumber = null;
 
     /**
      * Initialize an EventContainer for an aggregate with the given aggregateIdentifier. This identifier will be
      * attached to all incoming events.
      *
-     * @param string $aggregateType
      * @param mixed $aggregateId
      */
-    public function __construct($aggregateType, $aggregateId)
+    public function __construct(string $aggregateType, $aggregateId)
     {
         $this->aggregateType = $aggregateType;
         $this->aggregateId   = $aggregateId;
@@ -58,9 +50,8 @@ class EventContainer implements Countable
      *
      * @param mixed $payload
      * @param Metadata|array $metadata
-     * @return GenericDomainEventMessage
      */
-    public function addEvent($payload, $metadata = null)
+    public function addEvent($payload, $metadata = null): GenericDomainEventMessage
     {
         $domainEventMessage = new GenericDomainEventMessage(
             $this->aggregateType,
@@ -75,11 +66,9 @@ class EventContainer implements Countable
     }
 
     /**
-     * @param DomainEventMessageInterface $domainEventMessage
-     * @return DomainEventMessageInterface
      * @throws InvalidArgumentException
      */
-    public function addEventMessage(DomainEventMessageInterface $domainEventMessage)
+    public function addEventMessage(DomainEventMessageInterface $domainEventMessage): DomainEventMessageInterface
     {
         if ($domainEventMessage->getAggregateType() !== $this->aggregateType) {
             throw new InvalidArgumentException(sprintf(
@@ -109,7 +98,7 @@ class EventContainer implements Countable
     /**
      * @return GenericDomainEventMessage[]
      */
-    public function getEvents()
+    public function getEvents(): array
     {
         return $this->events;
     }
@@ -117,7 +106,7 @@ class EventContainer implements Countable
     /**
      * Clears the events in this container. The sequence number is not modified by this call.
      */
-    public function commit()
+    public function commit(): void
     {
         $this->lastCommittedSequenceNumber = $this->getLastSequenceNumber();
         $this->events = [];
@@ -125,10 +114,8 @@ class EventContainer implements Countable
 
     /**
      * Returns the number of events currently inside this container.
-     *
-     * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->events);
     }
@@ -136,10 +123,9 @@ class EventContainer implements Countable
     /**
      * Sets the first sequence number that should be assigned to an incoming event.
      *
-     * @param int $lastKnownSequenceNumber
      * @throws RuntimeException
      */
-    public function initializeSequenceNumber($lastKnownSequenceNumber)
+    public function initializeSequenceNumber(?int $lastKnownSequenceNumber): void
     {
         if (count($this) !== 0) {
             throw new RuntimeException('Cannot set first sequence number if events have already been added');
@@ -149,10 +135,8 @@ class EventContainer implements Countable
 
     /**
      * Returns the sequence number of the last committed event, or null if no events have been committed.
-     *
-     * @return int
      */
-    public function getLastSequenceNumber()
+    public function getLastSequenceNumber(): ?int
     {
         if (count($this->events) === 0) {
             return $this->lastCommittedSequenceNumber;
@@ -164,10 +148,7 @@ class EventContainer implements Countable
         return $this->lastSequenceNumber;
     }
 
-    /**
-     * @return int
-     */
-    private function newSequenceNumber()
+    private function newSequenceNumber(): int
     {
         $currentSequenceNumber = $this->getLastSequenceNumber();
         if ($currentSequenceNumber === null) {

@@ -1,8 +1,8 @@
 <?php
 
-namespace CQRSTest\EventStore;
+declare(strict_types=1);
 
-use JMS\Serializer\Annotation as JMS;
+namespace CQRSTest\EventStore;
 
 class SomeEvent
 {

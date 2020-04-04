@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace CQRSTest\Domain\Message;
 
 use CQRS\Domain\Message\GenericMessage;
@@ -8,7 +11,7 @@ use Ramsey\Uuid\Uuid;
 
 class GenericMessageTest extends TestCase
 {
-    public function testCreateFromPayload()
+    public function testCreateFromPayload(): void
     {
         $payload = new SomePayload();
         $message = new GenericMessage($payload);
@@ -21,7 +24,7 @@ class GenericMessageTest extends TestCase
         $this->assertEquals([], $message->getMetadata()->toArray());
     }
 
-    public function testReconstructUsingExistingData()
+    public function testReconstructUsingExistingData(): void
     {
         $metadata = Metadata::from(['foo' => 'bar']);
         $uuid = Uuid::uuid4();

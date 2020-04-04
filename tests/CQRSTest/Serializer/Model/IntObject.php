@@ -1,19 +1,20 @@
 <?php
 
-namespace CQRSTest\Serializer\Model;
+declare(strict_types=1);
 
+namespace CQRSTest\Serializer\Model;
 
 class IntObject
 {
-    private $id;
+    private int $value;
+
+    public static function fromInt(int $value): self
+    {
+        return new self($value);
+    }
 
     private function __construct(int $value)
     {
-        $this->id = $value;
-    }
-
-    public static function fromInt(int $value)
-    {
-        return new self($value);
+        $this->value = $value;
     }
 }

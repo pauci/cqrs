@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\Domain\Payload;
 
 use CQRS\Exception\RuntimeException;
@@ -20,7 +22,7 @@ abstract class AbstractDomainEvent extends AbstractEvent
      * @param mixed $aggregateId
      * @throws RuntimeException
      */
-    public function setAggregateId($aggregateId)
+    public function setAggregateId($aggregateId): void
     {
         if (null !== $this->aggregateId) {
             throw new RuntimeException('Aggregate ID has been already assigned to this event');

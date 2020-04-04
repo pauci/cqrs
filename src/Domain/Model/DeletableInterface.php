@@ -11,8 +11,6 @@ interface DeletableInterface
      * to remove this instance at an appropriate time.
      *
      * Repositories should not return any instances of Aggregates that return true on isDeleted().
-     *
-     * @return bool
      */
     public function isDeleted(): bool;
 }

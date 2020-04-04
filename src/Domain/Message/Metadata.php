@@ -6,7 +6,6 @@ namespace CQRS\Domain\Message;
 
 use ArrayAccess;
 use ArrayIterator;
-use ArrayObject;
 use Countable;
 use CQRS\Exception\RuntimeException;
 use IteratorAggregate;
@@ -16,105 +15,63 @@ use Traversable;
 
 class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializable, JsonSerializable
 {
-    /**
-     * @var self
-     */
-    private static $emptyInstance;
+    private array $data;
 
     /**
-     * @var array
-     */
-    private $values;
-
-    /**
-     * @return Metadata
-     */
-    public static function emptyInstance(): self
-    {
-        if (static::$emptyInstance === null) {
-            static::$emptyInstance = new static();
-        }
-        return static::$emptyInstance;
-    }
-
-    public static function resetEmptyInstance(): void
-    {
-        static::$emptyInstance = null;
-    }
-
-    /**
-     * @param array|self $metadata
-     * @return Metadata
+     * @param mixed[]|self|null $metadata
      */
     public static function from($metadata = null): self
     {
-        if ($metadata instanceof static) {
+        if ($metadata instanceof self) {
             return $metadata;
         }
-        if ($metadata === null || $metadata === []) {
-            return static::emptyInstance();
+        if ($metadata === null) {
+            return new static();
         }
         return new static($metadata);
     }
 
-    /**
-     * @param array $data
-     * @return Metadata
-     */
     public static function jsonDeserialize(array $data): self
     {
         return new static($data);
     }
 
-    /**
-     * @param array $values
-     */
-    private function __construct(array $values = [])
+    private function __construct(array $data = [])
     {
-        ksort($values);
-        $this->values = $values;
+        ksort($data);
+        $this->data = $data;
     }
 
-    /**
-     * @return ArrayObject
-     */
-    public function jsonSerialize(): ArrayObject
+    public function jsonSerialize(): object
     {
-        return new ArrayObject($this->toArray());
+        return (object) $this->data;
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
-        return $this->values;
+        return $this->data;
     }
 
-    /**
-     * @return Traversable
-     */
     public function getIterator(): Traversable
     {
-        return new ArrayIterator($this->values);
+        return new ArrayIterator($this->data);
     }
 
     /**
      * @param string $offset
-     * @return bool
      */
     public function offsetExists($offset): bool
     {
-        return isset($this->values[$offset]);
+        return isset($this->data[$offset]);
     }
 
     /**
      * @param string $offset
-     * @return mixed
+     * @return mixed|null
      */
     public function offsetGet($offset)
     {
-        return $this->values[$offset] ?? null;
+        return $this->data[$offset] ?? null;
     }
 
     /**
@@ -136,20 +93,14 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
         throw new RuntimeException('Event metadata is immutable.');
     }
 
-    /**
-     * @return int
-     */
     public function count(): int
     {
-        return count($this->values);
+        return count($this->data);
     }
 
-    /**
-     * @return string
-     */
     public function serialize(): string
     {
-        return serialize($this->values);
+        return serialize($this->data);
     }
 
     /**
@@ -157,21 +108,18 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      */
     public function unserialize($serialized): void
     {
-        $this->values = unserialize($serialized);
+        $this->data = unserialize($serialized, false);
     }
 
     /**
      * Returns a Metadata instance containing values of this, combined with the given additionalMetadata.
      * If any entries have identical keys, the values from the additionalMetadata will take precedence.
-     *
-     * @param Metadata $additionalMetadata
-     * @return self
      */
     public function mergedWith(Metadata $additionalMetadata): self
     {
-        $values = array_merge($this->values, $additionalMetadata->values);
+        $values = array_merge($this->data, $additionalMetadata->data);
 
-        if ($values === $this->values) {
+        if ($values === $this->data) {
             return $this;
         }
 
@@ -184,14 +132,13 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
      *
      * This Metadata instance is not influenced by this operation.
      *
-     * @param array $keys
-     * @return self
+     * @param string[] $keys
      */
     public function withoutKeys(array $keys): self
     {
-        $values = array_diff_key($this->values, array_flip($keys));
+        $values = array_diff_key($this->data, array_flip($keys));
 
-        if ($values === $this->values) {
+        if ($values === $this->data) {
             return $this;
         }
 

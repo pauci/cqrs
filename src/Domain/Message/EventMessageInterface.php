@@ -8,8 +8,5 @@ use Pauci\DateTime\DateTimeInterface;
 
 interface EventMessageInterface extends MessageInterface
 {
-    /**
-     * @return DateTimeInterface
-     */
     public function getTimestamp(): DateTimeInterface;
 }

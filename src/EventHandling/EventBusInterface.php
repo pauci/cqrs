@@ -10,14 +10,7 @@ use Generator;
 
 interface EventBusInterface
 {
-    /**
-     * @param EventMessageInterface $event
-     */
     public function publish(EventMessageInterface $event): void;
 
-    /**
-     * @param EventStreamInterface $eventStream
-     * @return Generator
-     */
-    public function publishFromStream(EventStreamInterface $eventStream);
+    public function publishFromStream(EventStreamInterface $eventStream): Generator;
 }

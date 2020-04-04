@@ -1,24 +1,25 @@
 <?php
 
-namespace CQRSTest\Serializer\Model;
+declare(strict_types=1);
 
+namespace CQRSTest\Serializer\Model;
 
 class StringObject
 {
-    private $id;
+    private string $value;
 
-    private function __construct(string $value = null)
+    public static function unknown(): self
     {
-        $this->id = $value;
+        return new self();
     }
 
-    public static function fromString(string $value)
+    public static function fromString(string $value): self
     {
         return new self($value);
     }
 
-    public static function unknown()
+    private function __construct(string $value = null)
     {
-        return new self();
+        $this->value = $value;
     }
 }
