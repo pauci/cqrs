@@ -74,9 +74,9 @@ class JsonSerializerTest extends TestCase
         );
 
         self::assertEquals(
-            StringObject::unknown(),
+            StringObject::fromString('foo'),
             $jsonSerializer->deserialize(
-                'null',
+                '"foo"',
                 StringObject::class
             )
         );

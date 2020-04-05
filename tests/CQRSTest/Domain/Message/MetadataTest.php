@@ -33,7 +33,7 @@ class MetadataTest extends TestCase
             'last' => null,
         ]);
 
-        $json = json_encode($metadata);
+        $json = json_encode($metadata, JSON_THROW_ON_ERROR, 512);
         $this->assertEquals('{"first":"value","foo":"bar","last":null}', $json);
     }
 
@@ -120,34 +120,6 @@ class MetadataTest extends TestCase
             'foo' => 'bar',
             'bar' => 'baz',
         ]);
-    }
-
-    public function testSerialize(): void
-    {
-        $metadata = Metadata::from([
-            'foo' => 'bar',
-            'bar' => 'baz',
-        ]);
-
-        $serialized = serialize($metadata);
-
-        $this->assertEquals(
-            'C:28:"CQRS\Domain\Message\Metadata":46:{a:2:{s:3:"bar";s:3:"baz";s:3:"foo";s:3:"bar";}}',
-            $serialized
-        );
-    }
-
-    public function testUnserialize(): void
-    {
-        /** @var Metadata $metadata */
-        $metadata = unserialize(
-            'C:28:"CQRS\Domain\Message\Metadata":46:{a:2:{s:3:"bar";s:3:"baz";s:3:"foo";s:3:"bar";}}'
-        );
-
-        $this->assertEquals([
-            'foo' => 'bar',
-            'bar' => 'baz',
-        ], $metadata->toArray());
     }
 
     public function testIterate(): void

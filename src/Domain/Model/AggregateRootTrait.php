@@ -6,7 +6,6 @@ namespace CQRS\Domain\Model;
 
 use CQRS\Domain\Message\DomainEventMessageInterface;
 use CQRS\Domain\Message\Metadata;
-use CQRS\Domain\Payload\AbstractDomainEvent;
 use CQRS\Exception\RuntimeException;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -32,10 +31,6 @@ trait AggregateRootTrait
      */
     protected function registerEvent(object $payload, $metadata = null): DomainEventMessageInterface
     {
-        if ($payload instanceof AbstractDomainEvent && null === $payload->aggregateId) {
-            $payload->setAggregateId($this->getId());
-        }
-
         return $this->getEventContainer()
             ->addEvent($payload, $metadata);
     }
@@ -94,6 +89,7 @@ trait AggregateRootTrait
                 ));
             }
 
+            // @todo Na zaciatku nastavit sequence number na 0 = nula eventov...
             $this->eventContainer = new EventContainer($aggregateType, $aggregateId);
             $this->eventContainer->initializeSequenceNumber($this->lastEventSequenceNumber);
         }

@@ -27,14 +27,4 @@ class AbstractAggregateRootTest extends TestCase
         $aggregateRoot->commitEvents();
         $this->assertEmpty($aggregateRoot->getUncommittedEvents());
     }
-
-    public function testRegisterEventInjectsAggregateId(): void
-    {
-        $domainEvent = new SomeDomainEvent();
-
-        $aggregateRoot = new AggregateRootUnderTest(4);
-        $aggregateRoot->raise($domainEvent);
-
-        $this->assertEquals(4, $domainEvent->aggregateId);
-    }
 }

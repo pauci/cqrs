@@ -10,10 +10,9 @@ use Countable;
 use CQRS\Exception\RuntimeException;
 use IteratorAggregate;
 use JsonSerializable;
-use Serializable;
 use Traversable;
 
-class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializable, JsonSerializable
+class Metadata implements IteratorAggregate, ArrayAccess, Countable, JsonSerializable
 {
     private array $data;
 
@@ -96,19 +95,6 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, Serializabl
     public function count(): int
     {
         return count($this->data);
-    }
-
-    public function serialize(): string
-    {
-        return serialize($this->data);
-    }
-
-    /**
-     * @param string $serialized
-     */
-    public function unserialize($serialized): void
-    {
-        $this->data = unserialize($serialized, false);
     }
 
     /**

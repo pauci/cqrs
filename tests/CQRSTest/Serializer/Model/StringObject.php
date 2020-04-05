@@ -8,17 +8,12 @@ class StringObject
 {
     private string $value;
 
-    public static function unknown(): self
-    {
-        return new self();
-    }
-
     public static function fromString(string $value): self
     {
         return new self($value);
     }
 
-    private function __construct(string $value = null)
+    private function __construct(string $value)
     {
         $this->value = $value;
     }

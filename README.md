@@ -34,13 +34,13 @@ class User extends CQRS\Domain\Model\AbstractAggregateRoot
     }
 }
 
-class ChangeUserName extends CQRS\Domain\Payload\AbstractCommand
+class ChangeUserName
 {
     public $id;
     public $name;
 }
 
-class UserNameChanged extends CQRS\Domain\Payload\AbstractEvent
+class UserNameChanged
 {
     public $id;
     public $name;
