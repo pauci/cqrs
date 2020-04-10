@@ -51,7 +51,7 @@ class TableEventStoreTest extends TestCase
         $this->assertEquals(1, count($data));
         $this->assertEquals($event->getId(), $data[0]['event_id']);
         $this->assertEquals($event->getTimestamp()->format('Y-m-d H:i:s'), $data[0]['event_date']);
-        $this->assertEquals($event->getTimestamp()->format('u'), $data[0]['event_date_u']);
+        $this->assertEquals((int) $event->getTimestamp()->format('u'), $data[0]['event_date_u']);
         $this->assertEquals('SomeAggregate', $data[0]['aggregate_type']);
         $this->assertEquals(123, $data[0]['aggregate_id']);
         $this->assertEquals(4, $data[0]['sequence_number']);
@@ -76,7 +76,7 @@ class TableEventStoreTest extends TestCase
             ]);
         }
 
-        $events = $this->tableEventStore->read();
+        $events = $this->tableEventStore->read(-1);
 
         $this->assertCount(3, $events);
         $this->assertEquals([11, 12, 13], array_keys($events));

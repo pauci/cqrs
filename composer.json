@@ -41,7 +41,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "CQRSTest\\": "tests/CQRSTest/"
+            "CQRSTest\\": "tests/"
         }
     },
     "scripts": {

@@ -155,7 +155,7 @@ class TableEventStore implements EventStoreInterface
             return new GenericDomainEventMessage(
                 $data['aggregate_type'],
                 $data['aggregate_id'],
-                $data['sequence_number'],
+                (int) $data['sequence_number'],
                 $payload,
                 $metadata,
                 $id,
