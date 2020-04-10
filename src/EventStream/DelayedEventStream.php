@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\EventStream;
 
 use CQRS\Domain\Message\EventMessageInterface;
@@ -9,38 +11,22 @@ use Ramsey\Uuid\UuidInterface;
 
 class DelayedEventStream implements IteratorAggregate, EventStreamInterface
 {
-    /**
-     * @var EventStreamInterface
-     */
-    private $eventStream;
+    private EventStreamInterface $eventStream;
 
-    /**
-     * @var int
-     */
-    private $delaySeconds;
+    private int $delaySeconds;
 
-    /**
-     * @param EventStreamInterface $eventStream
-     * @param int $delaySeconds
-     */
-    public function __construct(EventStreamInterface $eventStream, $delaySeconds)
+    public function __construct(EventStreamInterface $eventStream, int $delaySeconds)
     {
         $this->eventStream = $eventStream;
         $this->delaySeconds = $delaySeconds;
     }
 
-    /**
-     * @return UuidInterface|null
-     */
-    public function getLastEventId()
+    public function getLastEventId(): ?UuidInterface
     {
         return $this->eventStream->getLastEventId();
     }
 
-    /**
-     * @return Generator
-     */
-    public function getIterator()
+    public function getIterator(): Generator
     {
         foreach ($this->eventStream as $offset => $event) {
             $this->delay($event);
@@ -48,10 +34,7 @@ class DelayedEventStream implements IteratorAggregate, EventStreamInterface
         }
     }
 
-    /**
-     * @param EventMessageInterface $event
-     */
-    private function delay(EventMessageInterface $event)
+    private function delay(EventMessageInterface $event): void
     {
         $eventTime = $event->getTimestamp()->getTimestamp();
         $dispatchTime = $eventTime + $this->delaySeconds;

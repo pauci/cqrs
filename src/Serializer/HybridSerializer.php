@@ -1,20 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\Serializer;
 
 use CQRS\Serializer\Event\FailedToDeserializeEvent;
 
 final class HybridSerializer implements SerializerInterface
 {
-    /**
-     * @var JsonSerializer
-     */
-    private $jsonSerializer;
+    private JsonSerializer $jsonSerializer;
 
     /**
-     * @var array
+     * @var string[]
      */
-    private $typeMap;
+    private array $typeMap;
 
     public function __construct(JsonSerializer $jsonSerializer, array $typeMap)
     {
@@ -24,19 +23,16 @@ final class HybridSerializer implements SerializerInterface
 
     /**
      * @param mixed $data
-     * @return string
      */
-    public function serialize($data)
+    public function serialize($data): string
     {
         return $this->jsonSerializer->serialize($data);
     }
 
     /**
-     * @param string $data
-     * @param string $type
      * @return mixed
      */
-    public function deserialize($data, $type)
+    public function deserialize(string $data, string $type)
     {
         $type = $this->translateType($type);
 
@@ -53,7 +49,7 @@ final class HybridSerializer implements SerializerInterface
         }
     }
 
-    private function translateType($type)
+    private function translateType(string $type): string
     {
         return array_key_exists($type, $this->typeMap) ? $this->typeMap[$type] : $type;
     }

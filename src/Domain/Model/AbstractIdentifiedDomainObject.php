@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\Domain\Model;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -13,14 +15,10 @@ abstract class AbstractIdentifiedDomainObject
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @var int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @return int
-     */
-    protected function getId()
+    protected function getId(): int
     {
         return $this->id;
     }

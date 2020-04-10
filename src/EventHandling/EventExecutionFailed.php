@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\EventHandling;
 
 use CQRS\Domain\Message\EventMessageInterface;
@@ -8,46 +10,27 @@ use JsonSerializable;
 
 class EventExecutionFailed implements JsonSerializable
 {
-    /**
-     * @var EventMessageInterface
-     */
-    protected $event;
+    protected EventMessageInterface $event;
 
-    /**
-     * @var Exception
-     */
-    protected $exception;
+    protected Exception $exception;
 
-    /**
-     * @param EventMessageInterface $event
-     * @param Exception $exception
-     */
     public function __construct(EventMessageInterface $event, Exception $exception)
     {
         $this->event = $event;
         $this->exception = $exception;
     }
 
-    /**
-     * @return EventMessageInterface
-     */
-    public function getEvent()
+    public function getEvent(): EventMessageInterface
     {
         return $this->event;
     }
 
-    /**
-     * @return Exception
-     */
-    public function getException()
+    public function getException(): Exception
     {
         return $this->exception;
     }
 
-    /**
-     * @return array
-     */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'event' => $this->event,

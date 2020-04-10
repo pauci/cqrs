@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace CQRS\Domain\Message;
@@ -8,25 +9,16 @@ use Ramsey\Uuid\UuidInterface;
 
 class GenericMessage implements MessageInterface
 {
-    /**
-     * @var UuidInterface
-     */
-    private $id;
+    private UuidInterface $id;
 
-    /**
-     * @var string
-     */
-    private $payloadType;
+    private string $payloadType;
 
     /**
      * @var mixed
      */
     private $payload;
 
-    /**
-     * @var Metadata
-     */
-    private $metadata;
+    private Metadata $metadata;
 
     /**
      * @param mixed $payload
@@ -41,9 +33,6 @@ class GenericMessage implements MessageInterface
         $this->metadata = Metadata::from($metadata);
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         return [
@@ -54,17 +43,11 @@ class GenericMessage implements MessageInterface
         ];
     }
 
-    /**
-     * @return UuidInterface
-     */
     public function getId(): UuidInterface
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getPayloadType(): string
     {
         return $this->payloadType;
@@ -78,18 +61,11 @@ class GenericMessage implements MessageInterface
         return $this->payload;
     }
 
-    /**
-     * @return Metadata
-     */
     public function getMetadata(): Metadata
     {
         return $this->metadata;
     }
 
-    /**
-     * @param Metadata $metadata
-     * @return MessageInterface
-     */
     public function addMetadata(Metadata $metadata): MessageInterface
     {
         $metadata = $this->metadata->mergedWith($metadata);

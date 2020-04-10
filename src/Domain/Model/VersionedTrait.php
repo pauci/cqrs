@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace CQRS\Domain\Model;
@@ -10,14 +11,10 @@ trait VersionedTrait
     /**
      * @ORM\Version
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     * @var int
      */
-    private $version;
+    private int $version;
 
-    /**
-     * @return int
-     */
-    public function getVersion()
+    public function getVersion(): int
     {
         return $this->version;
     }

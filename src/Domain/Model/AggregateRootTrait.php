@@ -1,26 +1,22 @@
 <?php
+
 declare(strict_types=1);
 
 namespace CQRS\Domain\Model;
 
 use CQRS\Domain\Message\DomainEventMessageInterface;
 use CQRS\Domain\Message\Metadata;
-use CQRS\Domain\Payload\AbstractDomainEvent;
 use CQRS\Exception\RuntimeException;
 use Doctrine\ORM\Mapping as ORM;
 
 trait AggregateRootTrait
 {
-    /**
-     * @var EventContainer
-     */
-    private $eventContainer;
+    private ?EventContainer $eventContainer = null;
 
     /**
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     * @var int
      */
-    private $lastEventSequenceNumber;
+    private ?int $lastEventSequenceNumber = null;
 
     /**
      * @return mixed
@@ -31,25 +27,15 @@ trait AggregateRootTrait
      * Registers an event to be published when the aggregate is saved, containing the given payload and optional
      * metadata.
      *
-     * @param object $payload
      * @param Metadata|array $metadata
-     * @return DomainEventMessageInterface
      */
-    protected function registerEvent($payload, $metadata = null)
+    protected function registerEvent(object $payload, $metadata = null): DomainEventMessageInterface
     {
-        if ($payload instanceof AbstractDomainEvent && null === $payload->aggregateId) {
-            $payload->setAggregateId($this->getId());
-        }
-
         return $this->getEventContainer()
             ->addEvent($payload, $metadata);
     }
 
-    /**
-     * @param DomainEventMessageInterface $eventMessage
-     * @return DomainEventMessageInterface
-     */
-    protected function registerEventMessage(DomainEventMessageInterface $eventMessage)
+    protected function registerEventMessage(DomainEventMessageInterface $eventMessage): DomainEventMessageInterface
     {
         return $this->getEventContainer()
             ->addEventMessage($eventMessage);
@@ -60,7 +46,7 @@ trait AggregateRootTrait
      *
      * @return DomainEventMessageInterface[]
      */
-    public function getUncommittedEvents()
+    public function getUncommittedEvents(): array
     {
         if ($this->eventContainer === null) {
             return [];
@@ -70,8 +56,6 @@ trait AggregateRootTrait
 
     /**
      * {@inheritdoc}
-     *
-     * @return int
      */
     public function getUncommittedEventsCount(): int
     {
@@ -90,7 +74,6 @@ trait AggregateRootTrait
     }
 
     /**
-     * @return EventContainer
      * @throws RuntimeException
      */
     private function getEventContainer(): EventContainer
@@ -106,6 +89,7 @@ trait AggregateRootTrait
                 ));
             }
 
+            // @todo Na zaciatku nastavit sequence number na 0 = nula eventov...
             $this->eventContainer = new EventContainer($aggregateType, $aggregateId);
             $this->eventContainer->initializeSequenceNumber($this->lastEventSequenceNumber);
         }

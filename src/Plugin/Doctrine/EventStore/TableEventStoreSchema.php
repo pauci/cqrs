@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\Plugin\Doctrine\EventStore;
 
 use Doctrine\DBAL\Schema\Schema;
@@ -7,27 +9,18 @@ use Doctrine\DBAL\Schema\Table;
 
 class TableEventStoreSchema
 {
-    /**
-     * @var string
-     */
-    private $table;
+    private string $table;
 
-    /**
-     * @param string $table
-     */
-    public function __construct($table = 'cqrs_event')
+    public function __construct(string $table = 'cqrs_event')
     {
         $this->table = $table;
     }
 
-    /**
-     * @param bool $eventDateIndex
-     * @param bool $aggregateIndex
-     * @param bool $uniqueAggregateIndex
-     * @return Table
-     */
-    public function getTableSchema($eventDateIndex = false, $aggregateIndex = false, $uniqueAggregateIndex = false)
-    {
+    public function getTableSchema(
+        bool $eventDateIndex = false,
+        bool $aggregateIndex = false,
+        bool $uniqueAggregateIndex = false
+    ): Table {
         $schema = new Schema();
         $table = $schema->createTable($this->table);
         $table->addColumn('id', 'integer', ['autoincrement' => true, 'unsigned' => true]);

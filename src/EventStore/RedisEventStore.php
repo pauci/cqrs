@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\EventStore;
 
 use CQRS\Domain\Message\EventMessageInterface;
@@ -11,33 +13,15 @@ use Traversable;
 
 class RedisEventStore implements EventStoreInterface
 {
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
+    private SerializerInterface $serializer;
 
-    /**
-     * @var Redis
-     */
-    private $redis;
+    private Redis $redis;
 
-    /**
-     * @var string
-     */
-    private $key = 'cqrs_event';
+    private string $key = 'cqrs_event';
 
-    /**
-     * @var int
-     */
-    private $size;
+    private int $size;
 
-    /**
-     * @param SerializerInterface $serializer
-     * @param Redis $redis
-     * @param string|null $key
-     * @param int|null $size
-     */
-    public function __construct(SerializerInterface $serializer, Redis $redis, $key = null, $size = null)
+    public function __construct(SerializerInterface $serializer, Redis $redis, string $key = null, int $size = null)
     {
         $this->serializer = $serializer;
         $this->redis = $redis;
@@ -51,10 +35,7 @@ class RedisEventStore implements EventStoreInterface
         }
     }
 
-    /**
-     * @param EventMessageInterface $event
-     */
-    public function store(EventMessageInterface $event)
+    public function store(EventMessageInterface $event): void
     {
         $record = RedisEventRecord::fromMessage($event, $this->serializer);
         $this->redis->lPush($this->key, (string) $record);
@@ -65,16 +46,10 @@ class RedisEventStore implements EventStoreInterface
     }
 
     /**
-     * @param int|null $offset
-     * @param int $limit
      * @return EventMessageInterface[]
      */
-    public function read($offset = null, $limit = 10)
+    public function read(int $offset = 0, int $limit = 10): array
     {
-        if (null == $offset) {
-            $offset = -10;
-        }
-
         $records = $this->redis->lRange($this->key, $offset, $limit);
 
         return array_map(function ($data) {
@@ -83,13 +58,9 @@ class RedisEventStore implements EventStoreInterface
         }, $records);
     }
 
-    /**
-     * @param int $timeout
-     * @return RedisEventRecord|null
-     */
-    public function pop($timeout = 0)
+    public function pop(int $timeout = 0): ?RedisEventRecord
     {
-        $data = $this->redis->brPop($this->key, (int) $timeout);
+        $data = $this->redis->brPop($this->key, $timeout);
 
         if (!array_key_exists(1, $data)) {
             return null;
@@ -98,11 +69,7 @@ class RedisEventStore implements EventStoreInterface
         return new RedisEventRecord($data[1]);
     }
 
-    /**
-     * @param null|UuidInterface $previousEventId
-     * @return Traversable
-     */
-    public function iterate(UuidInterface $previousEventId = null)
+    public function iterate(UuidInterface $previousEventId = null): Traversable
     {
         throw new Exception\BadMethodCallException('Method is not implemented');
     }

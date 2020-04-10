@@ -1,15 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\HandlerResolver;
 
 class EventHandlerResolver
 {
     /**
      * @param mixed $handler
-     * @param string $eventType
-     * @return callable
      */
-    public function __invoke($handler, $eventType)
+    public function __invoke($handler, string $eventType): callable
     {
         if (is_object($handler) && !is_callable($handler)) {
             $method = $this->resolveHandlingMethod($eventType);
@@ -23,11 +23,8 @@ class EventHandlerResolver
 
     /**
      * Derives event handling method name from event type
-     *
-     * @param string $eventType
-     * @return string
      */
-    protected function resolveHandlingMethod($eventType)
+    protected function resolveHandlingMethod(string $eventType): string
     {
         // Remove namespace
         $pos = strrpos($eventType, '\\');

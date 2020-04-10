@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\EventHandling;
 
 use CQRS\Domain\Message\DomainEventMessageInterface;
@@ -9,30 +11,20 @@ use Psr\Container\ContainerInterface;
 
 class SynchronousEventBus extends AbstractEventBus
 {
-    /**
-     * @var ContainerInterface
-     */
-    private $locator;
+    private ContainerInterface $locator;
 
-    /**
-     * @param ContainerInterface $locator
-     */
     public function __construct(ContainerInterface $locator)
     {
         $this->locator = $locator;
     }
 
-    /**
-     * @return ContainerInterface
-     */
     public function getLocator(): ContainerInterface
     {
         return $this->locator;
     }
 
     /**
-     * @param EventMessageInterface $event
-     * @throws Exception\RuntimeException
+     * @throws \Exception
      */
     public function publish(EventMessageInterface $event): void
     {
@@ -55,11 +47,9 @@ class SynchronousEventBus extends AbstractEventBus
     }
 
     /**
-     * @param Callable $handler
-     * @param EventMessageInterface $event
      * @throws \Exception
      */
-    private function invokeEventHandler(callable $handler, EventMessageInterface $event)
+    private function invokeEventHandler(callable $handler, EventMessageInterface $event): void
     {
         try {
             if ($event instanceof DomainEventMessageInterface) {

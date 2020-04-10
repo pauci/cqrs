@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\EventStore;
 
 use CQRS\Domain\Message\DomainEventMessageInterface;
@@ -13,17 +15,9 @@ use Ramsey\Uuid\Uuid;
 
 class RedisEventRecord
 {
-    /**
-     * @var string
-     */
-    private $data;
+    private string $data;
 
-    /**
-     * @param EventMessageInterface $event
-     * @param SerializerInterface $serializer
-     * @return RedisEventRecord
-     */
-    public static function fromMessage(EventMessageInterface $event, SerializerInterface $serializer)
+    public static function fromMessage(EventMessageInterface $event, SerializerInterface $serializer): RedisEventRecord
     {
         $data = [
             'id' => $event->getId(),
@@ -41,38 +35,28 @@ class RedisEventRecord
             ];
         }
 
-        return new self(json_encode($data));
+        return new self(json_encode($data, JSON_THROW_ON_ERROR, 512));
     }
 
-    /**
-     * @param string $data
-     */
-    public function __construct($data)
+    public function __construct(string $data)
     {
         $this->data = $data;
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->data;
     }
 
-    /**
-     * @return array
-     */
-    public function toArray()
+    public function toArray(): array
     {
-        return json_decode($this->data, true);
+        return json_decode($this->data, true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**
-     * @param SerializerInterface $serializer
      * @return GenericDomainEventMessage|GenericEventMessage
      */
-    public function toMessage(SerializerInterface $serializer)
+    public function toMessage(SerializerInterface $serializer): GenericEventMessage
     {
         $data = $this->toArray();
 

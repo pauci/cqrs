@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\EventStream;
 
 use CQRS\Domain\Message\EventMessageInterface;
@@ -10,38 +12,22 @@ use Ramsey\Uuid\UuidInterface;
 
 class EventStoreEventStream implements IteratorAggregate, EventStreamInterface
 {
-    /**
-     * @var EventStoreInterface
-     */
-    private $eventStore;
+    private EventStoreInterface $eventStore;
 
-    /**
-     * @var UuidInterface|null
-     */
-    private $lastEventId;
+    private ?UuidInterface $lastEventId;
 
-    /**
-     * @param EventStoreInterface $eventStore
-     * @param UuidInterface|null $previousEventId
-     */
     public function __construct(EventStoreInterface $eventStore, UuidInterface $previousEventId = null)
     {
         $this->eventStore = $eventStore;
         $this->lastEventId = $previousEventId;
     }
 
-    /**
-     * @return UuidInterface|null
-     */
-    public function getLastEventId()
+    public function getLastEventId(): ?UuidInterface
     {
         return $this->lastEventId;
     }
 
-    /**
-     * @return Generator
-     */
-    public function getIterator()
+    public function getIterator(): Generator
     {
         $eventIterator = $this->eventStore->iterate($this->lastEventId);
 

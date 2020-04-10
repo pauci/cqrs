@@ -14,37 +14,89 @@ The core library has no dependencies on other libraries. Plugins have dependenci
 
 Install with [composer](http://getcomposer.org):
 
-    composer require pauci/cqrs dev-master
+```shell script
+composer require pauci/cqrs
+```
 
 
 ## Usage
 
 ```php
 
-class User extends CQRS\Domain\Model\AbstractAggregateRoot
+final class User extends \CQRS\Domain\Model\AbstractEventSourcedAggregateRoot
 {
-    private $name;
+    private int $id;
+    private string $name;
 
-    public function changeName($name)
+    public static function create(int $id, string $name): self
     {
-        $oldName = $this->name;
-        $this->name = $name;
+        $user = new self($id);
+        $user->apply(new UserCreated($name));
+        return $user;
+    }
 
-        $this->registerEvent(new UserNameChanged(['name' => $name, 'oldName' => $name]));
+    private function __construct(int $id)
+    {
+        $this->id = $id;
+    }
+
+    protected function applyUserCreated(UserCreated $event): void
+    {
+        $this->name = $event->getName();
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function changeName(string $name): void
+    {
+        if ($name !== $this->name) {
+            $this->apply(new UserNameChanged($name));
+        }
+    }
+
+    protected function applyUserNameChanged(UserNameChanged $event): void
+    {
+        $this->name = $event->getName();
     }
 }
 
-class ChangeUserName extends CQRS\Domain\Payload\AbstractCommand
+final class UserCreated
 {
-    public $id;
-    public $name;
+    private string $name;
+
+    public function __construct(string $name)
+    {
+        $this->name = $name;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
 }
 
-class UserNameChanged extends CQRS\Domain\Payload\AbstractEvent
+final class ChangeUserName
 {
-    public $id;
-    public $name;
-    public $oldName;
+    public int $id;
+    public string $name;
+}
+
+final class UserNameChanged
+{
+    private string $name;
+
+    public function __construct(string $name)
+    {
+        $this->name = $name;
+    }
+    
+    public function getName(): string
+    {
+        return $this->name;
+    }
 }
 
 class UserService
@@ -56,7 +108,7 @@ class UserService
         $this->repository = $repository;
     }
 
-    public function changeUserName(ChangeUserName $command)
+    public function changeUserName(ChangeUserName $command): void
     {
         $user = $this->repository->find($command->id);
         $user->changeName($command->name);
@@ -65,9 +117,14 @@ class UserService
 
 class EchoEventListener
 {
-    public function onUserNameChanged(UserNameChanged $event)
-    {
-        echo "Name of user #{$event->id} changed from {$event->oldName} to {$event->name}.\n";
+    public function onUserNameChanged(
+        UserNameChanged $event,
+        \CQRS\Domain\Message\Metadata $metadata,
+        \DateTimeInterface $timestamp,
+        int $sequenceNumber,
+        int $userId
+    ): void {
+        echo "Name of user #{$userId} changed to {$event->getName()}.\n";
     }
 }
 

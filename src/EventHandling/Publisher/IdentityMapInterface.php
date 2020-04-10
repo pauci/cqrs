@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\EventHandling\Publisher;
 
 use CQRS\Domain\Model\AggregateRootInterface;
@@ -9,17 +11,11 @@ interface IdentityMapInterface
     /**
      * @return AggregateRootInterface[]
      */
-    public function getAll();
+    public function getAll(): array;
 
-    /**
-     * @param AggregateRootInterface $aggregateRoot
-     */
-    public function add(AggregateRootInterface $aggregateRoot);
+    public function add(AggregateRootInterface $aggregateRoot): void;
 
-    /**
-     * @param AggregateRootInterface $aggregateRoot
-     */
-    public function remove(AggregateRootInterface $aggregateRoot);
+    public function remove(AggregateRootInterface $aggregateRoot): void;
 
-    public function clear();
+    public function clear(): void;
 }

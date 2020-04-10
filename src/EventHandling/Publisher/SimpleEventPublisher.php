@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\EventHandling\Publisher;
 
 use CQRS\Domain\Message\EventMessageInterface;
@@ -9,30 +11,15 @@ use CQRS\EventStore\EventStoreInterface;
 
 class SimpleEventPublisher implements EventPublisherInterface
 {
-    /**
-     * @var EventBusInterface
-     */
-    private $eventBus;
+    private EventBusInterface $eventBus;
+
+    private EventQueueInterface $queue;
+
+    private EventStoreInterface $eventStore;
+
+    private Metadata $additionalMetadata;
 
     /**
-     * @var EventQueueInterface
-     */
-    private $queue;
-
-    /**
-     * @var EventStoreInterface
-     */
-    private $eventStore;
-
-    /**
-     * @var Metadata
-     */
-    private $additionalMetadata;
-
-    /**
-     * @param EventBusInterface $eventBus
-     * @param EventQueueInterface $queue
-     * @param EventStoreInterface $eventStore
      * @param Metadata|array $additionalMetadata
      */
     public function __construct(
@@ -50,10 +37,7 @@ class SimpleEventPublisher implements EventPublisherInterface
         }
     }
 
-    /**
-     * @return EventBusInterface
-     */
-    public function getEventBus()
+    public function getEventBus(): EventBusInterface
     {
         return $this->eventBus;
     }
@@ -61,20 +45,17 @@ class SimpleEventPublisher implements EventPublisherInterface
     /**
      * @param Metadata|array $additionalMetadata
      */
-    public function setAdditionalMetadata($additionalMetadata)
+    public function setAdditionalMetadata($additionalMetadata): void
     {
         $this->additionalMetadata = Metadata::from($additionalMetadata);
     }
 
-    /**
-     * @return Metadata
-     */
-    public function getAdditionalMetadata()
+    public function getAdditionalMetadata(): Metadata
     {
         return $this->additionalMetadata;
     }
 
-    public function publishEvents()
+    public function publishEvents(): void
     {
         $this->dispatchEvents($this->dequeueEvents());
     }
@@ -82,7 +63,7 @@ class SimpleEventPublisher implements EventPublisherInterface
     /**
      * @return EventMessageInterface[]
      */
-    protected function dequeueEvents()
+    protected function dequeueEvents(): array
     {
         if (!$this->queue) {
             return [];
@@ -100,7 +81,7 @@ class SimpleEventPublisher implements EventPublisherInterface
     /**
      * @param EventMessageInterface[] $events
      */
-    protected function dispatchEvents(array $events)
+    protected function dispatchEvents(array $events): void
     {
         foreach ($events as $event) {
             if ($this->eventStore) {

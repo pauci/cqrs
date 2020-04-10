@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\Plugin\Doctrine\EventHandling\Publisher;
 
 use CQRS\Domain\Message\DomainEventMessageInterface;
@@ -12,11 +14,8 @@ class DoctrineEventPublisher extends SimpleEventPublisher implements EventSubscr
     /**
      * @var DomainEventMessageInterface[]
      */
-    private $events = [];
+    private array $events = [];
 
-    /**
-     * @return array
-     */
     public function getSubscribedEvents(): array
     {
         return [
@@ -25,18 +24,18 @@ class DoctrineEventPublisher extends SimpleEventPublisher implements EventSubscr
         ];
     }
 
-    public function publishEvents()
+    public function publishEvents(): void
     {
         $this->events = array_merge($this->events, $this->dequeueEvents());
         // Actual event dispatching is postponed until doctrine's postFlush event.
     }
 
-    public function preFlush()
+    public function preFlush(): void
     {
         $this->publishEvents();
     }
 
-    public function postFlush()
+    public function postFlush(): void
     {
         if (empty($this->events)) {
             return;

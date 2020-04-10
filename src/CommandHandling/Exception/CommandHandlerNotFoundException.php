@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CQRS\CommandHandling\Exception;
 
 use Psr\Container\NotFoundExceptionInterface;

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace CQRS\CommandHandling;
@@ -25,36 +26,16 @@ use Psr\Container\ContainerInterface;
  */
 class SequentialCommandBus implements CommandBusInterface
 {
-    /**
-     * @var ContainerInterface
-     */
-    private $locator;
+    private ContainerInterface $locator;
 
-    /**
-     * @var TransactionManagerInterface
-     */
-    private $transactionManager;
+    private TransactionManagerInterface $transactionManager;
 
-    /**
-     * @var EventPublisherInterface
-     */
-    private $eventPublisher;
+    private EventPublisherInterface $eventPublisher;
 
-    /**
-     * @var array
-     */
-    private $commandStack = [];
+    private array $commandStack = [];
 
-    /**
-     * @var bool
-     */
-    private $executing = false;
+    private bool $executing = false;
 
-    /**
-     * @param ContainerInterface $locator
-     * @param TransactionManagerInterface $transactionManager
-     * @param EventPublisherInterface $eventPublisher
-     */
     public function __construct(
         ContainerInterface $locator,
         TransactionManagerInterface $transactionManager,
@@ -65,25 +46,16 @@ class SequentialCommandBus implements CommandBusInterface
         $this->eventPublisher = $eventPublisher;
     }
 
-    /**
-     * @return ContainerInterface
-     */
     public function getLocator(): ContainerInterface
     {
         return $this->locator;
     }
 
-    /**
-     * @return TransactionManagerInterface
-     */
     public function getTransactionManager(): TransactionManagerInterface
     {
         return $this->transactionManager;
     }
 
-    /**
-     * @return EventPublisherInterface
-     */
     public function getEventPublisher(): EventPublisherInterface
     {
         return $this->eventPublisher;
@@ -95,10 +67,9 @@ class SequentialCommandBus implements CommandBusInterface
      * If an exception occurs in any command it will be put on a stack
      * of exceptions that is thrown only when all the commands are processed.
      *
-     * @param mixed $command
      * @throws Exception
      */
-    public function dispatch($command): void
+    public function dispatch(object $command): void
     {
         $this->commandStack[] = $command;
 
@@ -120,10 +91,9 @@ class SequentialCommandBus implements CommandBusInterface
     }
 
     /**
-     * @param mixed $command
      * @throws Exception
      */
-    protected function invokeHandler($command): void
+    protected function invokeHandler(object $command): void
     {
         try {
             $this->executing = true;
