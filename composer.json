@@ -1,20 +1,35 @@
 {
     "name": "pauci/cqrs",
     "description": "CQRS library",
-    "type": "library",
     "license": "MIT",
+    "keywords": [
+        "pauci",
+        "cqrs",
+        "ddd",
+        "event-sourcing"
+    ],
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.5.x-dev"
+        }
+    },
     "require": {
         "php": "^7.4",
-        "ramsey/uuid": "^4.0",
+        "ext-json": "*",
+        "pauci/datetime": "^0.3.5",
         "psr/container": "^1.0",
-        "pauci/datetime": "^0.3.3",
-        "ext-json": "^7.4"
+        "ramsey/uuid": "^4.0"
     },
     "require-dev": {
-        "doctrine/orm": "^2.5",
+        "ext-PDO": "*",
+        "doctrine/dbal": "^2.10",
+        "doctrine/orm": "^2.7",
+        "guzzlehttp/guzzle": "^6.2",
         "phpunit/phpunit": "^9.1",
-        "squizlabs/php_codesniffer": "^3.5",
-        "guzzlehttp/guzzle": "^6.2"
+        "squizlabs/php_codesniffer": "^3.5"
     },
     "suggest": {
         "ramsey/uuid-doctrine": "Provides the ability to use ramsey/uuid as a Doctrine field type"
@@ -29,18 +44,14 @@
             "CQRSTest\\": "tests/CQRSTest/"
         }
     },
-    "extras": {
-        "branch-alias": {
-            "dev-master": "0.1.x-dev"
-        }
-    },
     "scripts": {
         "check": [
-            "@cs",
+            "@cs-check",
             "@test"
         ],
-        "cs": "phpcs",
+        "cs-check": "phpcs",
         "cs-fix": "phpcbf",
-        "test": "phpunit"
+        "test": "phpunit --colors=always",
+        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
     }
 }
