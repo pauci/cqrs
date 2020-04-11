@@ -14,35 +14,56 @@ use CQRS\Exception\OutOfBoundsException;
 use CQRS\Serializer\SerializerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Types\Types;
 use Generator;
 use Pauci\DateTime\DateTime;
-use PDO;
+use Ramsey\Uuid\Doctrine\UuidType;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
-class TableEventStore implements EventStoreInterface
+class DbalEventStore implements EventStoreInterface
 {
-    private SerializerInterface $serializer;
+    private Config $config;
 
     private Connection $connection;
 
-    private ?string $table = 'cqrs_event';
+    private SerializerInterface $serializer;
 
-    public function __construct(SerializerInterface $serializer, Connection $connection, string $table = null)
+    private ?string $dateTimeFormat = null;
+
+    public function __construct(Config $config, Connection $connection, SerializerInterface $serializer)
     {
-        $this->serializer = $serializer;
+        $this->config = $config;
         $this->connection = $connection;
-
-        if (null !== $table) {
-            $this->table = $table;
-        }
+        $this->serializer = $serializer;
     }
 
     public function store(EventMessageInterface $event): void
     {
-        $data = $this->toArray($event);
-        $this->connection->insert($this->table, $data);
+        $data = [
+            'event_id' => $event->getId(),
+            'event_date' => $event->getTimestamp()->format($this->getDateTimeFormat()),
+            'aggregate_type' => null,
+            'aggregate_id' => null,
+            'sequence_number' => null,
+            'payload_type' => $event->getPayloadType(),
+            'payload' => $this->serializer->serialize($event->getPayload()),
+            'metadata' => $this->serializer->serialize($event->getMetadata()),
+        ];
+
+        if ($event instanceof DomainEventMessageInterface) {
+            $data['aggregate_type'] = $event->getAggregateType();
+            $data['aggregate_id'] = $event->getAggregateId();
+            $data['sequence_number'] = $event->getSequenceNumber();
+        }
+
+        $types = [
+            'event_id' => UuidType::NAME,
+            'sequence_number' => Types::INTEGER,
+        ];
+
+        $this->connection->insert($this->config->getTableName(), $data, $types);
     }
 
     /**.
@@ -55,7 +76,7 @@ class TableEventStore implements EventStoreInterface
             $offset = (((int) (($this->getLastRowId() - 1) / $limit)) * $limit) + 1;
         }
 
-        $sql = 'SELECT * FROM ' . $this->table
+        $sql = 'SELECT * FROM ' . $this->config->getTableName()
             . ' WHERE id >= ?'
             . ' ORDER BY id ASC'
             . ' LIMIT ?';
@@ -67,7 +88,7 @@ class TableEventStore implements EventStoreInterface
         $stmt->bindValue(2, $limit, Types::INTEGER);
         $stmt->execute();
 
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($row = $stmt->fetch(FetchMode::ASSOCIATIVE)) {
             $events[$row['id']] = $this->fromArray($row);
         }
 
@@ -96,7 +117,7 @@ class TableEventStore implements EventStoreInterface
 
             $count = 0;
             $lastId = false;
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            while ($row = $stmt->fetch(FetchMode::ASSOCIATIVE)) {
                 $count++;
                 $lastId = $row['id'];
                 yield $this->fromArray($row);
@@ -112,32 +133,38 @@ class TableEventStore implements EventStoreInterface
 
     private function toArray(EventMessageInterface $event): array
     {
-        $dateTimeFormat = $this->connection->getDatabasePlatform()->getDateTimeFormatString();
-        $timestamp = $event->getTimestamp();
-
         $data = [
-            'event_id' => (string) $event->getId(),
-            'event_date' => $timestamp->format($dateTimeFormat),
-            'event_date_u' => $timestamp->format('u'),
+            'event_id' => $event->getId()->toString(),
+            'event_date' => $event->getTimestamp()->format($this->getDateTimeFormat()),
+            'aggregate_type' => null,
+            'aggregate_id' => null,
+            'sequence_number' => null,
             'payload_type' => $event->getPayloadType(),
             'payload' => $this->serializer->serialize($event->getPayload()),
             'metadata' => $this->serializer->serialize($event->getMetadata()),
         ];
 
         if ($event instanceof DomainEventMessageInterface) {
-            $aggregateId = $event->getAggregateId();
-            if (!is_int($aggregateId)) {
-                $aggregateId = (string) $aggregateId;
-            }
-
-            $data = array_merge($data, [
-                'aggregate_type' => $event->getAggregateType(),
-                'aggregate_id' => $aggregateId,
-                'sequence_number' => $event->getSequenceNumber(),
-            ]);
+            $data['aggregate_type'] = $event->getAggregateType();
+            $data['aggregate_id'] = (string) $event->getAggregateId();
+            $data['sequence_number'] = $event->getSequenceNumber();
         }
 
         return $data;
+    }
+
+    private function getDateTimeFormat(): string
+    {
+        if (null === $this->dateTimeFormat) {
+            $this->dateTimeFormat = $this->connection->getDatabasePlatform()
+                ->getDateTimeFormatString();
+
+            if (false === strpos($this->dateTimeFormat, 's.')) {
+                $this->dateTimeFormat = str_replace('s', 's.u', $this->dateTimeFormat);
+            }
+        }
+
+        return $this->dateTimeFormat;
     }
 
     /**
@@ -149,9 +176,9 @@ class TableEventStore implements EventStoreInterface
         /** @var Metadata $metadata */
         $metadata = $this->serializer->deserialize($data['metadata'], Metadata::class);
         $id = Uuid::fromString($data['event_id']);
-        $timestamp = DateTime::fromString("{$data['event_date']}.{$data['event_date_u']}");
+        $timestamp = DateTime::fromString($data['event_date']);
 
-        if (array_key_exists('aggregate_type', $data)) {
+        if (isset($data['aggregate_type'], $data['aggregate_id'], $data['sequence_number'])) {
             return new GenericDomainEventMessage(
                 $data['aggregate_type'],
                 $data['aggregate_id'],
@@ -168,7 +195,7 @@ class TableEventStore implements EventStoreInterface
 
     private function getLastRowId(): int
     {
-        $sql = 'SELECT MAX(id) FROM ' . $this->table;
+        $sql = 'SELECT MAX(id) FROM ' . $this->config->getTableName();
 
         $stmt = $this->connection->prepare($sql);
         $stmt->execute();
@@ -184,7 +211,7 @@ class TableEventStore implements EventStoreInterface
             return $lastRowId;
         }
 
-        $sql = "SELECT id FROM {$this->table} WHERE event_id = ? LIMIT 1";
+        $sql = 'SELECT id FROM ' . $this->config->getTableName() . ' WHERE event_id = ? LIMIT 1';
 
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue(1, (string) $eventId, Types::STRING);
