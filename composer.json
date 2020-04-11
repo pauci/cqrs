@@ -24,11 +24,11 @@
         "ramsey/uuid": "^4.0"
     },
     "require-dev": {
-        "ext-PDO": "*",
         "doctrine/dbal": "^2.10",
         "doctrine/orm": "^2.7",
         "guzzlehttp/guzzle": "^6.2",
         "phpunit/phpunit": "^9.1",
+        "ramsey/uuid-doctrine": "^1.6",
         "squizlabs/php_codesniffer": "^3.5"
     },
     "suggest": {

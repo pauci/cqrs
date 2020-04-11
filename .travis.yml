@@ -1,5 +1,5 @@
 language: php
-
+os: linux
 cache:
   directories:
     - $HOME/.composer/cache
@@ -8,8 +8,12 @@ env:
   global:
     - COMPOSER_ARGS="--no-interaction"
     - COVERAGE_DEPS="satooshi/php-coveralls"
+    - REDIS=true
 
-matrix:
+services:
+  - redis
+
+jobs:
   fast_finish: true
   include:
     - php: 7.4
@@ -22,11 +26,16 @@ matrix:
         - CS_CHECK=true
         - TEST_COVERAGE=true
 
-services:
-  - redis
+    - php: nightly
+      env:
+        - COMPOSER_ARGS="$COMPOSER_ARGS --ignore-platform-reqs"
+        - REDIS=false
+
+  allow_failures:
+    - php: nighlty
 
 before_install:
-  - phpenv config-add ./travis/php.ini
+  - if [[ $REDIS == 'true' ]]; then phpenv config-add ./travis/php.ini ; fi
   - if [[ $TEST_COVERAGE != 'true' ]]; then phpenv config-rm xdebug.ini || return 0 ; fi
 
 install:
