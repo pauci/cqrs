@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CQRS\Plugin\Doctrine\EventHandling\Publisher;
 
-use CQRS\Domain\Message\DomainEventMessageInterface;
+use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\EventHandling\Publisher\SimpleEventPublisher;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
@@ -12,7 +12,7 @@ use Doctrine\ORM\Events;
 class DoctrineEventPublisher extends SimpleEventPublisher implements EventSubscriber
 {
     /**
-     * @var DomainEventMessageInterface[]
+     * @var EventMessageInterface[]
      */
     private array $events = [];
 

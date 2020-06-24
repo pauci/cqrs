@@ -14,7 +14,7 @@ use CQRS\Exception\OutOfBoundsException;
 use CQRS\Serializer\SerializerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Types\Types;
+use Doctrine\DBAL\ParameterType;
 use Generator;
 use Pauci\DateTime\DateTime;
 use PDO;
@@ -27,7 +27,7 @@ class TableEventStore implements EventStoreInterface
 
     private Connection $connection;
 
-    private ?string $table = 'cqrs_event';
+    private string $table = 'cqrs_event';
 
     public function __construct(SerializerInterface $serializer, Connection $connection, string $table = null)
     {
@@ -63,8 +63,8 @@ class TableEventStore implements EventStoreInterface
         $events = [];
 
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue(1, $offset, Types::INTEGER);
-        $stmt->bindValue(2, $limit, Types::INTEGER);
+        $stmt->bindValue(1, $offset, ParameterType::INTEGER);
+        $stmt->bindValue(2, $limit, ParameterType::INTEGER);
         $stmt->execute();
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -90,8 +90,8 @@ class TableEventStore implements EventStoreInterface
         $stmt = $this->connection->prepare($sql);
 
         while (true) {
-            $stmt->bindValue(1, $id, Types::INTEGER);
-            $stmt->bindValue(2, 100, Types::INTEGER);
+            $stmt->bindValue(1, $id, ParameterType::INTEGER);
+            $stmt->bindValue(2, 100, ParameterType::INTEGER);
             $stmt->execute();
 
             $count = 0;
@@ -187,7 +187,7 @@ class TableEventStore implements EventStoreInterface
         $sql = "SELECT id FROM {$this->table} WHERE event_id = ? LIMIT 1";
 
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue(1, (string) $eventId, Types::STRING);
+        $stmt->bindValue(1, (string) $eventId, ParameterType::STRING);
         $stmt->execute();
 
         $rowId = $stmt->fetchColumn();

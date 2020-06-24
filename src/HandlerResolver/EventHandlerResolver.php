@@ -13,8 +13,9 @@ class EventHandlerResolver
     {
         if (is_object($handler) && !is_callable($handler)) {
             $method = $this->resolveHandlingMethod($eventType);
-            if (method_exists($handler, $method)) {
-                return [$handler, $method];
+            $callback = [$handler, $method];
+            if (is_callable($callback)) {
+                return $callback;
             }
         }
 

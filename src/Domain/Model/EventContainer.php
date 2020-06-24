@@ -18,7 +18,7 @@ use CQRS\Exception\RuntimeException;
 class EventContainer implements Countable
 {
     /**
-     * @var GenericDomainEventMessage[]
+     * @var DomainEventMessageInterface[]
      */
     private array $events = [];
 
@@ -96,7 +96,7 @@ class EventContainer implements Countable
     }
 
     /**
-     * @return GenericDomainEventMessage[]
+     * @return DomainEventMessageInterface[]
      */
     public function getEvents(): array
     {

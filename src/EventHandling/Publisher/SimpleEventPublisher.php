@@ -13,14 +13,14 @@ class SimpleEventPublisher implements EventPublisherInterface
 {
     private EventBusInterface $eventBus;
 
-    private EventQueueInterface $queue;
+    private ?EventQueueInterface $queue;
 
-    private EventStoreInterface $eventStore;
+    private ?EventStoreInterface $eventStore;
 
-    private Metadata $additionalMetadata;
+    private ?Metadata $additionalMetadata = null;
 
     /**
-     * @param Metadata|array $additionalMetadata
+     * @param Metadata|array|null $additionalMetadata
      */
     public function __construct(
         EventBusInterface $eventBus,
@@ -50,7 +50,7 @@ class SimpleEventPublisher implements EventPublisherInterface
         $this->additionalMetadata = Metadata::from($additionalMetadata);
     }
 
-    public function getAdditionalMetadata(): Metadata
+    public function getAdditionalMetadata(): ?Metadata
     {
         return $this->additionalMetadata;
     }

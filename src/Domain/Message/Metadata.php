@@ -17,7 +17,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, JsonSeriali
     private array $data;
 
     /**
-     * @param mixed[]|self|null $metadata
+     * @param self|array|null $metadata
      */
     public static function from($metadata = null): self
     {
@@ -35,7 +35,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, JsonSeriali
         return new static($data);
     }
 
-    private function __construct(array $data = [])
+    final private function __construct(array $data = [])
     {
         ksort($data);
         $this->data = $data;

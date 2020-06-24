@@ -11,7 +11,7 @@ class EventHandlerLocator implements ContainerInterface
     protected array $handlers = [];
 
     /**
-     * @var callable
+     * @var callable|null
      */
     protected $resolver;
 
