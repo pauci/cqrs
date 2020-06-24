@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace CQRS\HandlerResolver;
 
+use Closure;
 use Psr\Container\ContainerInterface;
 
 class ContainerHandlerResolver
 {
     protected ContainerInterface $container;
 
-    /**
-     * @var callable
-     */
-    protected $nextResolver;
+    protected ?Closure $nextResolver;
 
-    public function __construct(ContainerInterface $container, callable $nextResolver = null)
+    public function __construct(ContainerInterface $container, Closure $nextResolver = null)
     {
         $this->container = $container;
         $this->nextResolver = $nextResolver;
@@ -33,7 +31,7 @@ class ContainerHandlerResolver
         }
 
         if ($this->nextResolver) {
-            $handler = call_user_func($this->nextResolver, $handler, $messageType);
+            $handler = ($this->nextResolver)($handler, $messageType);
         }
 
         return $handler;

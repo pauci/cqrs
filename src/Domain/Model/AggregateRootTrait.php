@@ -59,7 +59,7 @@ trait AggregateRootTrait
      */
     public function getUncommittedEventsCount(): int
     {
-        return count($this->eventContainer);
+        return $this->eventContainer ? count($this->eventContainer) : 0;
     }
 
     /**

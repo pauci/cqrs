@@ -63,7 +63,7 @@ final class ParamDeserializationHelper
 
     private function camelCaseToUnderscore(string $key): string
     {
-        $string = preg_replace('/(?<=\\w)(?=[A-Z])/', '_$1', $key);
+        $string = preg_replace('/(?<=\\w)(?=[A-Z])/', '_$1', $key) ?? $key;
         return strtolower($string);
     }
 
