@@ -17,7 +17,7 @@ class CommandHandlerLocator implements ContainerInterface
 
     /**
      * @param array $handlers
-     * @param callable $resolver
+     * @param callable|null $resolver
      */
     public function __construct(array $handlers = [], callable $resolver = null)
     {
