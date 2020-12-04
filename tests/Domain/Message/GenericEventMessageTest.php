@@ -18,8 +18,8 @@ class GenericEventMessageTest extends TestCase
         $event = new SomePayload();
         $eventMessage = new GenericEventMessage($event);
 
-        $this->assertSame($event, $eventMessage->getPayload());
-        $this->assertInstanceOf(DateTimeImmutable::class, $eventMessage->getTimestamp());
+        self::assertSame($event, $eventMessage->getPayload());
+        self::assertInstanceOf(DateTimeImmutable::class, $eventMessage->getTimestamp());
     }
 
     public function testReconstructUsingExistingData(): void
@@ -30,8 +30,8 @@ class GenericEventMessageTest extends TestCase
 
         $eventMessage = new GenericEventMessage(new SomePayload(), $metadata, $id, $timestamp);
 
-        $this->assertSame($timestamp, $eventMessage->getTimestamp());
-        $this->assertSame($id, $eventMessage->getId());
-        $this->assertSame($metadata, $eventMessage->getMetadata());
+        self::assertSame($timestamp, $eventMessage->getTimestamp());
+        self::assertSame($id, $eventMessage->getId());
+        self::assertSame($metadata, $eventMessage->getMetadata());
     }
 }

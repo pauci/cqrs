@@ -26,7 +26,7 @@ class FilteringEventStoreTest extends TestCase
 
         $events = $eventStore->read();
 
-        $this->assertContains($validEvent, $events);
-        $this->assertNotContains($invalidEvent, $events);
+        self::assertContains($validEvent, $events);
+        self::assertNotContains($invalidEvent, $events);
     }
 }

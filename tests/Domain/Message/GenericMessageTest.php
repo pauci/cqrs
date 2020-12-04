@@ -16,12 +16,12 @@ class GenericMessageTest extends TestCase
         $payload = new SomePayload();
         $message = new GenericMessage($payload);
 
-        $this->assertSame($payload, $message->getPayload());
-        $this->assertEquals(SomePayload::class, $message->getPayloadType());
+        self::assertSame($payload, $message->getPayload());
+        self::assertEquals(SomePayload::class, $message->getPayloadType());
 
-        $this->assertInstanceOf(Uuid::class, $message->getId());
-        $this->assertEquals(4, $message->getId()->getVersion());
-        $this->assertEquals([], $message->getMetadata()->toArray());
+        self::assertInstanceOf(Uuid::class, $message->getId());
+        self::assertEquals(4, $message->getId()->getVersion());
+        self::assertEquals([], $message->getMetadata()->toArray());
     }
 
     public function testReconstructUsingExistingData(): void
@@ -31,7 +31,7 @@ class GenericMessageTest extends TestCase
 
         $message = new GenericMessage(new SomePayload(), $metadata, $uuid);
 
-        $this->assertSame($uuid, $message->getId());
-        $this->assertSame($metadata, $message->getMetadata());
+        self::assertSame($uuid, $message->getId());
+        self::assertSame($metadata, $message->getMetadata());
     }
 }

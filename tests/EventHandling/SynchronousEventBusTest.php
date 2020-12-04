@@ -35,7 +35,7 @@ class SynchronousEventBusTest extends TestCase
     {
         $this->eventBus->publish(new GenericEventMessage(new SynchronousEvent()));
 
-        $this->assertEquals(1, $this->handler->executed);
+        self::assertEquals(1, $this->handler->executed);
     }
 
     public function testItRaisesEventExecutionFailedOnFailure(): void
@@ -48,9 +48,9 @@ class SynchronousEventBusTest extends TestCase
 
         $failureEvent = $this->handler->failureEvent;
 
-        $this->assertInstanceOf(EventExecutionFailed::class, $failureEvent);
-        $this->assertInstanceOf(SomeException::class, $failureEvent->getException());
-        $this->assertSame($failureCausingEvent, $failureEvent->getEvent()->getPayload());
+        self::assertInstanceOf(EventExecutionFailed::class, $failureEvent);
+        self::assertInstanceOf(SomeException::class, $failureEvent->getException());
+        self::assertSame($failureCausingEvent, $failureEvent->getEvent()->getPayload());
     }
 
     public function testItIgnoresErrorWhenHandlingEventExecutionFailedEvent(): void
@@ -66,7 +66,7 @@ class SynchronousEventBusTest extends TestCase
 
         $this->eventBus->publish(new GenericEventMessage($failureEvent));
 
-        $this->assertTrue(true);
+        self::assertTrue(true);
     }
 }
 

@@ -18,13 +18,13 @@ class AbstractAggregateRootTest extends TestCase
 
         $eventMessages = $aggregateRoot->getUncommittedEvents();
 
-        $this->assertCount(1, $eventMessages);
-        $this->assertInstanceOf(GenericDomainEventMessage::class, $eventMessages[0]);
-        $this->assertEquals(AggregateRootUnderTest::class, $eventMessages[0]->getAggregateType());
-        $this->assertEquals(4, $eventMessages[0]->getAggregateId());
-        $this->assertSame($event, $eventMessages[0]->getPayload());
+        self::assertCount(1, $eventMessages);
+        self::assertInstanceOf(GenericDomainEventMessage::class, $eventMessages[0]);
+        self::assertEquals(AggregateRootUnderTest::class, $eventMessages[0]->getAggregateType());
+        self::assertEquals(4, $eventMessages[0]->getAggregateId());
+        self::assertSame($event, $eventMessages[0]->getPayload());
 
         $aggregateRoot->commitEvents();
-        $this->assertEmpty($aggregateRoot->getUncommittedEvents());
+        self::assertEmpty($aggregateRoot->getUncommittedEvents());
     }
 }

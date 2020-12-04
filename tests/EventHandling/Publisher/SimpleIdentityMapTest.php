@@ -22,14 +22,14 @@ class SimpleIdentityMapTest extends TestCase
         $identityMap->add($ar2);
         $identityMap->add($ar2); // Add same object twice
 
-        $this->assertSame([$ar1, $ar2], $identityMap->getAll());
+        self::assertSame([$ar1, $ar2], $identityMap->getAll());
 
         $identityMap->remove($ar1);
 
-        $this->assertSame([$ar2], $identityMap->getAll());
+        self::assertSame([$ar2], $identityMap->getAll());
 
         $identityMap->clear();
 
-        $this->assertSame([], $identityMap->getAll());
+        self::assertSame([], $identityMap->getAll());
     }
 }

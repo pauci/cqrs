@@ -18,10 +18,10 @@ class GenericDomainEventMessageTest extends TestCase
 
         $message = new GenericDomainEventMessage('SomeAggregate', 1234, 5, $event);
 
-        $this->assertEquals('SomeAggregate', $message->getAggregateType());
-        $this->assertEquals(1234, $message->getAggregateId());
-        $this->assertEquals(5, $message->getSequenceNumber());
-        $this->assertSame($event, $message->getPayload());
+        self::assertEquals('SomeAggregate', $message->getAggregateType());
+        self::assertEquals(1234, $message->getAggregateId());
+        self::assertEquals(5, $message->getSequenceNumber());
+        self::assertSame($event, $message->getPayload());
     }
 
     public function testReconstructUsingExistingData(): void
@@ -40,8 +40,8 @@ class GenericDomainEventMessageTest extends TestCase
             $timestamp
         );
 
-        $this->assertSame($metadata, $message->getMetadata());
-        $this->assertSame($id, $message->getId());
-        $this->assertSame($timestamp, $message->getTimestamp());
+        self::assertSame($metadata, $message->getMetadata());
+        self::assertSame($id, $message->getId());
+        self::assertSame($timestamp, $message->getTimestamp());
     }
 }

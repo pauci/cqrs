@@ -18,7 +18,7 @@ class EventHandlerLocatorTest extends TestCase
         $locator->add('TestEvent', 'handler4');
         $locator->add('AnotherEvent', static function() {});
 
-        $this->assertSame([
+        self::assertSame([
             'handler3',
             'handler1',
             'handler4',
@@ -30,6 +30,6 @@ class EventHandlerLocatorTest extends TestCase
     {
         $locator = new EventHandlerLocator();
 
-        $this->assertEmpty($locator->get('TestEvent'));
+        self::assertEmpty($locator->get('TestEvent'));
     }
 }

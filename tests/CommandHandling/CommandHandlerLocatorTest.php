@@ -17,7 +17,7 @@ class CommandHandlerLocatorTest extends TestCase
         $locator = new CommandHandlerLocator();
         $locator->set('Command', $handler);
 
-        $this->assertSame($handler, $locator->get('Command'));
+        self::assertSame($handler, $locator->get('Command'));
     }
 
     public function testItThrowsExceptionWhenNoHandlerIsRegisteredForCommand(): void
