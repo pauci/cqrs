@@ -23,7 +23,7 @@ class TableEventStoreTest extends TestCase
     public function setUp(): void
     {
         if (!extension_loaded('pdo_sqlite')) {
-            $this->markTestSkipped('The pdo_sqlite extension is not available.');
+            self::markTestSkipped('The pdo_sqlite extension is not available.');
         }
 
         $schema = new TableEventStoreSchema();
