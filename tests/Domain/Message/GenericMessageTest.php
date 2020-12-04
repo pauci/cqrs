@@ -19,8 +19,6 @@ class GenericMessageTest extends TestCase
         self::assertSame($payload, $message->getPayload());
         self::assertEquals(SomePayload::class, $message->getPayloadType());
 
-        self::assertInstanceOf(Uuid::class, $message->getId());
-        self::assertEquals(4, $message->getId()->getVersion());
         self::assertEquals([], $message->getMetadata()->toArray());
     }
 

@@ -27,7 +27,7 @@ class GenericMessage implements MessageInterface
      */
     public function __construct($payload, $metadata = null, UuidInterface $id = null)
     {
-        $this->id = $id ?: Uuid::uuid4();
+        $this->id = $id ?? Uuid::uuid4();
         $this->payloadType = get_class($payload);
         $this->payload = $payload;
         $this->metadata = Metadata::from($metadata);
