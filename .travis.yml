@@ -21,6 +21,8 @@ matrix:
         - DEPS=latest
         - CS_CHECK=true
         - TEST_COVERAGE=true
+    - php: 8.0
+        - DEPS=latest
 
 services:
   - redis
