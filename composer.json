@@ -18,7 +18,7 @@
         }
     },
     "require": {
-        "php": "^7.4",
+        "php": "^7.4 | ^8.0",
         "ext-json": "*",
         "pauci/datetime": "^0.3.5",
         "psr/container": "^1.0",
@@ -54,8 +54,8 @@
         ],
         "cs-check": "phpcs",
         "cs-fix": "phpcbf",
-        "stan": "phpstan analyse --no-progress --ansi",
-        "test": "phpunit --colors=always",
-        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
+        "stan": "phpstan analyse --no-progress",
+        "test": "phpunit",
+        "test-coverage": "phpunit --coverage-clover clover.xml"
     }
 }
