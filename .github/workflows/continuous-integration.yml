@@ -79,6 +79,13 @@ jobs:
       matrix:
         php-versions: ['7.4', '8.0']
 
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -88,6 +95,7 @@ jobs:
         with:
           php-version: "${{ matrix.php-versions }}"
           coverage: xdebug
+          extensions: redis
 
       - name: Get composer cache directory
         id: composer-cache

@@ -26,6 +26,7 @@
     },
     "require-dev": {
         "ext-PDO": "*",
+        "ext-redis": "*",
         "doctrine/dbal": "^2.12",
         "doctrine/orm": "^2.8",
         "guzzlehttp/guzzle": "^7.2",
