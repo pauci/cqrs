@@ -140,9 +140,9 @@ $commandBus->dispatch($command);
 [badge-source]: https://img.shields.io/badge/source-pauci/cqrs-blue.svg?style=flat-square
 [badge-php]: https://img.shields.io/packagist/php-v/pauci/cqrs?style=flat-square
 [badge-release]: https://img.shields.io/packagist/v/pauci/cqrs.svg?style=flat-square&label=release
-[badge-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
 [badge-build]: https://img.shields.io/github/workflow/status/pauci/cqrs/Continuous%20Integration?style=flat-square
-[badge-coverage]: https://img.shields.io/codecov/c/github/pauci/cqrs?style=flat-square&token=KmPSlqBuuG
+[badge-coverage]: https://img.shields.io/codecov/c/github/pauci/cqrs?style=flat-square&token=ZC45TP7HQX
+[badge-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
 [badge-downloads]: https://img.shields.io/packagist/dt/pauci/cqrs.svg?style=flat-square
 
 [source]: https://github.com/pauci/cqrs
