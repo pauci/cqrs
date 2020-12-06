@@ -18,7 +18,7 @@ class MetadataTest extends TestCase
             'last' => null,
         ]);
 
-        $this->assertSame([
+        self::assertSame([
             'first' => 'value',
             'foo' => 'bar',
             'last' => null,
@@ -34,7 +34,7 @@ class MetadataTest extends TestCase
         ]);
 
         $json = json_encode($metadata, JSON_THROW_ON_ERROR, 512);
-        $this->assertEquals('{"first":"value","foo":"bar","last":null}', $json);
+        self::assertEquals('{"first":"value","foo":"bar","last":null}', $json);
     }
 
     public function testJsonDeserialize(): void
@@ -45,7 +45,7 @@ class MetadataTest extends TestCase
             'last' => null,
         ]);
 
-        $this->assertEquals([
+        self::assertEquals([
             'foo' => 'bar',
             'first' => 'value',
             'last' => null,
@@ -60,18 +60,18 @@ class MetadataTest extends TestCase
             'last' => null,
         ]);
 
-        $this->assertCount(3, $metadata);
+        self::assertCount(3, $metadata);
     }
 
     public function testArrayAccess(): void
     {
         $metadata = Metadata::from(['foo' => 'bar']);
 
-        $this->assertTrue(isset($metadata['foo']));
-        $this->assertEquals('bar', $metadata['foo']);
+        self::assertTrue(isset($metadata['foo']));
+        self::assertEquals('bar', $metadata['foo']);
 
-        $this->assertFalse(isset($metadata['baz']));
-        $this->assertNull($metadata['baz']);
+        self::assertFalse(isset($metadata['baz']));
+        self::assertNull($metadata['baz']);
     }
 
     public function testArraySetForImmutability(): void
@@ -97,11 +97,11 @@ class MetadataTest extends TestCase
         $metadata = Metadata::from(['foo' => 'bar']);
 
         $mergedMetadata = $metadata->mergedWith(Metadata::from(['foo' => 'baz']));
-        $this->assertNotSame($metadata, $mergedMetadata);
-        $this->assertEquals($mergedMetadata->toArray(), ['foo' => 'baz']);
+        self::assertNotSame($metadata, $mergedMetadata);
+        self::assertEquals($mergedMetadata->toArray(), ['foo' => 'baz']);
 
-        $this->assertSame($metadata, $metadata->mergedWith(Metadata::from(['foo' => 'bar'])));
-        $this->assertEquals($metadata->toArray(), ['foo' => 'bar']);
+        self::assertSame($metadata, $metadata->mergedWith(Metadata::from(['foo' => 'bar'])));
+        self::assertEquals($metadata->toArray(), ['foo' => 'bar']);
     }
 
     public function testWithoutKeys(): void
@@ -112,11 +112,11 @@ class MetadataTest extends TestCase
         ]);
 
         $withoutKeys = $metadata->withoutKeys(['bar']);
-        $this->assertNotSame($metadata, $withoutKeys);
-        $this->assertEquals($withoutKeys->toArray(), ['foo' => 'bar']);
+        self::assertNotSame($metadata, $withoutKeys);
+        self::assertEquals($withoutKeys->toArray(), ['foo' => 'bar']);
 
-        $this->assertSame($metadata, $metadata->withoutKeys(['baz']));
-        $this->assertEquals($metadata->toArray(), [
+        self::assertSame($metadata, $metadata->withoutKeys(['baz']));
+        self::assertEquals($metadata->toArray(), [
             'foo' => 'bar',
             'bar' => 'baz',
         ]);
@@ -134,7 +134,7 @@ class MetadataTest extends TestCase
             $data[$key] = $value;
         }
 
-        $this->assertSame([
+        self::assertSame([
             'bar' => 'baz',
             'foo' => 'bar',
         ], $data);

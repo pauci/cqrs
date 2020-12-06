@@ -22,7 +22,7 @@ class RedisEventStoreTest extends TestCase
     public function setUp(): void
     {
         if (!extension_loaded('redis')) {
-            $this->markTestSkipped('The redis extension is not available.');
+            self::markTestSkipped('The redis extension is not available.');
         }
 
         $this->redis = new Redis();
@@ -40,8 +40,8 @@ class RedisEventStoreTest extends TestCase
 
         $data = $this->redis->lRange('cqrs_event', 0, -1);
 
-        $this->assertCount(1, $data);
-        $this->assertEquals($record, $data[0]);
+        self::assertCount(1, $data);
+        self::assertEquals($record, $data[0]);
     }
 
     public function testCappedCollection(): void
@@ -52,7 +52,7 @@ class RedisEventStoreTest extends TestCase
         }
 
         $events = $this->redisEventStore->read();
-        $this->assertCount(4, $events);
+        self::assertCount(4, $events);
     }
 
     /**
@@ -64,8 +64,8 @@ class RedisEventStoreTest extends TestCase
 
         $events = $this->redisEventStore->read();
 
-        $this->assertCount(1, $events);
-        $this->assertEquals($event, $events[0]);
+        self::assertCount(1, $events);
+        self::assertEquals($event, $events[0]);
     }
 
     public function testPopEvent(): void
@@ -78,10 +78,10 @@ class RedisEventStoreTest extends TestCase
 
         foreach ($data as $record) {
             $event = $this->redisEventStore->pop()->toMessage(new SomeSerializer());
-            $this->assertEquals($record[0], $event);
+            self::assertEquals($record[0], $event);
         }
 
-        $this->assertFalse((bool) $this->redis->exists('cqrs_event'));
+        self::assertFalse((bool) $this->redis->exists('cqrs_event'));
     }
 
     public function getData(): array

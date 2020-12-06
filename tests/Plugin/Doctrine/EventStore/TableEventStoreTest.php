@@ -23,7 +23,7 @@ class TableEventStoreTest extends TestCase
     public function setUp(): void
     {
         if (!extension_loaded('pdo_sqlite')) {
-            $this->markTestSkipped('The pdo_sqlite extension is not available.');
+            self::markTestSkipped('The pdo_sqlite extension is not available.');
         }
 
         $schema = new TableEventStoreSchema();
@@ -48,16 +48,16 @@ class TableEventStoreTest extends TestCase
 
         $data = $this->conn->fetchAll('SELECT * FROM cqrs_event');
 
-        $this->assertEquals(1, count($data));
-        $this->assertEquals($event->getId(), $data[0]['event_id']);
-        $this->assertEquals($event->getTimestamp()->format('Y-m-d H:i:s'), $data[0]['event_date']);
-        $this->assertEquals((int) $event->getTimestamp()->format('u'), $data[0]['event_date_u']);
-        $this->assertEquals('SomeAggregate', $data[0]['aggregate_type']);
-        $this->assertEquals(123, $data[0]['aggregate_id']);
-        $this->assertEquals(4, $data[0]['sequence_number']);
-        $this->assertEquals(SomeEvent::class, $data[0]['payload_type']);
-        $this->assertEquals('{}', $data[0]['payload']);
-        $this->assertEquals('{}', $data[0]['metadata']);
+        self::assertEquals(1, count($data));
+        self::assertEquals($event->getId(), $data[0]['event_id']);
+        self::assertEquals($event->getTimestamp()->format('Y-m-d H:i:s'), $data[0]['event_date']);
+        self::assertEquals((int) $event->getTimestamp()->format('u'), $data[0]['event_date_u']);
+        self::assertEquals('SomeAggregate', $data[0]['aggregate_type']);
+        self::assertEquals(123, $data[0]['aggregate_id']);
+        self::assertEquals(4, $data[0]['sequence_number']);
+        self::assertEquals(SomeEvent::class, $data[0]['payload_type']);
+        self::assertEquals('{}', $data[0]['payload']);
+        self::assertEquals('{}', $data[0]['metadata']);
     }
 
     public function testReadEvents(): void
@@ -78,19 +78,19 @@ class TableEventStoreTest extends TestCase
 
         $events = $this->tableEventStore->read(-1);
 
-        $this->assertCount(3, $events);
-        $this->assertEquals([11, 12, 13], array_keys($events));
-        $this->assertContainsOnlyInstancesOf(GenericDomainEventMessage::class, $events);
+        self::assertCount(3, $events);
+        self::assertEquals([11, 12, 13], array_keys($events));
+        self::assertContainsOnlyInstancesOf(GenericDomainEventMessage::class, $events);
 
-        $this->assertEquals('bd0a32dd-37f1-42ab-807f-c3c29261a9fe', (string) $events[11]->getId());
-        $this->assertEquals('2014-08-15 09:55:33.654321', $events[11]->getTimestamp()->format('Y-m-d H:i:s.u'));
-        $this->assertEquals('SomeAggregate', $events[11]->getAggregateType());
-        $this->assertEquals(123, $events[11]->getAggregateId());
-        $this->assertEquals(21, $events[11]->getSequenceNumber());
-        $this->assertInstanceOf(SomeEvent::class, $events[11]->getPayload());
-        $this->assertInstanceOf(Metadata::class, $events[11]->getMetadata());
+        self::assertEquals('bd0a32dd-37f1-42ab-807f-c3c29261a9fe', (string) $events[11]->getId());
+        self::assertEquals('2014-08-15 09:55:33.654321', $events[11]->getTimestamp()->format('Y-m-d H:i:s.u'));
+        self::assertEquals('SomeAggregate', $events[11]->getAggregateType());
+        self::assertEquals(123, $events[11]->getAggregateId());
+        self::assertEquals(21, $events[11]->getSequenceNumber());
+        self::assertInstanceOf(SomeEvent::class, $events[11]->getPayload());
+        self::assertInstanceOf(Metadata::class, $events[11]->getMetadata());
 
         $events = $this->tableEventStore->read(5, 5);
-        $this->assertCount(5, $events);
+        self::assertCount(5, $events);
     }
 }

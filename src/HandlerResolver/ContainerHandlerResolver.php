@@ -11,9 +11,12 @@ class ContainerHandlerResolver
 {
     protected ContainerInterface $container;
 
-    protected ?Closure $nextResolver;
+    /**
+     * @var callable|null
+     */
+    protected $nextResolver;
 
-    public function __construct(ContainerInterface $container, Closure $nextResolver = null)
+    public function __construct(ContainerInterface $container, callable $nextResolver = null)
     {
         $this->container = $container;
         $this->nextResolver = $nextResolver;

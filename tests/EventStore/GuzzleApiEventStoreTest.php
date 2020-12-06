@@ -39,18 +39,18 @@ class GuzzleApiEventStoreTest extends TestCase
         $i = 0;
         /** @var EventMessageInterface $event */
         foreach ($iterator as $event) {
-            $this->assertInstanceOf(SomeEvent::class, $event->getPayload());
-            $this->assertInstanceOf(Metadata::class, $event->getMetadata());
+            self::assertInstanceOf(SomeEvent::class, $event->getPayload());
+            self::assertInstanceOf(Metadata::class, $event->getMetadata());
             $i++;
         }
 
-        $this->assertEquals(5, $i);
+        self::assertEquals(5, $i);
     }
 
     public function testIterateWithNoData(): void
     {
         $iterator = self::$apiEventStore->iterate();
 
-        $this->assertFalse($iterator->valid());
+        self::assertFalse($iterator->valid());
     }
 }

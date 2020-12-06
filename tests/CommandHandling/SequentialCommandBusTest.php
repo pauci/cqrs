@@ -46,14 +46,14 @@ class SequentialCommandBusTest extends TestCase
     {
         $this->commandBus->dispatch(new DoSequentialCommand());
 
-        $this->assertEquals(1, $this->handler->sequential);
-        $this->assertEquals(1, $this->handler->simple);
+        self::assertEquals(1, $this->handler->sequential);
+        self::assertEquals(1, $this->handler->simple);
 
-        $this->assertEquals(1, $this->transactionManager->begin);
-        $this->assertEquals(1, $this->transactionManager->commit);
-        $this->assertEquals(0, $this->transactionManager->rollback);
+        self::assertEquals(1, $this->transactionManager->begin);
+        self::assertEquals(1, $this->transactionManager->commit);
+        self::assertEquals(0, $this->transactionManager->rollback);
 
-        $this->assertEquals(1, $this->eventPublisher->published);
+        self::assertEquals(1, $this->eventPublisher->published);
     }
 
     public function testItRollbacksTransactionOnFailure(): void
@@ -64,11 +64,11 @@ class SequentialCommandBusTest extends TestCase
             $this->commandBus->dispatch(new DoFailureCommand());
         } catch (CommandFailureTestException $e) {
 
-            $this->assertEquals(1, $this->transactionManager->begin);
-            $this->assertEquals(0, $this->transactionManager->commit);
-            $this->assertEquals(1, $this->transactionManager->rollback);
+            self::assertEquals(1, $this->transactionManager->begin);
+            self::assertEquals(0, $this->transactionManager->commit);
+            self::assertEquals(1, $this->transactionManager->rollback);
 
-            $this->assertEquals(0, $this->eventPublisher->published);
+            self::assertEquals(0, $this->eventPublisher->published);
 
             throw $e;
         }
@@ -80,11 +80,11 @@ class SequentialCommandBusTest extends TestCase
 
         $this->commandBus->dispatch(new DoSequentialFailureCommand());
 
-        $this->assertEquals(1, $this->transactionManager->begin);
-        $this->assertEquals(1, $this->transactionManager->commit);
-        $this->assertEquals(0, $this->transactionManager->rollback);
+        self::assertEquals(1, $this->transactionManager->begin);
+        self::assertEquals(1, $this->transactionManager->commit);
+        self::assertEquals(0, $this->transactionManager->rollback);
 
-        $this->assertEquals(1, $this->eventPublisher->published);
+        self::assertEquals(1, $this->eventPublisher->published);
     }
 
     public function testItThrowsExceptionWhenServiceHasNoHandlingMethod(): void

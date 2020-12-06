@@ -22,9 +22,9 @@ class ChainingEventStoreTest extends TestCase
         $chainingEventStore->store($event);
 
         $events1 = $es1->read();
-        $this->assertEquals([$event], $events1);
+        self::assertEquals([$event], $events1);
 
         $events2 = $es2->read();
-        $this->assertEquals([$event], $events2);
+        self::assertEquals([$event], $events2);
     }
 }
