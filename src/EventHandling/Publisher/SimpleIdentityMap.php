@@ -31,6 +31,7 @@ class SimpleIdentityMap implements IdentityMapInterface
     public function remove(AggregateRootInterface $aggregateRoot): void
     {
         $index = array_search($aggregateRoot, $this->aggregateRoots, true);
+
         if (false !== $index) {
             unset($this->aggregateRoots[$index]);
         }

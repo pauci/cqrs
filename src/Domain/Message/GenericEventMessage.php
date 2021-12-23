@@ -12,13 +12,9 @@ class GenericEventMessage extends GenericMessage implements EventMessageInterfac
 {
     private DateTimeInterface $timestamp;
 
-    /**
-     * @param mixed $payload
-     * @param Metadata|array|null $metadata
-     */
     public function __construct(
-        $payload,
-        $metadata = null,
+        object $payload,
+        Metadata|array $metadata = [],
         UuidInterface $id = null,
         DateTimeInterface $timestamp = null
     ) {
@@ -30,6 +26,7 @@ class GenericEventMessage extends GenericMessage implements EventMessageInterfac
     {
         $data = parent::jsonSerialize();
         $data['timestamp'] = $this->timestamp;
+
         return $data;
     }
 

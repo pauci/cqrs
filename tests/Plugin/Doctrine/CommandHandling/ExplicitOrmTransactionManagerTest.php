@@ -50,4 +50,3 @@ class ExplicitOrmTransactionManagerTest extends TestCase
         $transactionManager->rollback();
     }
 }
-

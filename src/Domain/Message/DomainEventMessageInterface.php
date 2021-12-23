@@ -8,10 +8,7 @@ interface DomainEventMessageInterface extends EventMessageInterface
 {
     public function getAggregateType(): string;
 
-    /**
-     * @return mixed
-     */
-    public function getAggregateId();
+    public function getAggregateId(): mixed;
 
     public function getSequenceNumber(): int;
 }

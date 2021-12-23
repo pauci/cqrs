@@ -30,4 +30,3 @@ class SomeEvent3
         $this->string2 = $string2;
     }
 }
-

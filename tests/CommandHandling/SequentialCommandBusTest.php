@@ -5,38 +5,33 @@ declare(strict_types=1);
 namespace CQRSTest\CommandHandling;
 
 use CQRS\CommandHandling\SequentialCommandBus;
-use CQRS\CommandHandling\TransactionManager\TransactionManagerInterface;
-use CQRS\EventHandling\Publisher\EventPublisherInterface;
-use CQRS\Exception\RuntimeException;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
 
 class SequentialCommandBusTest extends TestCase
 {
     private SequentialCommandBus $commandBus;
 
-    private SequentialCommandHandler $handler;
+    private Stubs\DummyCommandHandler $handler;
 
-    private SequentialTransactionManager $transactionManager;
+    private Stubs\DummyTransactionManager $transactionManager;
 
-    private SequentialEventPublisher $eventPublisher;
+    private Stubs\DummyEventPublisher $eventPublisher;
 
     public function setUp(): void
     {
-        $this->handler = new SequentialCommandHandler();
+        $this->handler = new Stubs\DummyCommandHandler();
 
-        $locator = new SequentialCommandHandlerLocator();
+        $locator = new Stubs\DummyCommandHandlerLocator();
         $locator->handlers = [
-            DoSimpleCommand::class => [$this->handler, 'doSimple'],
-            DoSequentialCommand::class => [$this->handler, 'doSequential'],
-            DoFailureCommand::class => [$this->handler, 'doFailure'],
-            DoSequentialFailureCommand::class => [$this->handler, 'doSequentialFailure'],
-            NotInvokableCommand::class => 'notInvokable',
+            Stubs\DoSimpleCommand::class => [$this->handler, 'doSimple'],
+            Stubs\DoSequentialCommand::class => [$this->handler, 'doSequential'],
+            Stubs\DoFailureCommand::class => [$this->handler, 'doFailure'],
+            Stubs\DoSequentialFailureCommand::class => [$this->handler, 'doSequentialFailure'],
         ];
 
-        $this->transactionManager = new SequentialTransactionManager();
+        $this->transactionManager = new Stubs\DummyTransactionManager();
 
-        $this->eventPublisher = new SequentialEventPublisher();
+        $this->eventPublisher = new Stubs\DummyEventPublisher();
 
         $this->commandBus = new SequentialCommandBus($locator, $this->transactionManager, $this->eventPublisher);
         $this->handler->commandBus = $this->commandBus;
@@ -44,7 +39,7 @@ class SequentialCommandBusTest extends TestCase
 
     public function testHandlingOfSequentialCommand(): void
     {
-        $this->commandBus->dispatch(new DoSequentialCommand());
+        $this->commandBus->dispatch(new Stubs\DoSequentialCommand());
 
         self::assertEquals(1, $this->handler->sequential);
         self::assertEquals(1, $this->handler->simple);
@@ -58,12 +53,11 @@ class SequentialCommandBusTest extends TestCase
 
     public function testItRollbacksTransactionOnFailure(): void
     {
-        $this->expectException(CommandFailureTestException::class);
+        $this->expectException(Stubs\CommandFailureTestException::class);
 
         try {
-            $this->commandBus->dispatch(new DoFailureCommand());
-        } catch (CommandFailureTestException $e) {
-
+            $this->commandBus->dispatch(new Stubs\DoFailureCommand());
+        } catch (Stubs\CommandFailureTestException $e) {
             self::assertEquals(1, $this->transactionManager->begin);
             self::assertEquals(0, $this->transactionManager->commit);
             self::assertEquals(1, $this->transactionManager->rollback);
@@ -76,119 +70,14 @@ class SequentialCommandBusTest extends TestCase
 
     public function testItDoesntIgnoreErrorOnSequentialFailure(): void
     {
-        $this->expectException(CommandFailureTestException::class);
+        $this->expectException(Stubs\CommandFailureTestException::class);
 
-        $this->commandBus->dispatch(new DoSequentialFailureCommand());
+        $this->commandBus->dispatch(new Stubs\DoSequentialFailureCommand());
 
         self::assertEquals(1, $this->transactionManager->begin);
         self::assertEquals(1, $this->transactionManager->commit);
         self::assertEquals(0, $this->transactionManager->rollback);
 
         self::assertEquals(1, $this->eventPublisher->published);
-    }
-
-    public function testItThrowsExceptionWhenServiceHasNoHandlingMethod(): void
-    {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Command handler string is not invokable');
-
-        $this->commandBus->dispatch(new NotInvokableCommand());
-    }
-}
-
-class DoSimpleCommand
-{}
-
-class DoSequentialCommand
-{}
-
-class DoFailureCommand
-{}
-
-class DoSequentialFailureCommand
-{}
-
-class NotInvokableCommand
-{}
-
-class SequentialCommandHandlerLocator implements ContainerInterface
-{
-    public $handlers;
-
-    public function get($commandType)
-    {
-        return $this->handlers[$commandType];
-    }
-
-    public function has($commandType)
-    {
-        return true;
-    }
-}
-
-class SequentialCommandHandler
-{
-    public SequentialCommandBus $commandBus;
-
-    public int $simple = 0;
-
-    public int $sequential = 0;
-
-    public function doSimple(DoSimpleCommand $command)
-    {
-        $this->simple++;
-    }
-
-    public function doSequential(DoSequentialCommand $command)
-    {
-        $this->sequential++;
-        $this->commandBus->dispatch(new DoSimpleCommand());
-    }
-
-    public function doFailure(DoFailureCommand $command)
-    {
-        throw new CommandFailureTestException();
-    }
-
-    public function doSequentialFailure(DoSequentialFailureCommand $command)
-    {
-        $this->commandBus->dispatch(new DoFailureCommand());
-    }
-}
-
-class CommandFailureTestException extends \Exception
-{}
-
-class SequentialTransactionManager implements TransactionManagerInterface
-{
-    public int $begin = 0;
-
-    public int $commit = 0;
-
-    public int $rollback = 0;
-
-    public function begin(): void
-    {
-        $this->begin++;
-    }
-
-    public function commit(): void
-    {
-        $this->commit++;
-    }
-
-    public function rollback(): void
-    {
-        $this->rollback++;
-    }
-}
-
-class SequentialEventPublisher implements EventPublisherInterface
-{
-    public int $published = 0;
-
-    public function publishEvents(): void
-    {
-        $this->published++;
     }
 }

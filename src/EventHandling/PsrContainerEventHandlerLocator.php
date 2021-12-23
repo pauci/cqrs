@@ -6,49 +6,50 @@ namespace CQRS\EventHandling;
 
 use Psr\Container\ContainerInterface;
 
-class EventHandlerLocator implements ContainerInterface
+class PsrContainerEventHandlerLocator implements EventHandlerLocatorInterface
 {
+    protected ContainerInterface $container;
+
     protected array $handlers = [];
 
     /**
-     * @var callable|null
-     */
-    protected $resolver;
-
-    /**
+     * @param array<class-string, array<string|array{handler: string, priority?: int}>> $handlers
      * @throws Exception\InvalidArgumentException
      */
-    public function __construct(array $handlers = [], callable $resolver = null)
+    public function __construct(ContainerInterface $container, array $handlers = [])
     {
         foreach ($handlers as $eventType => $eventHandlers) {
             if (!is_array($eventHandlers)) {
                 throw new Exception\InvalidArgumentException(sprintf(
                     'Handlers for event %s must be specified as array; got %s',
                     $eventType,
-                    is_object($eventHandlers) ? get_class($eventHandlers) : gettype($eventHandlers)
+                    get_debug_type($eventHandlers)
                 ));
             }
 
-            $priority = 1;
             foreach ($eventHandlers as $handler) {
+                $priority = 1;
+
                 if (is_array($handler) && array_key_exists('handler', $handler)) {
                     if (array_key_exists('priority', $handler)) {
                         $priority = $handler['priority'];
                     }
+
                     $handler = $handler['handler'];
                 }
+
                 $this->add($eventType, $handler, $priority);
             }
         }
 
-        $this->resolver = $resolver;
+        $this->container = $container;
     }
 
     /**
      * @param mixed $handler
      * @throws Exception\InvalidArgumentException
      */
-    public function add(string $eventType, $handler, int $priority = 1): void
+    public function add(string $eventType, mixed $handler, int $priority = 1): void
     {
         if (
             array_key_exists($eventType, $this->handlers)
@@ -59,20 +60,21 @@ class EventHandlerLocator implements ContainerInterface
         }
 
         // Make sure the priority index is string so we can use array_merge_recursive
-        $this->handlers[$eventType][(int) $priority . '.0'][] = $handler;
+        $this->handlers[$eventType][$priority . '.0'][] = $handler;
     }
 
     /**
      * @param mixed $handler
      * @throws Exception\InvalidArgumentException
      */
-    public function remove($handler, string $eventType = null): void
+    public function remove(mixed $handler, string $eventType = null): void
     {
         // If event type is not specified, we need to iterate through each event type
         if (null === $eventType) {
             foreach ($this->handlers as $eventType => $unused) {
                 $this->remove($handler, $eventType);
             }
+
             return;
         }
 
@@ -93,6 +95,7 @@ class EventHandlerLocator implements ContainerInterface
             // If the queue for the given priority is empty, remove it.
             if (empty($this->handlers[$eventType][$priority])) {
                 unset($this->handlers[$eventType][$priority]);
+
                 break;
             }
         }
@@ -106,24 +109,29 @@ class EventHandlerLocator implements ContainerInterface
     /**
      * Returns an array of event handlers sorted by priority from highest to lowest
      *
-     * @param string $eventType
      * @return callable[]
      */
-    public function get($eventType): array
+    public function get(string $eventType): array
     {
         $handlers = array_merge_recursive(
-            array_key_exists($eventType, $this->handlers) ? $this->handlers[$eventType] : [],
-            array_key_exists('*', $this->handlers) ? $this->handlers['*'] : []
+            $this->handlers[$eventType] ?? [],
+            $this->handlers['*'] ?? [],
         );
-
 
         krsort($handlers, SORT_NUMERIC);
 
         $eventHandlers = [];
         foreach ($handlers as $priority => $handlersByPriority) {
-            foreach ($handlersByPriority as $handler) {
-                if ($this->resolver) {
-                    $handler = call_user_func($this->resolver, $handler, $eventType);
+            foreach ($handlersByPriority as $handlerId) {
+                $handler = $this->container->get($handlerId);
+
+                if (!is_callable($handler)) {
+                    throw new Exception\RuntimeException(sprintf(
+                        'Event handler "%s" of type "%s" for event "%s" is not callable',
+                        $handlerId,
+                        get_debug_type($handler),
+                        $eventType
+                    ));
                 }
 
                 $eventHandlers[] = $handler;
@@ -131,13 +139,5 @@ class EventHandlerLocator implements ContainerInterface
         }
 
         return $eventHandlers;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function has($eventType): bool
-    {
-        return array_key_exists($eventType, $this->handlers) || array_key_exists('*', $this->handlers);
     }
 }

@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace CQRSTest\CommandHandling;
 
 use CQRS\CommandHandling\Exception\CommandHandlerNotFoundException;
-use CQRS\CommandHandling\CommandHandlerLocator;
+use CQRS\CommandHandling\PsrContainerCommandHandlerLocator;
+use CQRSTest\Stubs\DummyCallableContainer;
 use PHPUnit\Framework\TestCase;
 
-class CommandHandlerLocatorTest extends TestCase
+class PsrContainerCommandHandlerLocatorTest extends TestCase
 {
     public function testRegisterAndGetCommandHandler(): void
     {
-        $handler = function () {};
+        $locator = new PsrContainerCommandHandlerLocator(['Command' => 'service'], new DummyCallableContainer());
 
-        $locator = new CommandHandlerLocator();
-        $locator->set('Command', $handler);
+        $handler = $locator->get('Command');
 
-        self::assertSame($handler, $locator->get('Command'));
+        self::assertEquals('service', $handler());
     }
 
     public function testItThrowsExceptionWhenNoHandlerIsRegisteredForCommand(): void
@@ -25,7 +25,7 @@ class CommandHandlerLocatorTest extends TestCase
         $this->expectException(CommandHandlerNotFoundException::class);
         $this->expectExceptionMessage('Command handler for CommandWithoutHandler not found');
 
-        $locator = new CommandHandlerLocator();
+        $locator = new PsrContainerCommandHandlerLocator([], new DummyCallableContainer());
         $locator->get('CommandWithoutHandler');
     }
 }

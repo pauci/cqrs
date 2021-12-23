@@ -24,9 +24,10 @@ class FilteringEventStoreTest extends TestCase
         $filteringEventStore->store($validEvent);
         $filteringEventStore->store($invalidEvent);
 
-        $events = $eventStore->read();
+        $event = $eventStore->pop();
+        self::assertSame($validEvent, $event);
 
-        self::assertContains($validEvent, $events);
-        self::assertNotContains($invalidEvent, $events);
+        $event = $eventStore->pop();
+        self::assertNull($event);
     }
 }

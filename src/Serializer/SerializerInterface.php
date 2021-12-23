@@ -6,13 +6,7 @@ namespace CQRS\Serializer;
 
 interface SerializerInterface
 {
-    /**
-     * @param mixed $data
-     */
-    public function serialize($data): string;
+    public function serialize(object $data): string;
 
-    /**
-     * @return mixed
-     */
-    public function deserialize(string $data, string $type);
+    public function deserialize(string $data, string $type): object;
 }

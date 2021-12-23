@@ -13,7 +13,7 @@ interface AggregateRootInterface
      *
      * @return mixed
      */
-    public function getId();
+    public function getId(): mixed;
 
     /**
      * Returns the events in the aggregate that have been raised since creation or the last commit.

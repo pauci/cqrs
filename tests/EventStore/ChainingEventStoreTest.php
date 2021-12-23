@@ -21,10 +21,10 @@ class ChainingEventStoreTest extends TestCase
         $event = new GenericEventMessage(new SomeEvent());
         $chainingEventStore->store($event);
 
-        $events1 = $es1->read();
-        self::assertEquals([$event], $events1);
+        $es1event = $es1->pop();
+        self::assertSame($event, $es1event);
 
-        $events2 = $es2->read();
-        self::assertEquals([$event], $events2);
+        $es2event = $es2->pop();
+        self::assertSame($event, $es2event);
     }
 }

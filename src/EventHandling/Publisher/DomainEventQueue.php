@@ -26,6 +26,7 @@ class DomainEventQueue implements EventQueueInterface
             foreach ($aggregateRoot->getUncommittedEvents() as $event) {
                 $dequeueEvents[] = $event;
             }
+
             $aggregateRoot->commitEvents();
         }
 
