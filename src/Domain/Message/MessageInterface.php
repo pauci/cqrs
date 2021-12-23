@@ -11,12 +11,12 @@ interface MessageInterface extends JsonSerializable
 {
     public function getId(): UuidInterface;
 
+    /**
+     * @return class-string
+     */
     public function getPayloadType(): string;
 
-    /**
-     * @return mixed
-     */
-    public function getPayload();
+    public function getPayload(): object;
 
     public function getMetadata(): Metadata;
 

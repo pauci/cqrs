@@ -4,31 +4,23 @@ declare(strict_types=1);
 
 namespace CQRSTest\EventStore;
 
+use CQRS\Domain\Message\Metadata;
 use CQRS\Serializer\SerializerInterface;
 
-class SomeSerializer implements SerializerInterface
+final class SomeSerializer implements SerializerInterface
 {
-    /**
-     * @param mixed $data
-     */
-    public function serialize($data): string
+    public function serialize(object $data): string
     {
         return '{}';
     }
 
-    /**
-     * @return mixed
-     */
-    public function deserialize(string $data, string $type)
+    public function deserialize(string $data, string $type): object
     {
-        switch ($type) {
-            case SomeEvent::class:
-                return new SomeEvent();
-
-            case 'array':
-                return [];
-        }
-
-        return null;
+        return match ($type) {
+            SomeEvent::class => new SomeEvent(),
+            Metadata::class => Metadata::from([]),
+            'array' => [],
+            default => null,
+        };
     }
 }

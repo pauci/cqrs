@@ -15,4 +15,3 @@ class SomeEvent
     protected DateTimeInterface $time;
     protected stdClass $object;
 }
-

@@ -6,9 +6,7 @@ namespace CQRS\CommandHandling;
 
 use CQRS\CommandHandling\TransactionManager\TransactionManagerInterface;
 use CQRS\EventHandling\Publisher\EventPublisherInterface;
-use CQRS\Exception\RuntimeException;
 use Exception;
-use Psr\Container\ContainerInterface;
 
 /**
  * Process Commands and pass them to their handlers in sequential order.
@@ -26,7 +24,7 @@ use Psr\Container\ContainerInterface;
  */
 class SequentialCommandBus implements CommandBusInterface
 {
-    private ContainerInterface $locator;
+    private CommandHandlerLocatorInterface $locator;
 
     private TransactionManagerInterface $transactionManager;
 
@@ -37,28 +35,13 @@ class SequentialCommandBus implements CommandBusInterface
     private bool $executing = false;
 
     public function __construct(
-        ContainerInterface $locator,
+        CommandHandlerLocatorInterface $locator,
         TransactionManagerInterface $transactionManager,
         EventPublisherInterface $eventPublisher
     ) {
         $this->locator = $locator;
         $this->transactionManager = $transactionManager;
         $this->eventPublisher = $eventPublisher;
-    }
-
-    public function getLocator(): ContainerInterface
-    {
-        return $this->locator;
-    }
-
-    public function getTransactionManager(): TransactionManagerInterface
-    {
-        return $this->transactionManager;
-    }
-
-    public function getEventPublisher(): EventPublisherInterface
-    {
-        return $this->eventPublisher;
     }
 
     /**
@@ -78,14 +61,17 @@ class SequentialCommandBus implements CommandBusInterface
         }
 
         $this->transactionManager->begin();
+
         try {
             while ($command = array_shift($this->commandStack)) {
                 $this->invokeHandler($command);
             }
+
             $this->eventPublisher->publishEvents();
             $this->transactionManager->commit();
         } catch (Exception $e) {
             $this->transactionManager->rollback();
+
             throw $e;
         }
     }
@@ -100,17 +86,10 @@ class SequentialCommandBus implements CommandBusInterface
 
             $commandType = get_class($command);
             $handler = $this->locator->get($commandType);
-
-            if (!is_callable($handler)) {
-                throw new RuntimeException(sprintf(
-                    'Command handler %s is not invokable',
-                    is_object($handler) ? get_class($handler) : gettype($handler)
-                ));
-            }
-
             $handler($command);
         } catch (Exception $e) {
             $this->executing = false;
+
             throw $e;
         }
 

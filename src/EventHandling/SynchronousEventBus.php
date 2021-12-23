@@ -7,20 +7,14 @@ namespace CQRS\EventHandling;
 use CQRS\Domain\Message\DomainEventMessageInterface;
 use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericEventMessage;
-use Psr\Container\ContainerInterface;
 
-class SynchronousEventBus extends AbstractEventBus
+class SynchronousEventBus implements EventBusInterface
 {
-    private ContainerInterface $locator;
+    private EventHandlerLocatorInterface $locator;
 
-    public function __construct(ContainerInterface $locator)
+    public function __construct(EventHandlerLocatorInterface $locator)
     {
         $this->locator = $locator;
-    }
-
-    public function getLocator(): ContainerInterface
-    {
-        return $this->locator;
     }
 
     /**
@@ -30,15 +24,12 @@ class SynchronousEventBus extends AbstractEventBus
     {
         $eventType = $event->getPayloadType();
         $eventHandlers = $this->locator->get($eventType);
-        if (!is_array($eventHandlers)) {
-            $eventHandlers = [$eventHandlers];
-        }
 
         foreach ($eventHandlers as $handler) {
             if (!is_callable($handler)) {
                 throw new Exception\RuntimeException(sprintf(
                     'Event handler %s is not invokable',
-                    is_object($handler) ? get_class($handler) : gettype($handler)
+                    get_debug_type($handler)
                 ));
             }
 

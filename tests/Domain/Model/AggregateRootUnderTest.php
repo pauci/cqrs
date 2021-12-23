@@ -15,13 +15,13 @@ class AggregateRootUnderTest extends AbstractAggregateRoot
      * @phpstan-var Id
      * @var mixed
      */
-    private $id;
+    private mixed $id;
 
     /**
      * @phpstan-param Id $id
      * @param mixed $id
      */
-    public function __construct($id)
+    public function __construct(mixed $id)
     {
         $this->id = $id;
     }
@@ -30,7 +30,7 @@ class AggregateRootUnderTest extends AbstractAggregateRoot
      * @phpstan-return Id
      * @return mixed
      */
-    public function getId()
+    public function getId(): mixed
     {
         return $this->id;
     }
@@ -40,4 +40,3 @@ class AggregateRootUnderTest extends AbstractAggregateRoot
         $this->registerEvent($event);
     }
 }
-

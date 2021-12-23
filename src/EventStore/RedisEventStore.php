@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace CQRS\EventStore;
 
 use CQRS\Domain\Message\EventMessageInterface;
-use CQRS\Exception;
 use CQRS\Serializer\SerializerInterface;
-use Ramsey\Uuid\UuidInterface;
 use Redis;
-use Traversable;
 
 class RedisEventStore implements EventStoreInterface
 {
@@ -17,22 +14,20 @@ class RedisEventStore implements EventStoreInterface
 
     private Redis $redis;
 
-    private string $key = 'cqrs_event';
+    private string $key;
 
     private int $size;
 
-    public function __construct(SerializerInterface $serializer, Redis $redis, string $key = null, int $size = null)
-    {
+    public function __construct(
+        SerializerInterface $serializer,
+        Redis $redis,
+        string $key = 'cqrs_event',
+        int $size = 0
+    ) {
         $this->serializer = $serializer;
         $this->redis = $redis;
-
-        if (null !== $key) {
-            $this->key = $key;
-        }
-
-        if (null !== $size) {
-            $this->size = $size;
-        }
+        $this->key = $key;
+        $this->size = $size;
     }
 
     public function store(EventMessageInterface $event): void
@@ -45,19 +40,6 @@ class RedisEventStore implements EventStoreInterface
         }
     }
 
-    /**
-     * @return EventMessageInterface[]
-     */
-    public function read(int $offset = 0, int $limit = 10): array
-    {
-        $records = $this->redis->lRange($this->key, $offset, $limit);
-
-        return array_map(function ($data) {
-            $record = new RedisEventRecord($data);
-            return $record->toMessage($this->serializer);
-        }, $records);
-    }
-
     public function pop(int $timeout = 0): ?RedisEventRecord
     {
         $data = $this->redis->brPop($this->key, $timeout);
@@ -67,10 +49,5 @@ class RedisEventStore implements EventStoreInterface
         }
 
         return new RedisEventRecord($data[1]);
-    }
-
-    public function iterate(UuidInterface $previousEventId = null): Traversable
-    {
-        throw new Exception\BadMethodCallException('Method is not implemented');
     }
 }

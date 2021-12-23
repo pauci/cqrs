@@ -19,14 +19,11 @@ class SimpleEventPublisher implements EventPublisherInterface
 
     private ?Metadata $additionalMetadata = null;
 
-    /**
-     * @param Metadata|array|null $additionalMetadata
-     */
     public function __construct(
         EventBusInterface $eventBus,
         EventQueueInterface $queue = null,
         EventStoreInterface $eventStore = null,
-        $additionalMetadata = null
+        Metadata|array $additionalMetadata = null
     ) {
         $this->eventBus   = $eventBus;
         $this->queue      = $queue;
@@ -42,10 +39,7 @@ class SimpleEventPublisher implements EventPublisherInterface
         return $this->eventBus;
     }
 
-    /**
-     * @param Metadata|array $additionalMetadata
-     */
-    public function setAdditionalMetadata($additionalMetadata): void
+    public function setAdditionalMetadata(Metadata|array $additionalMetadata): void
     {
         $this->additionalMetadata = Metadata::from($additionalMetadata);
     }
@@ -75,6 +69,7 @@ class SimpleEventPublisher implements EventPublisherInterface
                 $event = $event->addMetadata($this->additionalMetadata);
             }
         }
+
         return $events;
     }
 
@@ -84,9 +79,7 @@ class SimpleEventPublisher implements EventPublisherInterface
     protected function dispatchEvents(array $events): void
     {
         foreach ($events as $event) {
-            if ($this->eventStore) {
-                $this->eventStore->store($event);
-            }
+            $this->eventStore?->store($event);
 
             $this->eventBus->publish($event);
         }

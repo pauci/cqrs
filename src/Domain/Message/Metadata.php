@@ -16,26 +16,25 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, JsonSeriali
 {
     private array $data;
 
-    /**
-     * @param self|array|null $metadata
-     */
-    public static function from($metadata = null): self
+    public static function from(self|array $metadata = []): static
     {
-        if ($metadata instanceof self) {
+        if ($metadata instanceof static) {
             return $metadata;
         }
-        if ($metadata === null) {
-            return new static();
+
+        if ($metadata instanceof self) {
+            return new static($metadata->toArray());
         }
+
         return new static($metadata);
     }
 
-    public static function jsonDeserialize(array $data): self
+    public static function jsonDeserialize(array $data): static
     {
         return new static($data);
     }
 
-    final private function __construct(array $data = [])
+    final private function __construct(array $data)
     {
         ksort($data);
         $this->data = $data;
@@ -59,16 +58,16 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, JsonSeriali
     /**
      * @param string $offset
      */
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->data[$offset]);
     }
 
     /**
      * @param string $offset
-     * @return mixed|null
+     * @return mixed
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->data[$offset] ?? null;
     }
@@ -78,7 +77,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, JsonSeriali
      * @param mixed $value
      * @throws RuntimeException
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new RuntimeException('Event metadata is immutable.');
     }
@@ -87,7 +86,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, JsonSeriali
      * @param string $offset
      * @throws RuntimeException
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         throw new RuntimeException('Event metadata is immutable.');
     }
@@ -101,7 +100,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, JsonSeriali
      * Returns a Metadata instance containing values of this, combined with the given additionalMetadata.
      * If any entries have identical keys, the values from the additionalMetadata will take precedence.
      */
-    public function mergedWith(Metadata $additionalMetadata): self
+    public function mergedWith(Metadata $additionalMetadata): static
     {
         $values = array_merge($this->data, $additionalMetadata->data);
 
@@ -120,7 +119,7 @@ class Metadata implements IteratorAggregate, ArrayAccess, Countable, JsonSeriali
      *
      * @param string[] $keys
      */
-    public function withoutKeys(array $keys): self
+    public function withoutKeys(array $keys): static
     {
         $values = array_diff_key($this->data, array_flip($keys));
 

@@ -24,10 +24,7 @@ class EventContainer implements Countable
 
     private string $aggregateType;
 
-    /**
-     * @var mixed
-     */
-    private $aggregateId;
+    private mixed $aggregateId;
 
     private ?int $lastSequenceNumber = null;
 
@@ -39,7 +36,7 @@ class EventContainer implements Countable
      *
      * @param mixed $aggregateId
      */
-    public function __construct(string $aggregateType, $aggregateId)
+    public function __construct(string $aggregateType, mixed $aggregateId)
     {
         $this->aggregateType = $aggregateType;
         $this->aggregateId   = $aggregateId;
@@ -47,11 +44,8 @@ class EventContainer implements Countable
 
     /**
      * Add an event to this container.
-     *
-     * @param mixed $payload
-     * @param Metadata|array $metadata
      */
-    public function addEvent($payload, $metadata = null): GenericDomainEventMessage
+    public function addEvent(object $payload, Metadata|array $metadata = []): GenericDomainEventMessage
     {
         $domainEventMessage = new GenericDomainEventMessage(
             $this->aggregateType,
@@ -62,6 +56,7 @@ class EventContainer implements Countable
         );
 
         $this->addEventMessage($domainEventMessage);
+
         return $domainEventMessage;
     }
 
@@ -92,6 +87,7 @@ class EventContainer implements Countable
 
         $this->lastSequenceNumber = $domainEventMessage->getSequenceNumber();
         $this->events[] = $domainEventMessage;
+
         return $domainEventMessage;
     }
 
@@ -130,6 +126,7 @@ class EventContainer implements Countable
         if (count($this) !== 0) {
             throw new RuntimeException('Cannot set first sequence number if events have already been added');
         }
+
         $this->lastCommittedSequenceNumber = $lastKnownSequenceNumber;
     }
 
@@ -141,19 +138,21 @@ class EventContainer implements Countable
         if (count($this->events) === 0) {
             return $this->lastCommittedSequenceNumber;
         }
+
         if ($this->lastSequenceNumber === null) {
             $event = end($this->events);
             $this->lastSequenceNumber = $event->getSequenceNumber();
         }
+
         return $this->lastSequenceNumber;
     }
 
     private function newSequenceNumber(): int
     {
         $currentSequenceNumber = $this->getLastSequenceNumber();
-        if ($currentSequenceNumber === null) {
-            return 0;
-        }
-        return $currentSequenceNumber + 1;
+
+        return $currentSequenceNumber !== null
+            ? $currentSequenceNumber + 1
+            : 0;
     }
 }

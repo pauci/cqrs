@@ -21,15 +21,13 @@ trait AggregateRootTrait
     /**
      * @return mixed
      */
-    abstract public function getId();
+    abstract public function getId(): mixed;
 
     /**
      * Registers an event to be published when the aggregate is saved, containing the given payload and optional
      * metadata.
-     *
-     * @param Metadata|array $metadata
      */
-    protected function registerEvent(object $payload, $metadata = null): DomainEventMessageInterface
+    protected function registerEvent(object $payload, Metadata|array $metadata = []): DomainEventMessageInterface
     {
         return $this->getEventContainer()
             ->addEvent($payload, $metadata);
@@ -48,10 +46,9 @@ trait AggregateRootTrait
      */
     public function getUncommittedEvents(): array
     {
-        if ($this->eventContainer === null) {
-            return [];
-        }
-        return $this->eventContainer->getEvents();
+        return $this->eventContainer !== null
+            ? $this->eventContainer->getEvents()
+            : [];
     }
 
     /**
@@ -59,7 +56,9 @@ trait AggregateRootTrait
      */
     public function getUncommittedEventsCount(): int
     {
-        return $this->eventContainer ? count($this->eventContainer) : 0;
+        return $this->eventContainer !== null
+            ? count($this->eventContainer)
+            : 0;
     }
 
     /**
@@ -81,6 +80,7 @@ trait AggregateRootTrait
         if ($this->eventContainer === null) {
             $aggregateId = $this->getId();
             $aggregateType = get_class($this);
+
             if ($aggregateId === null) {
                 throw new RuntimeException(sprintf(
                     'Aggregate ID is unknown in %s. '
@@ -93,6 +93,7 @@ trait AggregateRootTrait
             $this->eventContainer = new EventContainer($aggregateType, $aggregateId);
             $this->eventContainer->initializeSequenceNumber($this->lastEventSequenceNumber);
         }
+
         return $this->eventContainer;
     }
 }

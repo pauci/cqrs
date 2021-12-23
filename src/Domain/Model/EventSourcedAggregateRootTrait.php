@@ -15,11 +15,9 @@ trait EventSourcedAggregateRootTrait
     use AggregateRootTrait;
 
     /**
-     * @param mixed $payload
-     * @param Metadata|array $metadata
      * @throws DomainException
      */
-    protected function apply($payload, $metadata = null): void
+    protected function apply(object $payload, Metadata|array $metadata = []): void
     {
         if ($this->getId() === null) {
             if ($this->getUncommittedEventsCount() > 0) {
@@ -60,6 +58,7 @@ trait EventSourcedAggregateRootTrait
                 $eventName
             ));
         }
+
         $this->$methodName(
             $eventMessage->getPayload(),
             $eventMessage->getTimestamp(),
@@ -76,7 +75,7 @@ trait EventSourcedAggregateRootTrait
             $name = substr($name, $pos + 1);
         }
 
-        if (substr($name, -5) === 'Event') {
+        if (str_ends_with($name, 'Event')) {
             $name = substr($name, 0, -5);
         }
 

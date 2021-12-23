@@ -7,7 +7,7 @@ namespace CQRSTest\EventStore;
 use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\GenericEventMessage;
-use CQRS\EventStore\RedisEventStore as RedisEventStoreAlias;
+use CQRS\EventStore\RedisEventStore;
 use Pauci\DateTime\DateTime;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
@@ -17,7 +17,7 @@ class RedisEventStoreTest extends TestCase
 {
     private Redis $redis;
 
-    private RedisEventStoreAlias $redisEventStore;
+    private RedisEventStore $redisEventStore;
 
     public function setUp(): void
     {
@@ -28,7 +28,7 @@ class RedisEventStoreTest extends TestCase
         $this->redis = new Redis();
         $this->redis->connect('127.0.0.1');
         $this->redis->del('cqrs_event');
-        $this->redisEventStore = new RedisEventStoreAlias(new SomeSerializer(), $this->redis, null, 4);
+        $this->redisEventStore = new RedisEventStore(new SomeSerializer(), $this->redis, size: 4);
     }
 
     /**
@@ -41,7 +41,7 @@ class RedisEventStoreTest extends TestCase
         $data = $this->redis->lRange('cqrs_event', 0, -1);
 
         self::assertCount(1, $data);
-        self::assertEquals($record, $data[0]);
+        self::assertJsonStringEqualsJsonString($record, $data[0]);
     }
 
     public function testCappedCollection(): void
@@ -51,21 +51,8 @@ class RedisEventStoreTest extends TestCase
             $this->redisEventStore->store($event);
         }
 
-        $events = $this->redisEventStore->read();
-        self::assertCount(4, $events);
-    }
-
-    /**
-     * @dataProvider getData
-     */
-    public function testReadEvents(EventMessageInterface $event, string $record): void
-    {
-        $this->redis->lPush('cqrs_event', $record);
-
-        $events = $this->redisEventStore->read();
-
-        self::assertCount(1, $events);
-        self::assertEquals($event, $events[0]);
+        $records = $this->redis->lRange('cqrs_event', 0, 10);
+        self::assertCount(4, $records);
     }
 
     public function testPopEvent(): void
@@ -92,11 +79,24 @@ class RedisEventStoreTest extends TestCase
             [
                 new GenericEventMessage(
                     new SomeEvent(),
-                    null,
+                    [],
                     Uuid::fromString('777bb61d-b9fa-4023-937e-1b6e4fc9f7b4'),
                     DateTime::fromString('2015-02-11T15:23:42.195819+0100')
                 ),
-                '{"id":"777bb61d-b9fa-4023-937e-1b6e4fc9f7b4","timestamp":"2015-02-11T15:23:42.195819+01:00","payload_type":"CQRSTest\\\EventStore\\\SomeEvent","payload":"{}","metadata":"{}"}'
+                <<<'JSON'
+                {
+                  "id": "777bb61d-b9fa-4023-937e-1b6e4fc9f7b4",
+                  "timestamp": "2015-02-11T15:23:42.195819+01:00",
+                  "payload": {
+                    "data": "{}",
+                    "type": "CQRSTest\\EventStore\\SomeEvent"
+                  },
+                  "metadata": {
+                    "data": {},
+                    "types": {}
+                  }
+                }
+                JSON,
             ],
             [
                 new GenericDomainEventMessage(
@@ -104,11 +104,29 @@ class RedisEventStoreTest extends TestCase
                     $aggregateId,
                     4,
                     new SomeEvent(),
-                    null,
+                    [],
                     Uuid::fromString('eabd641e-4181-4b5f-b191-ecdd40d82b1b'),
                     DateTime::fromString('2015-02-11T13:40:29.658819+0100')
                 ),
-                '{"id":"eabd641e-4181-4b5f-b191-ecdd40d82b1b","timestamp":"2015-02-11T13:40:29.658819+01:00","payload_type":"CQRSTest\\\EventStore\\\SomeEvent","payload":"{}","metadata":"{}","aggregate":{"type":"SomeAggregate","id":123,"seq":4}}'
+                <<<'JSON'
+                {
+                  "id": "eabd641e-4181-4b5f-b191-ecdd40d82b1b",
+                  "timestamp": "2015-02-11T13:40:29.658819+01:00",
+                  "payload": {
+                    "data": "{}",
+                    "type": "CQRSTest\\EventStore\\SomeEvent"
+                  },
+                  "metadata": {
+                    "data": {},
+                    "types": {}
+                  },
+                  "aggregate": {
+                    "type": "SomeAggregate",
+                    "id": 123,
+                    "seq": 4
+                  }
+                }
+                JSON
             ],
         ];
     }
