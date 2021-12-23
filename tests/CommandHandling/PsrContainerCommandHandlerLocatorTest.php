@@ -13,7 +13,7 @@ class PsrContainerCommandHandlerLocatorTest extends TestCase
 {
     public function testRegisterAndGetCommandHandler(): void
     {
-        $locator = new PsrContainerCommandHandlerLocator(['Command' => 'service'], new DummyCallableContainer());
+        $locator = new PsrContainerCommandHandlerLocator(new DummyCallableContainer(), ['Command' => 'service']);
 
         $handler = $locator->get('Command');
 
@@ -25,7 +25,7 @@ class PsrContainerCommandHandlerLocatorTest extends TestCase
         $this->expectException(CommandHandlerNotFoundException::class);
         $this->expectExceptionMessage('Command handler for CommandWithoutHandler not found');
 
-        $locator = new PsrContainerCommandHandlerLocator([], new DummyCallableContainer());
+        $locator = new PsrContainerCommandHandlerLocator(new DummyCallableContainer(), []);
         $locator->get('CommandWithoutHandler');
     }
 }
