@@ -12,8 +12,8 @@ use CQRSTest\EventStore\SomeSerializer;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\ORM\Tools\Setup;
 use PHPUnit\Framework\TestCase;
 
 class TableEventStoreTest extends TestCase
@@ -28,7 +28,7 @@ class TableEventStoreTest extends TestCase
             self::markTestSkipped('The pdo_sqlite extension is not available.');
         }
 
-        $config = Setup::createAnnotationMetadataConfiguration([], true);
+        $config = ORMSetup::createAnnotationMetadataConfiguration([], true);
         $this->conn = DriverManager::getConnection([
             'driver' => 'pdo_sqlite',
             'memory' => true,

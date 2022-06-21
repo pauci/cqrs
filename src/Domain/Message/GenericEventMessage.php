@@ -19,7 +19,7 @@ class GenericEventMessage extends GenericMessage implements EventMessageInterfac
         DateTimeInterface $timestamp = null
     ) {
         parent::__construct($payload, $metadata, $id);
-        $this->timestamp = $timestamp ?? DateTime::microsecondsNow();
+        $this->timestamp = $timestamp ?? DateTime::now();
     }
 
     public function jsonSerialize(): array

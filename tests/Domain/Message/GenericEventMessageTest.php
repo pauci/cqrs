@@ -26,7 +26,7 @@ class GenericEventMessageTest extends TestCase
     {
         $metadata = Metadata::from(['foo' => 'bar']);
         $id = Uuid::uuid4();
-        $timestamp = DateTime::microsecondsNow();
+        $timestamp = DateTime::now();
 
         $eventMessage = new GenericEventMessage(new SomePayload(), $metadata, $id, $timestamp);
 

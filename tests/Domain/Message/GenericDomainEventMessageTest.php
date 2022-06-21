@@ -27,7 +27,7 @@ class GenericDomainEventMessageTest extends TestCase
     public function testReconstructUsingExistingData(): void
     {
         $id = Uuid::uuid4();
-        $timestamp = DateTime::microsecondsNow();
+        $timestamp = DateTime::now();
         $metadata = Metadata::from(['foo' => 'bar']);
 
         $message = new GenericDomainEventMessage(
