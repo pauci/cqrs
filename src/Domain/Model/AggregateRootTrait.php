@@ -13,9 +13,10 @@ trait AggregateRootTrait
 {
     private ?EventContainer $eventContainer = null;
 
-    /**
-     * @ORM\Column(type="integer", options={"unsigned"=true})
-     */
+    #[ORM\Column(
+        type: 'integer',
+        options: ['unsigned' => true],
+    )]
     private ?int $lastEventSequenceNumber = null;
 
     /**

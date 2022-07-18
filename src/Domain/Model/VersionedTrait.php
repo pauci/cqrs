@@ -8,10 +8,11 @@ use Doctrine\ORM\Mapping as ORM;
 
 trait VersionedTrait
 {
-    /**
-     * @ORM\Version
-     * @ORM\Column(type="integer", options={"unsigned"=true})
-     */
+    #[ORM\Version]
+    #[ORM\Column(
+        type: 'integer',
+        options: ['unsigned' => true],
+    )]
     private int $version;
 
     public function getVersion(): int

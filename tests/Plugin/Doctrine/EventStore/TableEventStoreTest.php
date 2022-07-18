@@ -28,7 +28,7 @@ class TableEventStoreTest extends TestCase
             self::markTestSkipped('The pdo_sqlite extension is not available.');
         }
 
-        $config = ORMSetup::createAnnotationMetadataConfiguration([], true);
+        $config = ORMSetup::createAttributeMetadataConfiguration([], true);
         $this->conn = DriverManager::getConnection([
             'driver' => 'pdo_sqlite',
             'memory' => true,
