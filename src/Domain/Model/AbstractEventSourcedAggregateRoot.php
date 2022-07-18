@@ -6,9 +6,7 @@ namespace CQRS\Domain\Model;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\MappedSuperclass
- */
+#[ORM\MappedSuperclass]
 abstract class AbstractEventSourcedAggregateRoot implements AggregateRootInterface, DeletableInterface
 {
     use EventSourcedAggregateRootTrait;
