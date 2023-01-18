@@ -8,7 +8,7 @@ use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\EventStore\RedisEventStore;
-use Pauci\DateTime\DateTime;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use Redis;
@@ -81,7 +81,7 @@ class RedisEventStoreTest extends TestCase
                     new SomeEvent(),
                     [],
                     Uuid::fromString('777bb61d-b9fa-4023-937e-1b6e4fc9f7b4'),
-                    DateTime::fromString('2015-02-11T15:23:42.195819+0100')
+                    new DateTimeImmutable('2015-02-11T15:23:42.195819+0100')
                 ),
                 <<<'JSON'
                 {
@@ -106,7 +106,7 @@ class RedisEventStoreTest extends TestCase
                     new SomeEvent(),
                     [],
                     Uuid::fromString('eabd641e-4181-4b5f-b191-ecdd40d82b1b'),
-                    DateTime::fromString('2015-02-11T13:40:29.658819+0100')
+                    new DateTimeImmutable('2015-02-11T13:40:29.658819+0100')
                 ),
                 <<<'JSON'
                 {

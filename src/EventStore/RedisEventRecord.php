@@ -9,7 +9,7 @@ use CQRS\Domain\Message\EventMessageInterface;
 use CQRS\Domain\Message\GenericDomainEventMessage;
 use CQRS\Domain\Message\GenericEventMessage;
 use CQRS\Serializer\SerializerInterface;
-use Pauci\DateTime\DateTime;
+use DateTimeImmutable;
 use Ramsey\Uuid\Uuid;
 
 class RedisEventRecord
@@ -30,7 +30,7 @@ class RedisEventRecord
 
         $data = [
             'id' => $event->getId(),
-            'timestamp' => $event->getTimestamp(),
+            'timestamp' => $event->getTimestamp()->format('Y-m-d\TH:i:s.uP'),
             'payload' => [
                 'data' => $serializer->serialize($event->getPayload()),
                 'type' => $event->getPayloadType(),
@@ -72,7 +72,7 @@ class RedisEventRecord
         $data = $this->toArray();
 
         $id = Uuid::fromString($data['id']);
-        $timestamp = DateTime::fromString($data['timestamp']);
+        $timestamp = new DateTimeImmutable($data['timestamp']);
         $payload = $serializer->deserialize($data['payload']['data'], $data['payload']['type']);
 
         $metadata = $data['metadata']['data'];

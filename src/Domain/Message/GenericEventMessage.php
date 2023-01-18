@@ -4,22 +4,29 @@ declare(strict_types=1);
 
 namespace CQRS\Domain\Message;
 
-use Pauci\DateTime\DateTime;
-use Pauci\DateTime\DateTimeInterface;
+use DateTimeImmutable;
+use Psr\Clock\ClockInterface;
 use Ramsey\Uuid\UuidInterface;
 
 class GenericEventMessage extends GenericMessage implements EventMessageInterface
 {
-    private DateTimeInterface $timestamp;
+    private DateTimeImmutable $timestamp;
+
+    private static ClockInterface|null $clock = null;
+
+    public static function setClock(ClockInterface $clock): void
+    {
+        self::$clock = $clock;
+    }
 
     public function __construct(
         object $payload,
         Metadata|array $metadata = [],
         UuidInterface $id = null,
-        DateTimeInterface $timestamp = null
+        DateTimeImmutable $timestamp = null
     ) {
         parent::__construct($payload, $metadata, $id);
-        $this->timestamp = $timestamp ?? DateTime::now();
+        $this->timestamp = $timestamp ?? self::$clock?->now() ?? new DateTimeImmutable();
     }
 
     public function jsonSerialize(): array
@@ -30,7 +37,7 @@ class GenericEventMessage extends GenericMessage implements EventMessageInterfac
         return $data;
     }
 
-    public function getTimestamp(): DateTimeInterface
+    public function getTimestamp(): DateTimeImmutable
     {
         return $this->timestamp;
     }
