@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CQRS\Domain\Message;
 
-use Pauci\DateTime\DateTimeInterface;
+use DateTimeImmutable;
 use Ramsey\Uuid\UuidInterface;
 
 class GenericDomainEventMessage extends GenericEventMessage implements DomainEventMessageInterface
@@ -22,7 +22,7 @@ class GenericDomainEventMessage extends GenericEventMessage implements DomainEve
         object $payload,
         Metadata|array $metadata = [],
         UuidInterface $id = null,
-        DateTimeInterface $timestamp = null
+        DateTimeImmutable $timestamp = null
     ) {
         $this->aggregateType = $aggregateType;
         $this->aggregateId = $aggregateId;
