@@ -10,15 +10,10 @@
         "event-sourcing"
     ],
     "config": {
-        "sort-packages": true,
         "allow-plugins": {
             "composer/package-versions-deprecated": true
-        }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "0.5.x-dev"
-        }
+        },
+        "sort-packages": true
     },
     "require": {
         "php": "^8.0 || ^8.1 || ^8.2",
