@@ -9,7 +9,7 @@ use CQRS\Domain\Model\AbstractAggregateRoot;
 /**
  * @phpstan-template Id
  */
-class AggregateRootUnderTest extends AbstractAggregateRoot
+class SomeAggregateRoot extends AbstractAggregateRoot
 {
     /**
      * @phpstan-var Id
