@@ -23,7 +23,7 @@ class RemoveDeletedAggregatesListener implements EventSubscriber
      */
     public function preFlush(PreFlushEventArgs $event): void
     {
-        $entityManager = $event->getEntityManager();
+        $entityManager = $event->getObjectManager();
         $uow = $entityManager->getUnitOfWork();
 
         foreach ($uow->getIdentityMap() as $class => $entities) {

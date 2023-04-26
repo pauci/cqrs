@@ -112,7 +112,7 @@ jobs:
         run: composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader
 
       - name: Run unit tests
-        run: ./vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml --coverage-text
+        run: ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml --coverage-text
 
       - name: Publish coverage report to Codecov
         uses: codecov/codecov-action@v1
