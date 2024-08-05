@@ -34,7 +34,7 @@ class TableEventStoreTest extends TestCase
             'memory' => true,
         ]);
 
-        $em = EntityManager::create($this->conn, $config);
+        $em = new EntityManager($this->conn, $config);
 
         $listener = new CreateEventStoreTableListener();
         $em->getEventManager()->addEventSubscriber($listener);
